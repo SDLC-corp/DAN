@@ -1,0 +1,329 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { apiGET } from '../../utils/apiHelper';
+import TableWrapper from '../../utils/tableWrapper';
+import { Breadcrumb, Sidebar, Grid, Input, Dropdown, Button, Icon } from 'semantic-ui-react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import AddLabel from './addLabel';
+import ShippingLineNameDropdown from '../../components/dropdown/shippingLineDropdown';
+
+const sections = [
+    { key: 'Dashboard', content: 'Dashboard', link: true },
+    { key: 'label List', content: 'Label List', active: true },
+];
+
+export default function labelsManagement() {
+    const navigate = useNavigate()
+    let { action } = useParams();
+    const [params, setParams] = useSearchParams()
+    const [visible, setVisible] = useState()
+    const [loading, setLoading] = useState();
+    const [shippingLines, setShippingLines] = useState([])
+    const [fields, setFields] = useState([])
+    const [fieldForFilter, setFieldForFilter] = useState([])
+    const [keyMap, setKeyMap] = useState({})
+    const [idsData, setIdsData] = useState({})
+    const querySearch = params.get('search');
+    const [search, setSearch] = useState(querySearch || "");
+    const [shippingLineForFilter, setShippingLineForFilter] = useState([])
+    const [shippingLineId, setShippingLineId] = useState('');
+    const [refresh, setRefresh] = useState(false)
+    async function getMatrixData() {
+        // setRefresh(true)
+        setLoading(true);
+        const {
+            labels = [],
+            shippingLines = [],
+            fields = []
+        } = await getAllLabel();
+
+
+        let keyMap = {}
+
+        for (let idx = 0; idx < labels.length; idx++) {
+            const label = labels[idx];
+
+            try {
+                keyMap[label.fieldId + "-" + label.shippingLineId] = label
+            } catch (error) {
+                console.error("Key Map Error :: ", label);
+            }
+        }
+        setRefresh(false)
+        setLoading(false);
+        setShippingLineForFilter(shippingLines)
+        setShippingLines(shippingLines)
+        setFieldForFilter(fields)
+        setFields(fields)
+        setKeyMap(keyMap)
+    }
+
+
+    useEffect(() => {
+        document.title = "Admin Panel | Label-Matrix"
+        getMatrixData();
+    }, []);
+
+    useEffect(() => {
+        if (action == 'edit' || action == 'add') {
+            document.getElementsByClassName('isSidebar')[0].classList.remove("pushable");
+            // document.getElementsByClassName('table')[0].classList.remove("pushable");
+            setVisible(true);
+        } else {
+            document.getElementsByClassName('isSidebar')[0].classList.add("pushable");
+            document.getElementsByClassName('isSidebar')[0].classList.remove("top");
+            setVisible(false);
+        }
+    }, [action]);
+
+
+    const handleSearchChange = (e) => {
+        const searchText = e.target.value;
+        setSearch(searchText);
+    };
+
+    useEffect(() => {
+        if (search.trim() && search) {
+            setParams({search:search.trim()})
+         const filteredFields = fieldForFilter.filter((item) =>
+        item.displayName.toLowerCase().includes(search.toLowerCase())
+        )
+            setFields(filteredFields);
+        }else{
+            setFields(fieldForFilter)
+            setParams()
+        }
+    }, [search,fieldForFilter])
+
+    useEffect(() => {
+        if (shippingLineId.length > 0) {
+            const regexes = shippingLineId.map(id => new RegExp(`^${id}`, 'i'));
+            const filteredFields = shippingLineForFilter.filter((item) => {
+                return regexes.some(regex => regex.test(item._id));
+            });
+            setShippingLines(filteredFields);
+        } else {
+            setShippingLines(shippingLineForFilter);
+        }
+    }, [shippingLineId, refresh,fieldForFilter]);
+
+
+    const getTotalFieldCount = (id) => {
+        let arr = Object.keys(keyMap)
+        return arr.filter(cusId => cusId.indexOf(id) != -1).length
+    }
+
+    return (
+        <Sidebar.Pushable className='isSidebar'>
+            <Sidebar
+                style={{
+                    width: 1000,
+                }}
+                as={'div'}
+                animation="overlay"
+                icon="labeled"
+                direction="right"
+                // onHide={() => setVisible(false)}
+                onHidden={() => navigate('/dashboard/labels/manage')}
+                vertical={'vertical'}
+                visible={visible}>
+                <AddLabel
+                    visible={visible}
+                    through={"manage"}
+                    idsData={idsData}
+                    getAllLabel={getMatrixData}
+                />
+            </Sidebar>
+
+            <Sidebar.Pusher dimmed={visible}>
+                <div className="page-header" >
+                    <div>
+                        <Breadcrumb icon="right angle" sections={sections} />
+                        <div className="header-text">Label Matrix</div>
+                        <div className="sub-text">
+                            List of all fields and shipping lines and Labels
+                        </div>
+                    </div>
+                    <div className="page-header-actions">
+                        <div style={{ display: "flex", alignItems: "center", marginRight: "2rem" }}>
+                            <strong>REFRESH</strong>
+                            <p style={{ marginLeft: "1rem", cursor: "pointer" }}><Icon onClick={()=>{
+                            setRefresh(true)
+                            getMatrixData()
+                            }}
+                                className='ui right aligned blue' name="refresh" loading={refresh}></Icon></p>
+                        </div>
+                        <div style={{ marginRight: 10 }}>
+                            <Input
+                                icon='search'
+                                placeholder="Search Fields"
+                                type="text"
+                                // onChange={(e, { value }) => setSearch(value)}
+                                onChange={handleSearchChange}
+
+                                value={search}
+                            />
+                        </div>
+                        <div>
+                            <ShippingLineNameDropdown
+                                multiselect={true}
+                                shippingLineId={setShippingLineId} shippingId={shippingLineId} refresh={refresh}
+                            />
+                            {/* <Button
+                                primary
+                                onClick={async() => {
+                                    await getMatrixData();
+                                    setRefresh(!refresh)
+                                    // setSearch("")    
+                                    // setShippingLineId("")
+                                }}>
+                                <span>Refresh</span>
+                                <Icon className='ui right aligned' name="refresh" active={true}></Icon>
+                            </Button> */}
+                        </div>
+                    </div>
+                </div>
+
+                {/* <div style={{ padding: 10 }}>
+                    <table class="ui compact celled definition table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                {shippingLines.map(shippingLine => <th id={shippingLine._id}>
+                                    <div data-tooltip={shippingLine.name} data-position="bottom left" >
+                                        <span>{shippingLine.code || shippingLine.name}</span>
+                                        <span style={{ marginLeft: "1rem" }}>
+                                            ({getTotalFieldCount(shippingLine._id)})
+                                        </span>
+                                    </div>
+                                </th>)}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                fields?.length ?
+                                    fields.map(field => {
+                                        return (
+                                            <tr>
+                                                <td style={{ width: '15%' }}><h5>{field.displayName}</h5></td>
+                                                {shippingLines.map((shipLine) => {
+                                                    let labelObj = keyMap[field._id + '-' + shipLine._id] || { shippingLineId: shipLine._id, fieldId: field._id, fieldName: field.displayName }
+                                                    return <TableData
+                                                        label={labelObj}
+                                                        setIdsData={setIdsData}
+                                                    />
+                                                })}
+                                            </tr>
+                                        );
+                                    })
+                                    :
+                                    <div style={{ textAlign: 'center' }}>No records found</div>
+                            }
+                        </tbody>
+                    </table>
+                </div>  */}
+                <div style={{ display: 'flex',padding:5 }}>
+                    <div style={{ width: '300px' }}>
+
+                        <table className="ui compact celled definition table">
+                            <thead>
+                                <tr style={{ height: '50px'}}>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    fields?.length ?
+                                        fields.map(field => {
+                                            return (
+                                                <tr style={{height:'50px'}}>
+                                                    <td ><h5>{field.displayName}</h5></td>
+                                                </tr>
+                                            );
+                                        })
+                                        :
+                                        <div style={{ textAlign: 'center' }}>No records found</div>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style={{ width: '100%', overflowX: 'scroll' }}>
+                        <table className="ui celled table">
+                            <thead>
+                                <tr  >
+                                    {shippingLines.map(shippingLine => <th id={shippingLine._id} 
+                                    style={{height:'50px',whiteSpace:'nowrap'}}
+                                    >
+                                        <div data-tooltip={shippingLine.name} data-position="bottom left"  >
+                                            <span >{shippingLine.code || shippingLine.name}</span>
+                                            <span style={{ marginLeft: "1rem" }}>
+                                                ({getTotalFieldCount(shippingLine._id)})
+                                            </span>
+                                        </div>
+                                    </th>)}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {fields?.length ?
+                                    fields.map(field => {
+                                        return (
+                                            <tr style={{height:'50px',whiteSpace:'nowrap'}}>
+                                                {shippingLines.map((shipLine) => {
+                                                    let labelObj = keyMap[field._id + '-' + shipLine._id] || { shippingLineId: shipLine._id, fieldId: field._id, fieldName: field.displayName }
+                                                    return <TableData
+                                                        label={labelObj}
+                                                        setIdsData={setIdsData}
+                                                    />
+                                                })}
+                                            </tr>
+                                        );
+                                    })
+                                    :
+                                    <div style={{ textAlign: 'center' }}>No records found</div>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </Sidebar.Pusher>
+        </Sidebar.Pushable >
+    );
+}
+
+const TableData = ({ label = {}, setIdsData }) => {
+    const navigate = useNavigate()
+    const onClickEditButton = (id) => {
+        navigate(`/dashboard/labels/manage/edit/${id}`)
+    }
+    const onClickAddButton = (label) => {
+        navigate(`/dashboard/labels/manage/add`)
+        setIdsData(label)
+    }
+
+
+    return <td>
+        {
+            label.label ? <>
+                <i className="edit icon blue"
+                    onClick={() => onClickEditButton(label._id)}></i>
+                {label.label}
+            </>
+                : <>
+                    <i className="add icon blue"
+                        onClick={() => onClickAddButton(label)}></i>
+                </>
+        }
+
+    </td >
+}
+
+const getAllLabel = async (limit, page) => {
+    let response = await apiGET(`/v1/labels/matrix?limit=${limit}&page=${page}`);
+    if (response.status === 200) {
+        return response.data.data;
+    }
+    return {
+        displayNames: [],
+        labels: [],
+        parameterNames: [],
+    };
+};
