@@ -1,1 +1,1 @@
-# data-geometry-ai
+# Data Geometry
