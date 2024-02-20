@@ -14,7 +14,6 @@ export default function getMenus(user = {}) {
       type: 'menu',
       title: 'Label Matrix',
       path: '/dashboard/labels/manage',
-    //   openInNewTab:true,
       icon: 'box',
     },
     {
@@ -24,7 +23,6 @@ export default function getMenus(user = {}) {
     //   openInNewTab:true,
       icon: 'js square',
     },
-    // { type: 'menu', title: 'Document Types',path: '/dashboard/carrier-line',icon: 'box'},
     { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',},
 
     // { type: 'label', title: 'Delete Requests' },
@@ -53,7 +51,6 @@ export default function getMenus(user = {}) {
     {type: 'menu',title: 'Users',path: '/dashboard/users',icon: 'users',accessModule:MANAGE_USER},
     
     { type: 'label', title: 'Masters' ,accessModule: PORT_MASTERS},
-    { type: 'menu', title: 'Document Types',path: '/dashboard/carrier-line',icon: 'ship',accessModule : SHIPPING_LINE},
     { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',accessModule : FIELDS},
 
   ];

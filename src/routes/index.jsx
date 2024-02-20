@@ -9,7 +9,6 @@ import DocumentUpload from '../modules/docupload/documentUpload';
 import DocumentList from '../modules/docupload/listDocuments';
 import ViewDocument from '../modules/docupload/viewDocument';
 import JobList from '../modules/job/listJobs';
-
 import CustomLogic from '../modules/logic/customLogic';
 import ListFieldGroup from '../modules/fieldGroup/listFieldGroup';
 import RoleList from '../modules/role/listRole';

@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Form } from 'semantic-ui-react';
-import { useNavigate } from 'react-router-dom';
+import { Breadcrumb, Form, Image } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
-import moment from 'moment'
 import { apiGET } from '../../utils/apiHelper';
 import { Chart as ChartsJs, BarElement, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Bar, Pie } from 'react-chartjs-2';
 import DateRange from '../../components/daterangepicker/dateRangePicker';
-import { useContext } from 'react';
-import { AuthContext } from '../../contexts';
 import ShippingLineNameDropdown from '../../components/dropdown/shippingLineDropdown';
 
 ChartsJs.register(
@@ -38,9 +34,7 @@ function Dashboard() {
     syncCount: '',
     asyncCount: ''
   })
-  const [jobList, setJobList] = useState([])
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const [label, setlabel] = useState([])
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [lastThirtyDaysUploadedDocumentArr, setLastThirtyDaysUploadedDocumentArr] = useState([])
@@ -48,8 +42,6 @@ function Dashboard() {
   const [documentUploadedByShippingLine, setDocumentUploadedByShippingLine] = useState([])
   const [range, setRange] = useState([]);
   const [errorObj, setErrorObj] = useState({})
-  const { user } = useContext(AuthContext);
-  let loggedInUser = JSON.parse(localStorage.getItem("user"))
   const [filterShippingLine, setFilterShippingLine] = useState('')
 
   const getDocumentsCount = async (range,filterShippingLine) => {
@@ -81,7 +73,6 @@ function Dashboard() {
           shippingLineCounts: response.data.data.data.shippingLineCounts,
           domainCount: response.data.data.data.domainCount,
         })
-        setJobList(response.data.data.data.jobList)
         setLastThirtyDaysUploadedDocumentArr(response.data.data.data.lastThirtyDaysUploadedDocumentCount)
         setDocumentUploadedByUsers(response.data.data.data.documentUploadedByUser)
         setDocumentUploadedByShippingLine(response.data.data.data.documentUploadedByShippingLine)
@@ -111,14 +102,14 @@ function Dashboard() {
   };
 
 
-  const dataCounts = label.map((dateLabel) => {
+  const dataCounts = label?.map((dateLabel) => {
     const matchingCount = lastThirtyDaysUploadedDocumentArr.find((item) => item.date === dateLabel.date);
     return matchingCount ? matchingCount.count : 0;
   });
 
   //Data of Uploaded Documents
   const data = {
-    labels: label.map(item => item.date),
+    labels: label?.map(item => item.date),
     datasets: [
       {
         label: `Document Uploaded in last 30 Days`,
@@ -166,37 +157,22 @@ function Dashboard() {
     ],
   };
 
-  //Data of Uploaded Documents
-  // const documentUploadedByDomainName = {
-  //   labels: documentUploadedByDomain.map(item => item._id),
-  //   datasets: [
-  //     {
-  //       label: `Document By Domain`,
-  //       data: documentUploadedByDomain.map(item => item.count),
-  //       borderColor: '#35C69D',
-  //       backgroundColor: '#35C69D',
-  //       cubicInterpolationMode: 'monotone',
-  //       yAxisID: 'y',
-  //       tension: 0.4,
-  //       barThickness: 30, // Adjust the bar thickness as needed
-  //     },
-  //   ],
-  // };
 
   // Data for hbl mbl Documents
   const mblHblData = {
-    labels: [`${counts.mblCount} Document Types`, `${counts.hblCount} Document Types`],
+    labels: [`${7} Document Types`, `${8} Document Types`],
     datasets: [
       {
         label: 'Document Types',
-        data: [counts.mblCount, counts.hblCount],
+        // data: [counts.mblCount, counts.hblCount],
+        data: [7, 2],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
+          'rgba(158, 202, 225, 1)',
+          'rgba(50, 130, 189, 1)',
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
+          'rgba(255, 255, 255, 1)',
+          'rgba(255, 255, 255, 1)',
         ],
         borderWidth: 1,
       },
@@ -205,17 +181,19 @@ function Dashboard() {
 
   // Data for Sync and async Documents
   const syncAsyncData = {
-    labels: [`${counts.syncCount} Sync : Yes`, `${counts.asyncCount}  Sync : No`],
+    // labels: [`${counts.syncCount} Sync : Yes`, `${counts.asyncCount}  Sync : No`],
+    labels: [`${10} Sync : Yes`, `${5}  Sync : No`],
     datasets: [
       {
-        data: [counts.syncCount, counts.asyncCount],
+        // data: [counts.syncCount, counts.asyncCount],
+        data: [10,5],
         backgroundColor: [
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 99, 132, 0.2)',
+          'rgba(158, 202, 225, 1)',
+          'rgba(50, 130, 189, 1)',
         ],
         borderColor: [
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 99, 132, 1)',
+          'rgba(255, 255, 255, 1)',
+          'rgba(255, 255, 255, 1)',
         ],
         borderWidth: 1,
       },
@@ -356,7 +334,7 @@ function Dashboard() {
             {/*Shipping Line Count*/}
             <CardComponent
               headerText="Total Document Types"
-              icon="ship icon"
+              icon="bars icon"
               count={counts.shippingLineCount}
             />
 
@@ -371,7 +349,7 @@ function Dashboard() {
             <CardComponent
               headerText="Total User"
               icon="user icon"
-              count={loggedInUser?.role == 'documentation' ? 0 : counts.userCount}
+              count={counts.userCount}
             />
 
           </div>
@@ -388,7 +366,7 @@ function Dashboard() {
             <DateRange setRangeProps={setRange} showDatePicker={setShowDatePicker} setlabel={setlabel} />
           </div>
         </div>
-        <div className="ui container fluid">
+        <div className="ui container fluid" >
           <div className="ui grid">
             <div className="row">
               <div className="sixteen wide tablet eight wide computer column">
@@ -400,27 +378,17 @@ function Dashboard() {
                   />
                 </div>
               </div>
-
-              <div className="sixteen wide tablet eight wide computer column ui segment"
-                style={{ alignItems: 'center', display: 'flex' }}>
-                <div className="ui container fluid ">
-                  <div className="ui grid">
-                    {
-                      counts.mblCount > 0 || counts.hblCount > 0 ?
-                        <div className="row">
-                          <div className="seven wide tablet seven wide computer column ">
-                            <Pie data={mblHblData} style={{ width: 250, height: 250 }} />
-                          </div>
-                          <div className="seven wide tablet seven wide computer column">
-                            <Pie data={syncAsyncData} style={{ width: 250, height: 250 }} />
-                          </div>
-                        </div>
-                        :
-                        <div style={{ textAlign: 'center', width: '100%' }}>No Data</div>
-                    }
+              <div className="sixteen wide tablet eight wide computer column">
+                <div className="ui segment">
+                <div class="ui grid" style={{height:"320px", display:"flex",justifyContent:"center",alignItems:"center"}}>
+                  <div class="eight wide column">
+                    <Pie data={mblHblData} style={{ width: 300, height: 300 }} />
                   </div>
+                  <div class="eight wide column">
+                    <Pie data={mblHblData} style={{ width: 300, height: 300 }} />
+                  </div>
+              </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -451,7 +419,7 @@ function Dashboard() {
 
 
 const CardComponent = ({ headerText, icon, seriesCount, count }) => (
-  <div className="eight wide tablet five wide computer column"  >
+  <div className="ten wide tablet five wide computer column" >
     <div className="ui segment" >
       <div style={{ display: 'flex', justifyContent: 'space-between'}}>
         <div>

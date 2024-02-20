@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Layout from './layouts/basic';
 import AuthRequired from './contexts/auth/authRequired';
 import { authProtectedRoutes, publicRoutes } from './routes';

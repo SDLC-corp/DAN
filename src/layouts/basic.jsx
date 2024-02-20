@@ -9,7 +9,6 @@ import getMenus from './menu';
 
 function Layout() {
 
-  const navigate = useNavigate();
   const location = useLocation();
   let authContext = useContext(AuthContext);
   const { collapseSidebar, collapsed } = useProSidebar();
@@ -23,11 +22,9 @@ function Layout() {
     setUser(authContext.user.name)
     if (roles == "superAdmin") {
       setUserRole("Super Admin")
-    } else if (roles === "documentation") {
-      setUserRole("Documentation")
-    }
+    } 
     else{
-      setUserRole("Admin")
+      setUserRole(authContext.user.roleName)
     }
   }
 
