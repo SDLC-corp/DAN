@@ -1,4 +1,4 @@
-import {axiosApi, privateAxios} from '../services/axios';
+import {privateAxios} from '../services/axios';
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export async function apiGET(url, config = {}) {

@@ -271,7 +271,7 @@ export default function labelsManagement() {
 
               <Button
                 loading={loading} disabled={loading || docNoLoading || !imageUrl}
-                content='Save' fluid  onClick={saveBtnClickHandler} color='red' />
+                content='Save' fluid  onClick={saveBtnClickHandler} primary/>
               </Form>
             </div>
 

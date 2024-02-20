@@ -147,7 +147,7 @@ const DocumentUploadDrop = ({
                         backgroundColor: 'white',
                         borderRadius: '5px',
                         padding: "30px",
-                        minHeight: "47vh"
+                        minHeight: "37vh"
                     }}
                 >
                     {imageUrl && !loading ? (

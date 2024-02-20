@@ -9,8 +9,6 @@ import ShippingLineNameDropdown from '../../components/dropdown/documentTypeDrop
 import useDebounce from '../../utils/useDebounce';
 import DateRangeFilter from '../../components/filter/daterangeFilter';
 import Documentnotes from '../../components/notes/documentnotes';
-import { useContext } from 'react';
-import { AuthContext } from '../../contexts';
 import StatusView from '../job/viewStatus';
 import Papa from 'papaparse';
 import { ADD_NOTES, DELETE_DOCUMENT, EXPORT_DOCUMENTS, VIEW_DOCUMENT, VIEW_STATUS, hasAccess } from '../../utils/accessHelper';
@@ -18,9 +16,7 @@ import { ADD_NOTES, DELETE_DOCUMENT, EXPORT_DOCUMENTS, VIEW_DOCUMENT, VIEW_STATU
 
 function DocumentList() {
 
-  let { action } = useParams();
   const navigate = useNavigate()
-
   const [params, setParams] = useSearchParams()
   const [documentsdata, setDocumentData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
@@ -37,7 +33,6 @@ function DocumentList() {
   const [percentCount, setPercentCount] = useState([])
   const [documentTypeId, setDocumentTypeId] = useState('')
   const [filterModalOpen, setFilterModalOpen] = useState(false)
-  const [checkDropDown, setCheckDropDown] = useState(false)
   const [documentType, setDocumentType] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
@@ -48,10 +43,6 @@ function DocumentList() {
   const [selectedDocumentTypeName, setSelectedDocumentTypeName] = useState(queryDocumentTypeFilter || "")
   const [viewStatusModal, setViewStatusModal] = useState(false)
   const [docObj, setDocObj] = useState({})
-
-console.log("queryDocumentTypeFilter",queryDocumentTypeFilter);
-console.log("queryLimit",queryLimit);
-console.log("querySearchFilter",querySearchFilter);
 
 
   const sections = [
@@ -273,7 +264,7 @@ console.log("querySearchFilter",querySearchFilter);
                 <Popup
                   trigger={
                     <Label color="green" horizontal>
-                      ERP SYNC : YES
+                      API SYNC : YES
                     </Label>
                   }
                   content={moment(row?.lastSyncTime).format('DD/MM/YYYY HH:mm a')}
@@ -285,7 +276,7 @@ console.log("querySearchFilter",querySearchFilter);
             <List style={{ marginTop: 5 }}>
               <List.Item>
                 <Label color="gray" horizontal>
-                  ERP SYNC : NO
+                  API SYNC : NO
                 </Label>
               </List.Item>
             </List>)} */}
@@ -600,7 +591,6 @@ console.log("querySearchFilter",querySearchFilter);
                   setSearch('')
                   setSelectedNodePath([])
                   getAllDocuments()
-                  setCheckDropDown(false)
                   setSelectedDocumentTypeName("")
                 }}>
                 Clear Filter
@@ -790,7 +780,6 @@ console.log("querySearchFilter",querySearchFilter);
               setToDate('')
               setSelectedNodePath([])
               getAllDocuments()
-              setCheckDropDown(false)
               setSelectedDocumentTypeName("")
             }}>
               Clear
