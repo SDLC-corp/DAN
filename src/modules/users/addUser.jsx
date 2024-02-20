@@ -12,22 +12,17 @@ import { apiGET, apiPOST } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import ImageUploadDrop from '../../components/imageuploader/imageUploadDropzone';
 import DEFAULTIMG from '../../assets/images/default.png';
-import NestedDomain from '../../components/nodetree/nestedDomain';
-import MultiSelectDomain from './multiSelectDomain';
 import { AuthContext } from '../../contexts';
 
 function AddUser(Props) {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext);
-  const [openModalTree, setOpenModalTree] = useState(false)
-  const [nodeTreeValue, setNodeTreeValue] = useState()
-    const [approvalDomainArray, setApprovalDomainArray] = useState([])
   const { id } = useParams();
-    const [updatePassModal, setUpdatePassModal] = useState(false)
-    const [updatePass, setUpdatePass] = useState("")
-    const [confirmPass, setConfirmPass] = useState("")
-    const [passError, setPassError] = useState()
-    const [rolesData, setRolesData] = useState([])
+  const [updatePassModal, setUpdatePassModal] = useState(false)
+  const [updatePass, setUpdatePass] = useState("")
+  const [confirmPass, setConfirmPass] = useState("")
+  const [passError, setPassError] = useState()
+  const [rolesData, setRolesData] = useState([])
   const { action } = useParams();
   const sections = [
     { key: 'Dashboard', content: 'Dashboard', link: true },
@@ -39,7 +34,6 @@ function AddUser(Props) {
     name: '',
     email: '',
     password: '',
-    domain: '',
     roleId:'',
   })
   const [Error, setError] = useState()
@@ -75,10 +69,6 @@ function AddUser(Props) {
       setError({ ...Error, password: "Password is a required field" })
       return false
     }
-    else if ((nodeTreeValue < 1)) {
-      setError({ ...Error, domain: "Domain required" })
-      return false
-    }
     return true
   }
 
@@ -104,12 +94,9 @@ function AddUser(Props) {
       name: '',
       email: '',
       password: '',
-      domain: '',
       roleId:'',
     })
     setProfilePic("")
-    setNodeTreeValue([])
-    setApprovalDomainArray([])
     Props.setVisible(false)
     Props.setViewUser(false)
   }
@@ -129,16 +116,10 @@ function AddUser(Props) {
       const response = await apiGET(`/v1/users/${id}`)
       if (response.status === 200) {
         const user = response.data.data
-        setNodeTreeValue(user.domain)
-        if (user?.approvalDomain) {
-            setApprovalDomainArray(user.approvalDomain)
-        }
-        console.log("user",user);
         setUserObj({
           name: user.name,
           email: user.email,
           password: user.password,
-          domain: user.domain,
           profilePic: user.profilePic,
           roleId: user.roleId
         })
@@ -160,8 +141,6 @@ function AddUser(Props) {
           name: userObj.name,
           email: userObj.email,
           password: userObj.password,
-          domain: nodeTreeValue,
-          approvalDomain: approvalDomainArray,
           profilePic: profilePic,
         //   role: userObj.role,
           roleId: userObj.roleId
@@ -208,8 +187,6 @@ function AddUser(Props) {
         setLoading(true)
         let payload = {
           name: userObj.name,
-          domain: nodeTreeValue,
-          approvalDomain: approvalDomainArray,
           profilePic: profilePic,
           roleId: userObj.roleId,
         //   role: userObj.role
@@ -271,10 +248,6 @@ const getAllRoles = async () => {
                 return {key:item._id, text:item.name, value: item._id}
             })
             setRolesData([...list])
-            // setRole(response?.data?.data?.data);
-            // setTotalRows(response?.data?.data?.totalCount);
-            // setLimit(response?.data?.data?.limit)
-            // setPage(response?.data?.data?.page)
         }
         else {
             Swal.fire({
@@ -310,9 +283,7 @@ const getAllRoles = async () => {
     }
   }, [id])
 
-    useEffect(() => {
-        delete Error?.domain 
-    }, [nodeTreeValue,Error?.domain])
+
 
   return (
     <div className="fadeIn page-content-wrapper">
@@ -426,31 +397,31 @@ const getAllRoles = async () => {
           }
 
           {
-            Props.ViewUser || Props?.stateAction ?
-              <Form.Field
-                id="form-input-control-error-email"
-                control={Input}
-                label="Access Domains"
-                placeholder="Domain"
-                required={true}
-                value={nodeTreeValue}
-              ></Form.Field>
-              :<>
-                <Form.Field
-                id="form-input-control-error-email"
-                label="Access Domains"
-                required={true}
-                style={{marginBottom:5}}
-              />
-                {
-                <MultiSelectDomain 
-                    id={id} nodeTreeValue={nodeTreeValue} 
-                    setNodeTreeValue={setNodeTreeValue} 
-                    setVisible={Props.setVisible}
-                    error={Error}
-/>
-                }
-            </>
+//             Props.ViewUser || Props?.stateAction ?
+//               <Form.Field
+//                 id="form-input-control-error-email"
+//                 control={Input}
+//                 label="Access Domains"
+//                 placeholder="Domain"
+//                 required={true}
+//                 value={nodeTreeValue}
+//               ></Form.Field>
+//               :<>
+//                 <Form.Field
+//                 id="form-input-control-error-email"
+//                 label="Access Domains"
+//                 required={true}
+//                 style={{marginBottom:5}}
+//               />
+//                 {
+//                 <MultiSelectDomain 
+//                     id={id} nodeTreeValue={nodeTreeValue} 
+//                     setNodeTreeValue={setNodeTreeValue} 
+//                     setVisible={Props.setVisible}
+//                     error={Error}
+// />
+//                 }
+//             </>
             //   <Form.Field
             //     id="form-input-control-error-email"
             //     control={Input}
@@ -469,31 +440,31 @@ const getAllRoles = async () => {
             //   />
           }
           {
-             Props.ViewUser || Props?.stateAction 
-                ? <Form.Field
-                id="form-input-control-error-email"
-                control={Input}
-                label="Approver Domains"
-                placeholder="Domain"
-                required={true}
-                value={approvalDomainArray}
-              ></Form.Field>
-              :<>
-                <Form.Field
-                id="form-input-control-error-email"
-                label="Approver Domains"
-                // required={true}
-                style={{marginBottom:0, marginTop:10}}
-              />
-                {
-                <MultiSelectDomain 
-                    id={id} nodeTreeValue={approvalDomainArray} 
-                    setNodeTreeValue={setApprovalDomainArray} 
-                    setVisible={Props.setVisible}
-                    error={Error}
-                />
-                }
-            </>
+            //  Props.ViewUser || Props?.stateAction 
+            //     ? <Form.Field
+            //     id="form-input-control-error-email"
+            //     control={Input}
+            //     label="Approver Domains"
+            //     placeholder="Domain"
+            //     required={true}
+            //     value={approvalDomainArray}
+            //   ></Form.Field>
+            //   :<>
+            //     <Form.Field
+            //     id="form-input-control-error-email"
+            //     label="Approver Domains"
+            //     // required={true}
+            //     style={{marginBottom:0, marginTop:10}}
+            //   />
+            //     {
+            //     <MultiSelectDomain 
+            //         id={id} nodeTreeValue={approvalDomainArray} 
+            //         setNodeTreeValue={setApprovalDomainArray} 
+            //         setVisible={Props.setVisible}
+            //         error={Error}
+            //     />
+            //     }
+            // </>
           }
           <Form.Field
             width={4}

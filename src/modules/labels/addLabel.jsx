@@ -24,15 +24,15 @@ function AddLabel(props) {
     const [isoverride, setIsOverride] = useState(false)
     const [labelObj, setLabelObj] = useState({
         label: "",
-        shippingLineId: "",
+        documentTypeId: "",
         fieldId: "",
         logicCodeId: "",
         isOverride: false,
 
     })
-    const [shippingName, setShippingName] = useState()
+    const [documentTypeName, setDocumentTypeName] = useState()
     const [fieldName, setFieldName] = useState()
-    const [shippingList, setShippingList] = useState([])
+    const [documentTypeList, setDocumentTypeList] = useState([])
     const [fieldList, setFieldList] = useState([])
     const [errorObj, setErrorObj] = useState()
     const [loading, setLoading] = useState(false)
@@ -74,8 +74,8 @@ function AddLabel(props) {
                 setErrorObj({ ...errorObj, label: "Label is required" })
                 return false
             }
-            if (!data.shippingLineId) {
-                setErrorObj({ ...errorObj, shippingLineId: "Shipping Id is required" })
+            if (!data.documentTypeId) {
+                setErrorObj({ ...errorObj, documentTypeId: "documentType Id is required" })
                 return false
             }
             if (!data.fieldId) {
@@ -95,7 +95,7 @@ function AddLabel(props) {
     }
 
     const onChangeShipping = (e, data) => {
-        setLabelObj({ ...labelObj, shippingLineId: data.value });
+        setLabelObj({ ...labelObj, documentTypeId: data.value });
     };
 
     const onChangeField = (e, data) => {
@@ -227,7 +227,7 @@ function AddLabel(props) {
                 setIsOverride(response.isOverride)
                 setLabelObj({
                     label: response.label,
-                    shippingLineId: response.shippingLineId,
+                    documentTypeId: response.documentTypeId,
                     fieldId: response.fieldId,
                     logicCodeId: response?.logicCodeId,
                     isOverride: response.isOverride,
@@ -238,20 +238,20 @@ function AddLabel(props) {
                 })
                 setOverrideText(response.overrideCustomLogic)
                 setEditorCode(response.logic?.textArea)
-                setShippingName(response.shippingLine.name)
-                setFieldName(response.field.displayName)
+                setDocumentTypeName(response.documentType?.name)
+                setFieldName(response.field?.displayName)
             }
             else {
                 Toast.fire('Error! ', response?.data?.data || "Something went wrong!", 'error');
             }
         } catch (error) {
-            Toast.fire('Error! ', error || "Something went wrong!", 'error');
+            Toast.fire('Error! ',  error.stack || error || "Something went wrong!", 'error');
         }
     }
 
     const getListOfShippingLine = async () => {
         try {
-            const response = await apiGET(`/v1/shipping-lines`)
+            const response = await apiGET(`/v1/document-type`)
             if (response.status === 200) {
                 let list = response?.data?.data?.data;
                 if (list && list.length) {
@@ -263,7 +263,7 @@ function AddLabel(props) {
                         };
                     });
                 }
-                setShippingList(list)
+                setDocumentTypeList(list)
             } else {
                 Toast.fire('Error!', response?.data?.data || "Something went wrong!", 'error');
             }
@@ -369,7 +369,7 @@ function AddLabel(props) {
         }
     }
     const clearFields = () => {
-        setLabelObj({ label: "", shippingLineId: "", fieldId: "", logicCodeId: "", isOverride: false })
+        setLabelObj({ label: "", documentTypeId: "", fieldId: "", logicCodeId: "", isOverride: false })
         setEditorCode("")
         setIsOverride(false)
         setErrorObj()
@@ -390,6 +390,7 @@ function AddLabel(props) {
     useEffect(() => {
         if (id) {
             onClickGetLabelById()
+            getAllShortCodes()
         }
     }, [id])
 
@@ -399,11 +400,11 @@ function AddLabel(props) {
         getAllShortCodes()
         if (props.idsData) {
             setLabelObj({
-                ...labelObj, shippingLineId: props.idsData?.shippingLineId,
+                ...labelObj, documentTypeId: props.idsData?.documentTypeId,
                 fieldId: props.idsData?.fieldId, label: props.idsData?.fieldName
             })
-            let shppingData = shippingList.find(item => { if (item.value == props.idsData?.shippingLineId) return item.text })
-            setShippingName(shppingData?.text)
+            let documentTypeData = documentTypeList.find(item => { if (item.value == props.idsData?.documentTypeId) return item.text })
+            setDocumentTypeName(documentTypeData?.text)
             let fieldData = fieldList.find(item => { if (item.value == props.idsData?.fieldId) return item.text })
             setFieldName(fieldData?.text)
         }
@@ -413,7 +414,7 @@ function AddLabel(props) {
         if (isoverride) {
             setLabelObj({
                 label: labelObj.label,
-                shippingLineId: labelObj.shippingLineId,
+                documentTypeId: labelObj.documentTypeId,
                 fieldId: labelObj.fieldId,
                 isOverride: isoverride,
                 overrideCustomLogic: overrideText,
@@ -457,7 +458,7 @@ function AddLabel(props) {
                     />
 
                     <div style={{ marginBottom: "1rem", marginTop: "2rem" }}>
-                        <label ><strong>Shipping Line :</strong> <strong>{shippingName || labelObj.shippingLineId}</strong></label>
+                        <label ><strong>Document Type :</strong> <strong>{documentTypeName || labelObj.documentTypeId}</strong></label>
                     </div>
 
                     <div style={{ marginTop: "1rem", marginBottom: "2rem", display: "flex" }}>
@@ -465,7 +466,7 @@ function AddLabel(props) {
                     </div>
                     {/* {
                         id ? <div style={{ marginBottom: "1rem" }}>
-                            <label ><span>Shipping Line :</span> <strong>{shippingName || ""}</strong></label>
+                            <label ><span>Shipping Line :</span> <strong>{documentTypeName || ""}</strong></label>
                         </div>
                             : <Form.Dropdown
                                 label="Shipping Line"

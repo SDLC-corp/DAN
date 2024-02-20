@@ -1,28 +1,28 @@
-import axiosApi from '../services/axios';
+import {axiosApi, privateAxios} from '../services/axios';
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export async function apiGET(url, config = {}) {
-  return await axiosApi
+  return await privateAxios
     .get(url, { ...config })
     .then((response) => response)
     .catch((error) => error.response);
 }
 export async function apiPOST(url, data, config = {}) {
-  return axiosApi
+  return privateAxios
     .post(url, { ...data }, { ...config })
     .then((response) => response)
     .catch((error) => error.response);
 }
 
 export async function apiPUT(url, data, config = {}) {
-  return axiosApi
+  return privateAxios
     .put(url, { ...data }, { ...config })
     .then((response) => response)
     .catch((error) => error.response);
 }
 
 export async function apiDELETE(url, config = {}) {
-  return await axiosApi
+  return await privateAxios
     .delete(url, { ...config })
     .then((response) => response)
     .catch((error) => error.response);

@@ -2,7 +2,6 @@ import React from 'react';
 import Login from '../modules/login';
 import Dashboard from '../modules/dashboard';
 import UserList from '../modules/users/listUsers';
-import ShippingLineList from '../modules/shippingline/listShippingLine';
 import FieldList from '../modules/fields/listFields';
 import LabelList from '../modules/labels/listLabel';
 import LabelsManagement from '../modules/labels/labelsManagement';
@@ -41,10 +40,6 @@ const authProtectedRoutes = [
   { path: '/dashboard/document/deleterequest/approved', component: <RequestedDocumentList />, acccessModuleName: DELETE_REQUEST },
   { path: '/dashboard/document/deleterequest/delete/:id', component: <RequestedDocumentList />, acccessModuleName: DELETE_REQUEST },
 
-
-  { path: 'carrier-line', component: <ShippingLineList />,acccessModuleName: SHIPPING_LINE },
-  { path: 'carrier-line/:action', component: <ShippingLineList />, acccessModuleName: SHIPPING_LINE },
-  { path: 'carrier-line/:action/:id', component: <ShippingLineList />, acccessModuleName: SHIPPING_LINE },
 
   { path: 'fields', component: <FieldList /> , acccessModuleName: FIELDS},
   { path: 'fields/:action', component: <FieldList />, acccessModuleName:FIELD_MAPPING },

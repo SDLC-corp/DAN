@@ -22,8 +22,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { ASSIGN_TO, DELETE_DOCUMENT, EXTRACTION, REUPLOAD_PDF, SYNC_WITH_ERP, VIEW_RAW, hasAccess } from '../../utils/accessHelper';
 
-import {write, utils} from 'xlsx';
-import FileSaver from 'file-saver';
+
 
 export default function ViewDocument() {
     let { id } = useParams();
@@ -34,9 +33,7 @@ export default function ViewDocument() {
     const [selectedSentence, setSelectedSentence] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [rawModal, setRawModal] = useState(false)
-    const [rawTableModal, setRawTableModal] = useState(false)
     const [rawModalData, setRawModalData] = useState({})
-    const [rawTableModalData, setRawTableModalData] = useState({})
     const [onChangeClearCanvas, setOnChangeClearCanvas] = useState(false)
     const [count, setCount] = useState(0)
     let { user } = useContext(AuthContext);
@@ -56,7 +53,6 @@ export default function ViewDocument() {
                 // console.log("DOCOBJECT::::::::::",doc.domainName);
                 if (doc?.extractedData?.documents) {
                     setRawModalData(doc?.extractedData?.documents[0]?.fields)
-                    setRawTableModalData(doc?.extractedData?.tables)
                 }
             } else if (data.status == "401") {
                 Swal.fire({
@@ -74,7 +70,7 @@ export default function ViewDocument() {
                 navigate("/dashboard/document-list")
             }
         } catch (error) {
-            console.log('error', error);
+            console.log('error ---> getDoc Error', error);
             Swal.fire({
                 title: "Error !",
                 text: error,
@@ -182,7 +178,7 @@ export default function ViewDocument() {
             });
             for (let e = 0; e < selectedWord.length; e++) {
                 const aSelectedWord = selectedWord[e];
-                tempSelectedSentence = tempSelectedSentence + docObj.extractedData.pages[pageIndex].words[aSelectedWord].content + ' ';
+                tempSelectedSentence = tempSelectedSentence + docObj.extractedData?.pages[pageIndex].words[aSelectedWord].content + ' ';
             }
             setSelectedSentence(tempSelectedSentence);
         }
@@ -248,6 +244,7 @@ export default function ViewDocument() {
     }
 
     const onClickDeleteButton = async () => {
+
         Swal.fire({
           title: `Are you sure ? `,
           icon: 'warning',
@@ -303,7 +300,7 @@ export default function ViewDocument() {
 
     useEffect(() => {
      if (docObj) {
-         user.approvalDomain.map((item,index) => {
+         user?.approvalDomain?.map((item,index) => {
              if (item == docObj.domainName) {
                return setAccess(true)
             }
@@ -312,35 +309,6 @@ export default function ViewDocument() {
     }, [docObj])
     
 
-    /* Excel export */
-    const handleExportClick = (data) => {
-        
-        console.log("handleExportClick----", data);
-         // Process data into worksheet format
-         const worksheet = utils.json_to_sheet(data);
-    
-         // Add row spans and column spans
-         worksheet['!ref'] = 'A1:E10'; // Set the worksheet range to include all cells
-         for (const row of data) {
-            let _row = row
-           for (const cell of _row.cells) {
-             if (cell.rowSpan > 1) {
-               worksheet[`!merges`].push({ s: { c: cell.columnIndex, r: cell.rowIndex }, e: { c: cell.columnIndex, r: cell.rowIndex + cell.rowSpan - 1 } });
-             }
-             if (cell.columnSpan > 1) {
-               worksheet[`!merges`].push({ s: { c: cell.columnIndex, r: cell.rowIndex }, e: { c: cell.columnIndex + cell.columnSpan - 1, r: cell.rowIndex } });
-             }
-           }
-         }
-     
-         // Create and export workbook
-         const workbook = utils.book_new();
-         utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-         const buffer = write(workbook, { bookType: 'xlsx' });
-         const binaryString = utils.encode_buffer(buffer, 'binary');
-         const blob = new Blob([binaryString], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-         FileSaver.saveAs(blob, fileName);
-      };
 
     return (
         <Sidebar.Pushable style={{ display: "flex", maxWidth: '100%', maxHeight: "100%", overflow: 'hidden', width: "100%", flexDirection: "column" }}>
@@ -396,7 +364,7 @@ export default function ViewDocument() {
                                             {
                                             hasAccess(EXTRACTION) && <Dropdown.Item text='Extract' onClick={extract} />
                                             }
-                                            {
+                                            {/* {
                                                 // user?.role != "documentation" ?
                                                 hasAccess(REUPLOAD_PDF) ?
                                                     <Dropdown.Item text='Reupload PDF'
@@ -405,31 +373,30 @@ export default function ViewDocument() {
                                                             setVisible(true);
                                                         }}
                                                     /> : null
-                                            }
+                                            } */}
                                             {
-                                                // user?.role === "superAdmin" || (access && user.role == "admin")  ?                                                    <Dropdown.Item onClick={() => {
-                                                hasAccess(DELETE_DOCUMENT)  ?                                                    <Dropdown.Item onClick={() => {
-                                                        navigate(`/dashboard/studio/${id}/delete`);
+
+                                                <Dropdown.Item onClick={() => {
+                                                        console.log("clicked deleted");
+                                                        onClickDeleteButton()
                                                     }} text='Delete Document' />
-                                                    :
-                                                    <Dropdown.Item onClick={() => {
-                                                        navigate('/dashboard/studio/approved/' + id);
-                                                    }} text='Request To Delete Document' />
+                                                // user?.role === "superAdmin" || (access && user.role == "admin")  ?                                                    <Dropdown.Item onClick={() => {
+                                                
+                                                // hasAccess(DELETE_DOCUMENT)  
+                                                //     ?<Dropdown.Item onClick={() => {
+                                                //         console.log("clicked deleted");
+                                                //         navigate(`/dashboard/studio/${id}/delete`);
+                                                //     }} text='Delete Document' />
+                                                //     :
+                                                //     <Dropdown.Item onClick={() => {
+                                                //         navigate('/dashboard/studio/approved/' + id);
+                                                //     }} text='Request To Delete Document' />
 
                                             }
                                             {
                                                 hasAccess(VIEW_RAW) ?
                                                     <Dropdown.Item onClick={() => { setRawModal(!rawModal); }} text='View Raw' /> : null
                                             }
-                                            {
-                                                hasAccess(VIEW_RAW) ?
-                                                    <Dropdown.Item onClick={() => { setRawTableModal(!rawTableModal); }} text='View Raw Table' /> : null
-                                            }
-                                            {
-                                                hasAccess(VIEW_RAW) ?
-                                                    <Dropdown.Item onClick={() => { handleExportClick(rawTableModalData); }} text='Export Raw Table' /> : null
-                                            }
-                                            
 
                                             {
                                                 // (user?.role != "documentation") && <div
@@ -472,7 +439,7 @@ export default function ViewDocument() {
                                     </div>
 
 
-                                    {docObj?.syncWithOtm ? (
+                                    {/* {docObj?.syncWithOtm ? (
                                         <Popup
                                             content={moment(docObj?.lastSyncTime).format('DD/MM/YYYY HH:mm a')}
                                             trigger={
@@ -507,10 +474,9 @@ export default function ViewDocument() {
                                         >
                                             Push to API
                                         </Button>
-                                    )}
+                                    )} */}
                                 </div>
                                 {rawModal && <RawModal rawModalData={rawModalData} />}
-                                {rawTableModal && <TableRawTable rawModalData={rawTableModalData}/>}
                                 {docObj.documentUrl &&
                                     <FieldsAndValuesCmp documentId={id} _docObj={docObj} selectedSentence={selectedSentence}
                                         setDocObj={setDocObj} clearSelection={clearSelection} onChangeClearCanvas={OnChangeClearCanvas}
@@ -530,14 +496,9 @@ export default function ViewDocument() {
                         </div>
                     </div>
                     <div style={{ width: '100%', background: "#a7c4ff1f", borderTop: '2px solid rgb(204 204 204)' }}>
-                       { (docObj?.extractedData?.modelId == "prebuilt-invoice")
-                        ? docObj.documentUrl && <InvoiceUnitCmp documentId={id} _docObj={docObj} selectedSentence={selectedSentence}
+                        {docObj.documentUrl && <ShipunitCmp documentId={id} _docObj={docObj} selectedSentence={selectedSentence}
                             setDocObj={setDocObj} clearSelection={clearSelection} onChangeClearCanvas={OnChangeClearCanvas}
-                            setOnChangeClearCanvas={setOnChangeClearCanvas} />
-                        :docObj.documentUrl && <ShipunitCmp documentId={id} _docObj={docObj} selectedSentence={selectedSentence}
-                            setDocObj={setDocObj} clearSelection={clearSelection} onChangeClearCanvas={OnChangeClearCanvas}
-                            setOnChangeClearCanvas={setOnChangeClearCanvas} />
-                        }
+                            setOnChangeClearCanvas={setOnChangeClearCanvas} />}
                     </div>
                     <Toaster />
                 </div>
@@ -1572,304 +1533,6 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
 
 }
 
-function InvoiceUnitCmp({ _docObj, extractedData = {}, documentId, selectedSentence = '',
-    setDocObj, data, clearSelection, onChangeClearCanvas, setOnChangeClearCanvas }) {
-
-    const [docObj, _setDocObj] = useState(_docObj);
-    const [search, setSearch] = useState('');
-    const [selectedForEditing, setSelectedForEditing] = useState({});
-    const [btnLoading, setButtonLoading] = useState(false);
-    const [fieldsAndValues, setFieldsAndValues] = useState(docObj.fieldsAndValues);
-    const [onFocusRow, setOnFocusRow] = useState({});
-    const [sortData, setSortData] = useState();
-    const [thisSelectedSentence, setThisSelectedSentence] = useState('');
-    const [thisSelectedSentence2, setThisSelectedSentence2] = useState(selectedSentence);
-    const [documentsData, setDocumentsData] = useState();
-    const [docDropDownValue, setDocDropDownValue] = useState('')
-    const [hideTextAreaCheck, setHideTextAreaCheck] = useState(false)
-    const [dateValue, setDateValue] = useState('');
-
-    const [initialClientY, setInitialClientY] = useState("")
-
-    const [panelHeight, setPanelHeight] = useState(100);
-
-
-
-    useEffect(() => {
-        if (onFocusRow.selectedParam && selectedSentence != '') {
-            let tempObj = JSON.parse(JSON.stringify(selectedForEditing));
-            if (clickedFieldIndex == 0 || clickedFieldIndex) {
-                tempObj.fieldValue[clickedFieldIndex][onFocusRow.selectedParam] = selectedSentence;
-            } else {
-                for (let r = 0; r < tempObj?.fieldValue.length; r++) {
-                    const aFV = tempObj.fieldValue[r];
-                    if (aFV.itemId == onFocusRow.itemId) {
-                        tempObj.fieldValue[r][onFocusRow.selectedParam] = selectedSentence;
-                    }
-                }
-            }
-            setSelectedForEditing(tempObj);
-
-        }
-        else {
-            setThisSelectedSentence2(selectedSentence);
-            if (selectedForEditing.fieldType != "master") {
-                setThisSelectedSentence(selectedSentence);
-            }
-
-        }
-    }, [selectedSentence]);
-
-
-    let dragStart = (event, a, b) => {
-        setInitialClientY(event.clientY)
-    };
-
-    let draggingResize = (event, a, b) => {
-        event.preventDefault();
-        if (event.clientY != 0) {
-            let diffX = event.clientY - initialClientY;
-            setPanelHeight(panelHeight - diffX);
-            setInitialClientY(event.clientY)
-        }
-    };
-
-
-
-
-
-    let removeRow = async (deleteItemID) => {
-        const url = `/v1/documents/delete-field/${documentId}`;
-
-        const response = await apiPOST(url, { itemId: deleteItemID, isShipUnit: true });
-        console.log("response deleted", response);
-        if (response.status == '200') {
-            toast.success('Successfully deleted!', {
-                position: 'bottom-left',
-            });
-        } else {
-            toast.error('Something went wrong!', {
-                position: 'bottom-left',
-            });
-        }
-
-        for (let index = 0; index < fieldsAndValues.length; index++) {
-            const aFieldValue = fieldsAndValues[index];
-
-            if (aFieldValue.fieldName == "ship_unit_table") {
-                // splice || filter
-                const copy = aFieldValue.fieldValue.filter((item, i) => item.itemId !== deleteItemID);
-                aFieldValue.fieldValue = [...copy]
-            }
-        }
-        setFieldsAndValues(JSON.parse(JSON.stringify(fieldsAndValues)));
-
-
-    }
-
-    let addNewShipUnit = () => {
-
-        for (let index = 0; index < fieldsAndValues.length; index++) {
-            const aFieldValue = fieldsAndValues[index];
-
-            if (aFieldValue.fieldName == "ship_unit_table") {
-                aFieldValue.fieldValue.push({
-                    itemId: Math.random().toString(36).slice(2),
-                    description,
-                    productCode,
-                    amountValue,
-                    amountCurrencyCode,
-                    quantity,
-                    taxAmount,
-                    taxCurrencyCode,
-                    taxRate,
-                    unitPriceAmount,
-                    unitPriceCurrencyCode
-                })
-            }
-        }
-        setFieldsAndValues(JSON.parse(JSON.stringify(fieldsAndValues)));
-    }
-
-    let renderTable = (aField, idx) => {
-        return <Table compact className='shipUnitTable'>
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell>Description of supply</Table.HeaderCell>
-                    <Table.HeaderCell>HSN Code</Table.HeaderCell>
-                    <Table.HeaderCell>Qty </Table.HeaderCell>
-                    <Table.HeaderCell>Tax</Table.HeaderCell>
-                    <Table.HeaderCell>TaxRate</Table.HeaderCell>
-                    <Table.HeaderCell>UnitPrice</Table.HeaderCell>
-                    <Table.HeaderCell>Amount</Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-                {aField.fieldValue?.map((aRow, rowIndex) => {
-                    return (
-                        <Table.Row key={aRow.itemId}>
-                            <Table.Cell>
-                                <Button
-                                    icon size='mini' compact
-                                    onClick={() => {
-                                        removeRow(aRow.itemId)
-                                    }}>
-                                    <Icon name="trash alternate" />
-                                </Button>
-                                        {" "}{ rowIndex + 1}
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "2"} field={{
-                                    fieldValue: aRow.description,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'description'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "2"} field={{
-                                    fieldValue: aRow.productCode,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'productCode'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "10"} field={{
-                                    fieldValue: aRow.quantity,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'quantity'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                          
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "14"} field={{
-                                    fieldValue: aRow?.taxCurrencyCode,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'taxCurrencyCode'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                                <EditableTextItem compact={true} key={idx + "14"} field={{
-                                    fieldValue: aRow.taxCurrencyCode,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'taxCurrencyCode'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "14"} field={{
-                                    fieldValue: aRow.taxRate,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'taxRate'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "15"} field={{
-                                    fieldValue: aRow.unitPriceAmount,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'unitPriceAmount'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                                <EditableTextItem compact={true} key={idx + "15"} field={{
-                                    fieldValue: aRow.unitPriceCurrencyCode,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'unitPriceCurrencyCode'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-
-                              
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "17"} field={{
-                                    fieldValue: aRow?.amountValue,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: `amountValue`
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                                <EditableTextItem compact={true} key={idx + "17"} field={{
-                                    fieldValue: aRow?.amountCurrencyCode,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'amountCurrencyCode'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                        </Table.Row>
-                    );
-                })}
-            </Table.Body>
-        </Table>
-
-    }
-
-
-    return <>
-        <div style={{ width: '100%', display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div
-                style={{
-                    width: 40,
-                    cursor: 'row-resize',
-                    height: 20,
-                    marginTop: -11,
-                    zIndex: 1000,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    alignSelf: "center",
-                    background: 'white',
-                    border: "1px solid #a4a4a4",
-                    borderRadius: 4
-
-                }}
-                draggable={true}
-                onDragStart={(e) => dragStart(e)}
-                onDrag={(e) => draggingResize(e)}
-                onDragEnd={() => {
-                    // this.dragEndResize();
-                }}>
-                <div style={{ height: 8, width: 25, borderTop: '2px solid #878787', borderBottom: '2px solid #878787' }}>
-
-                </div>
-            </div>
-        </div>
-
-        <Scrollbars style={{ display: "flex", flexDirection: "column", justifyContent: "center", marginTop: -10, flex: 1, height: panelHeight, padding: 10 }} autoHide>
-            <div style={{ flex: 1, display: 'flex', alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-                {
-                    fieldsAndValues && fieldsAndValues?.map((aField, idx) => {
-                        if (aField.fieldName == "ship_unit_table") {
-                            return renderTable(aField, idx)
-                        }
-                    })}
-            </div>
-            <div style={{ marginTop: 16, marginLeft: 10 }}>
-                {/* <Button size='mini' compact icon  onClick={addNewShipUnit}> <Icon name="plus" /> Add New Ship Unit </Button> */}
-                <Button
-                    icon size='mini' compact
-                    onClick={() => {
-                        addNewShipUnit()
-                    }}>
-                    Add new Row
-                </Button>
-            </div>
-        </Scrollbars>
-    </>
-
-}
-
 function FieldsAndValuesCmp({ _docObj, extractedData = {}, documentId, selectedSentence = '',
     setDocObj, data, clearSelection, onChangeClearCanvas, setOnChangeClearCanvas }) {
     const [docObj, _setDocObj] = useState(_docObj);
@@ -2284,7 +1947,7 @@ class DocViewerCmp extends React.Component {
         context.putImageData(this.imgData, 0, 0);
 
         for (let p = 0; p < this.state.selectedWord.length; p++) {
-            const aSelectedWord = this.state.data.extractedData.pages[this.state.pageNumber - 1].words[this.state.selectedWord[p]];
+            const aSelectedWord = this.state.data.extractedData?.pages[this.state.pageNumber - 1].words[this.state.selectedWord[p]];
             context.lineWidth = 2;
             context.strokeStyle = '#f44336';
             context.beginPath();
@@ -2338,8 +2001,8 @@ class DocViewerCmp extends React.Component {
         const canvas = this.ref;
         const context = canvas.getContext('2d');
 
-        if (this.state.data && this.state.data.extractedData && this.state.data.extractedData.pages[this.state.pageNumber - 1]) {
-            let aPage = this.state.data.extractedData.pages[this.state.pageNumber - 1];
+        if (this.state.data && this.state.data.extractedData && this.state.data.extractedData?.pages[this.state.pageNumber - 1]) {
+            let aPage = this.state.data.extractedData?.pages[this.state.pageNumber - 1];
 
             // for (let w = 0; w < aPage.words.length; w++) {
             //     const aWord = aPage.words[w];
@@ -2360,8 +2023,8 @@ class DocViewerCmp extends React.Component {
         var position = this.getCanvasCoordinates(event);
 
         if (this.state.selectWordState) {
-            if (this.state.data && this.state.data.extractedData && this.state.data.extractedData.pages[this.state.pageNumber - 1]) {
-                let aPage = this.state.data.extractedData.pages[this.state.pageNumber - 1];
+            if (this.state.data && this.state.data.extractedData && this.state.data.extractedData?.pages[this.state.pageNumber - 1]) {
+                let aPage = this.state.data.extractedData?.pages[this.state.pageNumber - 1];
                 for (let w = 0; w < aPage.words.length; w++) {
                     const aWord = aPage.words[w];
                     if (this.pointIsInPoly(position, aWord.polygon)) {
@@ -2427,8 +2090,8 @@ class DocViewerCmp extends React.Component {
                 context.strokeStyle = '#21ba45';
                 context.strokeRect(this.boxData.start.x * (canvas.width / canvas.parentElement.clientWidth), this.boxData.start.y * (canvas.width / canvas.parentElement.clientWidth), (position.x - this.boxData.start.x) * (canvas.width / canvas.parentElement.clientWidth), (position.y - this.boxData.start.y) * (canvas.width / canvas.parentElement.clientWidth));
 
-                if (this.state.data && this.state.data.extractedData && this.state.data.extractedData.pages[this.state.pageNumber - 1]) {
-                    let aPage = this.state.data.extractedData.pages[this.state.pageNumber - 1];
+                if (this.state.data && this.state.data.extractedData && this.state.data.extractedData?.pages[this.state.pageNumber - 1]) {
+                    let aPage = this.state.data.extractedData?.pages[this.state.pageNumber - 1];
                     let finalSelectedWords = [...this.state.selectedWord];
                     for (let w = 0; w < aPage.words.length; w++) {
                         const aWord = aPage.words[w];
@@ -2450,8 +2113,8 @@ class DocViewerCmp extends React.Component {
                     // console.log('Added');
                 }
             } else {
-                if (this.state.data && this.state.data.extractedData && this.state.data.extractedData.pages[this.state.pageNumber - 1]) {
-                    let aPage = this.state.data.extractedData.pages[this.state.pageNumber - 1];
+                if (this.state.data && this.state.data.extractedData && this.state.data.extractedData?.pages[this.state.pageNumber - 1]) {
+                    let aPage = this.state.data.extractedData?.pages[this.state.pageNumber - 1];
                     for (let w = 0; w < aPage.words.length; w++) {
                         const aWord = aPage.words[w];
                         if (this.pointIsInPoly(position, aWord.polygon)) {
@@ -2498,7 +2161,7 @@ class DocViewerCmp extends React.Component {
         const canvas = this.ref;
         const context = canvas.getContext('2d');
 
-        let multiplier = (canvas.parentElement.clientWidth / this.state.data.extractedData.pages[this.state.pageNumber - 1].width) * (canvas.width / canvas.parentElement.clientWidth);
+        let multiplier = (canvas.parentElement.clientWidth / this.state.data.extractedData?.pages[this.state.pageNumber - 1].width) * (canvas.width / canvas.parentElement.clientWidth);
 
         this.setState({
             multiplier: multiplier,
@@ -2560,7 +2223,7 @@ class DocViewerCmp extends React.Component {
             _selectedWord.sort();
             for (let e = 0; e < _selectedWord.length; e++) {
                 const aSelectedWord = _selectedWord[e];
-                tempSelectedSentence = tempSelectedSentence + this.state.data.extractedData.pages[this.state.pageNumber - 1].words[aSelectedWord].content + ' ';
+                tempSelectedSentence = tempSelectedSentence + this.state.data.extractedData?.pages[this.state.pageNumber - 1].words[aSelectedWord].content + ' ';
             }
             navigator.clipboard.writeText(tempSelectedSentence);
 
@@ -2788,12 +2451,13 @@ function RawModal({ rawModalData }) {
             return value.value;
         } else if (value.kind === "address") {
             return  value.value.road + ", " + value.value.city + ", " + value.value.postalCode + ", " + value.value.streetAddress
-        } else if (value.kind === "currency") {
-            return  value.value.amount + " " +  value.value.currencyCode
+        } else if (value?.kind === "currency") {
+            return  value?.value?.amount + " " +  value?.value?.currencyCode
         } else if (value.values) {
             return value.values.map((item, index) => (
                 <div key={index}>
-                    <Table celled basic="very">
+                {  Object.entries(item.properties).length 
+                    ?  <Table celled basic="very">
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>Keys</Table.HeaderCell>
@@ -2805,8 +2469,9 @@ function RawModal({ rawModalData }) {
                                 <Table.Row key={key}>
                                     <Table.Cell>{key}</Table.Cell>
                                     <Table.Cell>{ 
+                                        // JSON.stringify(value?.value)
                                         (value.kind == "currency") 
-                                        ? value.value.amount + " " + value.value.currencyCode
+                                        ? value?.value?.amount + " " + value?.value?.currencyCode
                                         :  value.value
                                     }</Table.Cell>
                                     
@@ -2814,51 +2479,34 @@ function RawModal({ rawModalData }) {
                             ))}
                         </Table.Body>
                     </Table>
+                : null
+                }
+                   
                 </div>
             ));
         }
     };
 
-}
-function TableRawTable({ rawModalData: rawTableModalData }) {
-    console.log("rawTableModalData ----", rawTableModalData);
-    const RenderTable = ({ cells = [], columnCount = 0, rowCount = 0 }) => {
-
-
-        return (
+    return (
+        <Scrollbars className="fields-container">
             <Table celled>
                 <Table.Header>
                     <Table.Row>
-                    {[...Array(columnCount).keys()].map((colIndex) => (
-                        <Table.HeaderCell key={colIndex}> </Table.HeaderCell>
-                    ))}
+                        <Table.HeaderCell>Fields</Table.HeaderCell>
+                        <Table.HeaderCell>Values</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {[...Array(rowCount).keys()].map((rowIndex) => (
-                    <Table.Row key={rowIndex}>
-                        {cells
-                        .filter((item) => item.rowIndex === rowIndex)
-                        .map((item, colIndex) => (
-                            <Table.Cell key={colIndex} rowSpan={item.rowSpan} colSpan={item.columnSpan}>
-                            {item.content}
-                            </Table.Cell>
-                        ))}
-                    </Table.Row>
+                    {Object.entries(rawModalData).map(([key, value]) => (
+                        <Table.Row key={key}>
+                            <Table.Cell>{key}</Table.Cell>
+                            <Table.Cell>{renderValue(value)}</Table.Cell>
+                        </Table.Row>
                     ))}
                 </Table.Body>
-                </Table>
-
-        )
-      };
-      
-
-    return (
-    <Scrollbars className="fields-container">
-        <div>{rawTableModalData && rawTableModalData.map((item) => <RenderTable columnCount={item.columnCount} rowCount={item.rowCount} cells={item.cells} />)}</div>
-
-        <div style={{ height: 50 }}></div>
-    </Scrollbars>
+            </Table>
+            <div style={{ height: 20 }}></div>
+        </Scrollbars>
     );
-};
+}
 

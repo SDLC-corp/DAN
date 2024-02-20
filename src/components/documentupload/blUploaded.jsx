@@ -18,7 +18,6 @@ const BlUpload = () => {
   const [docNoLoading, setDocNoLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const [assignToUserId, setAssignToUserId] = useState('');
-  const [domainOptions, setDomainOptions] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [extractionType, setExtractionType] = useState('bl');
   const airDocumentType = [
@@ -71,10 +70,10 @@ const BlUpload = () => {
       };
       // if (searchQuery?.trim()) {
       //     const queryParams = objectToQueryParam(payload)
-      //     response = await apiGET(`/v1/shipping-lines?${queryParams}`)
+      //     response = await apiGET(`/v1/document-type?${queryParams}`)
       // }else{
       // }
-      response = await apiGET(`/v1/shipping-lines`);
+      response = await apiGET(`/v1/document-type`);
       if (response.status === 200) {
         // console.log("response?.data?.data?.data", response?.data);
         let list = response?.data?.data?.data;
@@ -229,55 +228,6 @@ const BlUpload = () => {
     }
   }
 
-  const getDomain = async () => {
-    try {
-      let response = await apiGET('/v1/domain/');
-      if (response.status === 200) {
-        const arr = transformData(response.data.data);
-        let list = arr;
-        if (list && list.length) {
-          list = list.map((item) => {
-            return {
-              key: item,
-              text: item,
-              value: item,
-            };
-          });
-        }
-        setDomainOptions(list);
-      } else {
-        Swal.fire({
-          title: 'Error!',
-          text: response?.data?.data,
-          icon: 'error',
-        });
-      }
-    } catch (error) {
-       Swal.fire({
-        title: 'Error!',
-        text: error,
-        icon: 'error',
-      });
-    }
-  };
-
-  const getDomainOptions = () => {
-    if (user.role === 'superAdmin') {
-      getDomain();
-    } else {
-      let list = user?.domain;
-      if (list && list.length) {
-        list = list.map((item) => {
-          return {
-            key: item,
-            text: item,
-            value: item,
-          };
-        });
-      }
-      setDomainOptions(list);
-    }
-  };
 
   useEffect(() => {
     if (searchQuery !== '' || extractionType !== '') {
@@ -285,9 +235,7 @@ const BlUpload = () => {
     }
   }, [searchQuery,extractionType]);
 
-  useEffect(() => {
-    getDomainOptions();
-  }, [user]);
+ 
 
   const handleShippingLineSearchQuery = (e, { searchQuery }) => {
     setSearchQuery(searchQuery);

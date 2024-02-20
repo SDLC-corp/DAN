@@ -24,11 +24,11 @@ export default function getMenus(user = {}) {
     //   openInNewTab:true,
       icon: 'js square',
     },
-    { type: 'menu', title: 'Document Types',path: '/dashboard/carrier-line',icon: 'box'},
+    // { type: 'menu', title: 'Document Types',path: '/dashboard/carrier-line',icon: 'box'},
     { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',},
 
-    { type: 'label', title: 'Delete Requests' },
-    {type: 'menu',title: 'Delete Requests',path: '/dashboard/document/deleterequest',icon: 'upload'},
+    // { type: 'label', title: 'Delete Requests' },
+    // {type: 'menu',title: 'Delete Requests',path: '/dashboard/document/deleterequest',icon: 'upload'},
 
     { type: 'label', title: 'Manage Users' },
     { type: 'menu', title: 'Manage Role', path: '/dashboard/manage-role', icon: 'square'},
@@ -45,8 +45,8 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'box',accessModule:LABEL_MATRIX },
     { type: 'menu', title: 'Custom Logic', path: '/dashboard/custom-logic', icon: 'js square',accessModule : CUSTOM_LOGIC},
 
-    { type: 'label', title: 'Delete Requests' , accessModule: DELETE_REQUEST},
-    {type: 'menu',title: 'Delete Requests',path: '/dashboard/document/deleterequest',icon: 'upload', accessModule:DELETE_REQUEST},
+    // { type: 'label', title: 'Delete Requests' , accessModule: DELETE_REQUEST},
+    // {type: 'menu',title: 'Delete Requests',path: '/dashboard/document/deleterequest',icon: 'upload', accessModule:DELETE_REQUEST},
 
     { type: 'label', title: 'Manage Users', accessModule:MANAGE_USER },
     { type: 'menu', title: 'Manage Role', path: '/dashboard/manage-role', icon: 'square',accessModule:MANAGE_ROLE},

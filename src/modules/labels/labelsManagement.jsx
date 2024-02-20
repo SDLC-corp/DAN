@@ -17,7 +17,7 @@ export default function labelsManagement() {
     const [params, setParams] = useSearchParams()
     const [visible, setVisible] = useState()
     const [loading, setLoading] = useState();
-    const [shippingLines, setShippingLines] = useState([])
+    const [documentTypes, setDocumentTypes] = useState([])
     const [fields, setFields] = useState([])
     const [fieldForFilter, setFieldForFilter] = useState([])
     const [keyMap, setKeyMap] = useState({})
@@ -32,9 +32,9 @@ export default function labelsManagement() {
         setLoading(true);
         const {
             labels = [],
-            shippingLines = [],
+            documentTypes = [],
             fields = []
-        } = await getAllLabel();
+        } = await getAllLabel(); 
 
 
         let keyMap = {}
@@ -43,15 +43,15 @@ export default function labelsManagement() {
             const label = labels[idx];
 
             try {
-                keyMap[label.fieldId + "-" + label.shippingLineId] = label
+                keyMap[label.fieldId + "-" + label.documentTypeId] = label
             } catch (error) {
                 console.error("Key Map Error :: ", label);
             }
         }
         setRefresh(false)
         setLoading(false);
-        setShippingLineForFilter(shippingLines)
-        setShippingLines(shippingLines)
+        setShippingLineForFilter(documentTypes)
+        setDocumentTypes(documentTypes)
         setFieldForFilter(fields)
         setFields(fields)
         setKeyMap(keyMap)
@@ -100,9 +100,9 @@ export default function labelsManagement() {
             const filteredFields = shippingLineForFilter.filter((item) => {
                 return regexes.some(regex => regex.test(item._id));
             });
-            setShippingLines(filteredFields);
+            setDocumentTypes(filteredFields);
         } else {
-            setShippingLines(shippingLineForFilter);
+            setDocumentTypes(shippingLineForFilter);
         }
     }, [shippingLineId, refresh,fieldForFilter]);
 
@@ -111,7 +111,6 @@ export default function labelsManagement() {
         let arr = Object.keys(keyMap)
         return arr.filter(cusId => cusId.indexOf(id) != -1).length
     }
-
     return (
         <Sidebar.Pushable className='isSidebar'>
             <Sidebar
@@ -140,7 +139,7 @@ export default function labelsManagement() {
                         <Breadcrumb icon="right angle" sections={sections} />
                         <div className="header-text">Label Matrix</div>
                         <div className="sub-text">
-                            List of all fields and shipping lines and Labels
+                            List of all fields and Document Types and Labels
                         </div>
                     </div>
                     <div className="page-header-actions">
@@ -250,13 +249,13 @@ export default function labelsManagement() {
                         <table className="ui celled table">
                             <thead>
                                 <tr  >
-                                    {shippingLines.map(shippingLine => <th id={shippingLine._id} 
+                                    {documentTypes.map(documentType => <th id={documentType._id} 
                                     style={{height:'50px',whiteSpace:'nowrap'}}
                                     >
-                                        <div data-tooltip={shippingLine.name} data-position="bottom left"  >
-                                            <span >{shippingLine.code || shippingLine.name}</span>
+                                        <div data-tooltip={documentType.name} data-position="bottom left"  >
+                                            <span >{documentType.code || documentType.name}</span>
                                             <span style={{ marginLeft: "1rem" }}>
-                                                ({getTotalFieldCount(shippingLine._id)})
+                                                ({getTotalFieldCount(documentType._id)})
                                             </span>
                                         </div>
                                     </th>)}
@@ -267,8 +266,8 @@ export default function labelsManagement() {
                                     fields.map(field => {
                                         return (
                                             <tr style={{height:'50px',whiteSpace:'nowrap'}}>
-                                                {shippingLines.map((shipLine) => {
-                                                    let labelObj = keyMap[field._id + '-' + shipLine._id] || { shippingLineId: shipLine._id, fieldId: field._id, fieldName: field.displayName }
+                                                {documentTypes.map((docType) => {
+                                                    let labelObj = keyMap[field._id + '-' + docType._id] || { documentTypeId: docType._id, fieldId: field._id, fieldName: field.displayName }
                                                     return <TableData
                                                         label={labelObj}
                                                         setIdsData={setIdsData}

@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Button, Dropdown, Icon, Image, Input, Label, List, Modal, Radio, Sidebar } from 'semantic-ui-react';
+import { Breadcrumb, Button, Dropdown, Image, Input, Modal, Sidebar } from 'semantic-ui-react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import TableWrapper from '../../utils/tableWrapper';
 import AddUser from './addUser';
-import { apiGET, apiPUT, objectToQueryParam } from '../../utils/apiHelper';
+import { apiGET, objectToQueryParam } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 import DEFAULTIMG from '../../assets/images/default.png';
 import DateRangeFilter from '../../components/filter/daterangeFilter';
 import useDebounce from '../../utils/useDebounce';
-import { AuthContext } from '../../contexts';
-import { useContext } from 'react';
-import NestedDomain from '../../components/nodetree/nestedDomain';
 import { ADD_USER, EDIT_USER, VIEW_USER, hasAccess } from '../../utils/accessHelper';
 
 
-function UserList(props) {
+function UserList() {
 
   const { state } = useLocation()
   const navigate = useNavigate();
@@ -36,22 +33,20 @@ function UserList(props) {
   const [toDate, setToDate] = useState('')
   const [filterModalOpen, setFilterModalOpen] = useState(false)
   const [role, setRole] = useState('')
-  const [selectedNodePath, setSelectedNodePath] = useState([]);
+  const [rolesDataOptions, setRolesDataOptions] = useState([])
   const validInputRegex = /^[a-zA-Z0-9\s@.]*$/
 
-  let {user} = useContext(AuthContext);
 
-  const getAllUsers = async (fromDate,toDate,selectedNodePath,role) => {
+  const getAllUsers = async (search,fromDate,toDate,role) => {
     setLoading(true);
     try {
       let response;
-      if (search || (fromDate && toDate) || selectedNodePath || role) {
+      if (search || (fromDate && toDate) || role) {
         const payload = {
           search: {
             name: search,
             fromDate: fromDate,
             toDate: toDate,
-            domainName:selectedNodePath,
             role:role
           }
         }
@@ -62,11 +57,12 @@ function UserList(props) {
           response = await apiGET(`/v1/users?limit=${limit}&page=${page}`,);
       }
       if (response.status === 200) {
-        setVisible(false)
-        setUsers(response?.data?.data?.data);
-          setTotalRows(response?.data?.data?.totalCount);
-          setPage(response?.data?.data?.page)
-          setLimit(response?.data?.data?.limit)
+          setVisible(false)
+          const result = response?.data?.data;
+          setUsers(result?.data);
+          setTotalRows(result?.totalCount);
+          setPage(result?.page)
+          setLimit(result?.limit)
       } else if (response.status === 400) {
         Swal.fire({
           title: "Error!",
@@ -123,42 +119,6 @@ function UserList(props) {
       selector: (row) => row?.role?.name,
     },
     {
-      name: 'Access Location',
-    //   cell: (row) => (<div>
-    //    { row?.domain ? row.domain.map((location)=><p data-tooltip={location} data-position="bottom center">
-    //       {(location.length > 20) ? location.substring(0, 20) + "..." : location}
-    //     </p>) : "--"}
-    //     </div>
-    //   ),
-        cell: (row) => ( <List style={{ marginTop: 5 }}>
-                    {Array.isArray(row.domain) && row.domain?.map((location)=><List.Item>
-                <Label color="gray" horizontal data-tooltip={location}>
-                  {location}
-                </Label>
-              </List.Item>
-            ) }
-            </List>
-      ),
-    },
-    {
-      name: 'Approver Location',
-    //   cell: (row) => (<div>
-    //    { row?.domain ? row.domain.map((location)=><p data-tooltip={location} data-position="bottom center">
-    //       {(location.length > 20) ? location.substring(0, 20) + "..." : location}
-    //     </p>) : "--"}
-    //     </div>
-    //   ),
-        cell: (row) => ( <List style={{ marginTop: 5 }}>
-                    {row.approvalDomain?.map((location)=><List.Item>
-                <Label color="gray" horizontal data-tooltip={location}>
-                  {location}
-                </Label>
-              </List.Item>
-            ) }
-            </List>
-      ),
-    },
-    {
       name: 'Created On',
       selector: (row) => <><p>{moment(row?.createdAt).format('DD/MM/YYYY')}</p>{moment(row?.createdAt).format('HH:mm a')}</>,
     },
@@ -190,6 +150,38 @@ function UserList(props) {
     navigate(`/dashboard/users/View/${id}`);
   }
 
+  const getAllRoles = async () => {
+    try {
+        setLoading(true);
+        let response = await apiGET(`/v1/role/all`)
+        setLoading(false);
+        if (response.status === 200) {
+            const result = response?.data?.data?.data
+            let list = result?.map(item => {
+                return {key:item._id, text:item.name, value: item._id}
+            })
+            setRolesDataOptions([...list])
+        }
+        else {
+            Swal.fire({
+                title: "Error!",
+                text: response?.data?.data || "Something went wrong!",
+                icon: "error",
+            });
+        }
+    } catch (error) {
+        Swal.fire({
+            title: "Error!",
+            text: error || "Something went wrong!",
+            icon: "error",
+        });
+    }
+};
+
+    useEffect(() => {
+      getAllRoles()
+    }, [])
+
 
   useEffect(() => {
     if (action == 'add' || action === 'edit' || action === "View" || state?.actions || state?.closeSidebar) {
@@ -200,13 +192,13 @@ function UserList(props) {
   }, [action || state?.actions || state?.closeSidebar]);
 
   useEffect(() => {
-    getAllUsers(fromDate, toDate,selectedNodePath,role);
+    getAllUsers(search,fromDate,toDate,role);
     setParams({page:page,limit:limit,search:search})
   }, [page, limit,search]);
 
   const dependencies = [search];
   useDebounce(() => {
-    getAllUsers(fromDate,toDate,selectedNodePath,role);
+    getAllUsers(search,fromDate,toDate,role);
   }, 300, dependencies);
 
   return (
@@ -313,10 +305,7 @@ function UserList(props) {
                 <label className='container-count-text'>Select Role</label>
               </div>
               <Dropdown
-                options={[{ text: "Superadmin", value: "superAdmin" }, { text: "Admin", value: 'admin' }, {
-                  text: "Documentation",
-                  value: 'documentation'
-                }]}
+                options={rolesDataOptions}
                 search
                 selection
                 clearable
@@ -326,29 +315,11 @@ function UserList(props) {
               />
              </div>
           </div>
-          <div style={{marginTop:10}}>
-          <div>
-                <label className='container-count-text'>Select Domain</label>
-              </div>
-              <div>
-                <NestedDomain nodePathFn={setSelectedNodePath} />
-                <div style={{ marginTop: 12 }}>
-                  {selectedNodePath?.length > 0 && (
-                    <div style={{ overflowX: 'auto', width: '100%' }}>
-                        Path : {selectedNodePath?.map(item=> <Label color="gray" style={{marginTop:2}} horizontal >
-                  {item}
-                </Label>)}
-                    </div>
-                  )}
-                </div>
-              </div>
-          </div>
         </Modal.Content>
         <Modal.Actions>
           <Button color='gray' onClick={() => {
             setFromDate('')
             setToDate('')
-            setSelectedNodePath([])
             setFilterModalOpen(false)
             getAllUsers();
             setRole('')
@@ -357,7 +328,7 @@ function UserList(props) {
           </Button>
           <Button color='gray' onClick={() => {
             setFilterModalOpen(false);
-            getAllUsers(fromDate, toDate,selectedNodePath,role);
+            getAllUsers(search,fromDate,toDate,role);
           }}>
             Apply
           </Button>

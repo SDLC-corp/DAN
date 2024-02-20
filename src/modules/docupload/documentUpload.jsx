@@ -10,8 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import AssignToModal from '../../components/modal/assignToModal';
 import UserListDropDown from '../../components/dropdown/userListDropDown';
 import { AIR, OCEAN, hasAccess } from '../../utils/accessHelper';
-import BlUpload from '../../components/documentupload/blUploaded';
-import InvoiceUpload from '../../components/documentupload/invoiceUpload';
 
 const sections = [
   { key: 'Dashboard', content: 'Dashboard', link: true },
@@ -19,38 +17,25 @@ const sections = [
 ];
 
 export default function labelsManagement() {
-  let authContext = useContext(AuthContext);
   const navigate = useNavigate()
   const [imageUrl, setImageUrl] = useState('')
   const [errorObj, setErrorObj] = useState({})
-  const [shippingLineId, setShippingLineId] = useState('')
-  const [documentNo, setDocumentNo] = useState('')
-  const [shippingLineList, setShippingLineList] = useState([])
   const [loading, setLoading] = useState(false)
   const [docNoLoading, setDocNoLoading] = useState(false)
   const { user } = useContext(AuthContext);
-    const [assignToUserId, setAssignToUserId] = useState("")
-    const [domainOptions, setDomainOptions] = useState([])
-    const [searchQuery, setSearchQuery] = useState("")
-    const [extractionType, setExtractionType] = useState("bl")
-    const airDocumentType = [{ text: "HAWBL", value: "HAWBL" }, { text: "MAWBL", value: "MAWBL" }]
-    const oceanDocumentType = [{ text: "HBL", value: "HBL" }, { text: "MBL", value: "MBL" }]
+  const [assignToUserId, setAssignToUserId] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [shippingType, setShippingType] = useState("ocean")
+  const [documentTypeOptions, setDocumentTypeOptions] = useState([])
 
   const initialDocObj = {
-    bookingNo: "",
-    documentNo: "",
     documentUrl: "",
-    documentType: "",
-    stageType: "",
-    shippingLineId: "",
-    documentNoVerified: false,
+    documentTypeId: "",
   }
-    // document: "",
 
-  const [docObj, setDocObj] = useState({
-    ...initialDocObj,
-    domainName: authContext.user?.domain?.[0] || "",
-  })
+
+
+  const [docObj, setDocObj] = useState({...initialDocObj})
 
   const updateDocObj = (key, value) => {
     setDocObj({ ...docObj, [key]: value })
@@ -58,7 +43,6 @@ export default function labelsManagement() {
 
   useEffect(() => {
     updateDocObj("documentUrl", imageUrl)
-    console.log("imageUrl ::", imageUrl);
   }, [imageUrl])
 
 
@@ -71,63 +55,149 @@ export default function labelsManagement() {
 
   }
 
-  const getListOfShippingLine = async (extractionType) => {
-    try {
-        let response
-        const payload ={
-            search :{ name:searchQuery}
-        }
-        // if (searchQuery?.trim()) {
-        //     const queryParams = objectToQueryParam(payload)
-        //     response = await apiGET(`/v1/shipping-lines?${queryParams}`)
-        // }else{
-        // }
-        response = await apiGET(`/v1/shipping-lines`)
-      if (response.status === 200) {
-        // console.log("response?.data?.data?.data", response?.data);
-        let list = response?.data?.data?.data;
-        if (list && list.length) {
-          list = list.map((item) => {
-            return {
-              key: item.name,
-              text: item.name,
-              value: item._id,
-            };
+  const getAllDocumentTypeList = async() => {
+      try {
+          let response = await apiGET(`/v1/document-type/list`,);
+          if (response.status === 200) {
+            let list = response?.data?.data?.data;
+            if (list && list.length) {
+              const uniqueTexts = new Set();
+              list = list.filter((item) => {
+                const text = item?.name;
+                if (!uniqueTexts.has(text)) {
+                  uniqueTexts.add(text);
+                  return true;
+                }
+                return false;
+              });
+              list = list.map((item) => {
+                return {
+                  key: item?.name,
+                  text: item?.code,
+                  value: item?._id,
+                };
+              });
+            }
+            setDocumentTypeOptions(list)
+            updateDocObj("documentTypeId",list[0].value)
+          }
+          else {
+            Swal.fire({
+              title: "Error!",
+              text: response?.data?.data || "Something went wrong!",
+              icon: "error",
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: error || "Something went wrong!",
+            icon: "error",
           });
-        }
-        setShippingLineList(list)
+        }        
+  }
+
+  useEffect(() => {
+    getAllDocumentTypeList()
+  }, [])
+
+
+
+  async function verifyDocument(orderBaseXid, domainName) {
+
+    setDocNoLoading(true)
+    let response = await apiGET(`/v1/documents/check/orderBases?documentNo=${orderBaseXid}&domainName=${domainName}&type=${shippingType}`)
+
+    if (response.status == "200") {
+      response = response.data
+
+      if (response.data && response.data.docPresent) {
+        alertSuccess("Document found in ERP", "Document No: " + orderBaseXid)
+        updateDocObj("documentNoVerified", true)
+      } else if (response.data && response.data.orderReleasesExisted) {
+        alertWarning("Order Already Released", "Document No: " + orderBaseXid)
+        updateDocObj("documentNoVerified", false)
       } else {
-        alertError(response?.data?.data)
+        alertWarning("Document not found in ERP")
+        updateDocObj("documentNoVerified", false)
       }
-    } catch (error) {
-      alertError("Something went wrong, please try again")
-    } finally {
-      setLoading(false);
+    } else {
+      alertError("Something went wrong")
+      updateDocObj("documentNoVerified", false)
     }
+
+    setDocNoLoading(false)
+
   }
 
 
-
-
-
-
-  useEffect(() => {
-    if (searchQuery !== "" || extractionType !== "") {
-        getListOfShippingLine(extractionType)
+  const saveBtnClickHandler = async () => {
+    let payload = {
+      "documentTypeId": docObj.documentTypeId,
+      "documentUrl": docObj.documentUrl || "https://artyfactassests.s3.ap-south-1.amazonaws.com/uploads/1692697809182/How-to-submit-shipping-instruction_0.pdf",
     }
-  }, [searchQuery,extractionType])
 
-
-
-
-
-    const handleTabChange=(val)=>{
-        setExtractionType(val)
+    if (user.role != "documentation" && assignToUserId) {
+        payload={...payload,assignToUserId:assignToUserId}
     }
-    // useEffect(() => {
-    //     if(hasAccess(AIR))  setExtractionType("air")
-    //     if(hasAccess(OCEAN))  setExtractionType("ocean")
-    // }, [])
+
+    setLoading(true)
+    let response = await apiPOST("/v1/documents", payload)
+    setLoading(false)
+    if (response?.status == "200") {
+      Swal.fire({
+        title: "Success!",
+        text: "Document added successfully",
+        icon: "success",
+      });
+
+      setDocObj(initialDocObj)
+      setImageUrl("")
+      setAssignToUserId("")
+      navigate("/dashboard/document-list")
+    } else {
+        if (response?.status == "403") {
+            Swal.fire({
+                title: "Alredy Exist!",
+                html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`,
+                icon: "error",
+         });
+        }else{
+            alertError(response?.data?.data)
+        }
+    }
+
+
+  }
+
+    const panes = [
+  {
+    menuItem: 'Ocean',
+    value:"ocean"
+    // render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane>,
+  },
+  {
+    menuItem: 'Air',
+    value:"air"
+    // render: () => <Tab.Pane attached={false}>Tab 1 Content</Tab.Pane>,
+  },
+]
+
+
+
+
+
+    const handleShippingLineSearchQuery = (e, { searchQuery }) => { 
+        setSearchQuery(searchQuery)
+    }
+
+    const handleTabChangeShippingLine=(val)=>{
+        setShippingType(val)
+    }
+    useEffect(() => {
+        if(hasAccess(AIR))  setShippingType("air")
+        if(hasAccess(OCEAN))  setShippingType("ocean")
+    }, [])
     
 
   return (
@@ -143,29 +213,74 @@ export default function labelsManagement() {
           </div>
         </div>
              <span>
-                    <div class="ui pointing secondary menu">
-                        {  <a class={`${extractionType == "bl" && "active"} item`} onClick={()=>handleTabChange("bl")}>BL</a>}
-                        {  <a class={`${extractionType == "invoice" && "active"} item`} onClick={()=>handleTabChange("invoice")}>INVOICE</a>}
-                    </div> 
+                    {/* <Tab menu={{ secondary: true,pointing: true }} panes={panes} 
+                        onTabChange={handleTabChangeShippingLine} /> */}
+              
+                    {/* <div class="ui pointing secondary menu">
+                        {  hasAccess(OCEAN) && <a class={`${shippingType == "ocean" && "active"} item`} onClick={()=>handleTabChangeShippingLine("ocean")}>Ocean</a>}
+                        {  hasAccess(AIR) && <a class={`${shippingType == "air" && "active"} item`} onClick={()=>handleTabChangeShippingLine("air")}>Air</a>}
+                    </div> */}
+                    
                 </span>
         <div style={{ padding: 25, flex: 1 }} >
-          {
-            extractionType == "bl" ? <BlUpload/> :<InvoiceUpload/>
-          }
+          <div class="ui grid">
+            <div class="ten wide column">
+                <label><strong>Upload Document<span style={{color:"red"}}>*</span> </strong></label>
+              <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} />
+              <Form style={{ width: '100%',marginTop:10 }}>
+
+              <Form.Dropdown
+                label="Document Types"
+                placeholder="Select Document Types"
+                options={documentTypeOptions || []}
+                required={true}
+                selection
+                onFocus={() => {
+                  setErrorObj();
+                }}
+                value={docObj.documentTypeId}
+                disabled={loading}
+                onChange={(e, data) => {
+                  updateDocObj("documentTypeId", data.value);
+                }}
+              />
+              
+              {/* <Form.Field
+                id="form-input-control-token-tracker"
+                label="INVOICE Id"
+                required={true}
+                style={{ marginTop: "18px",marginBottom:0 }}
+                disabled={loading}
+                // value={docObj.documentNo || ""}
+                // onChange={(e, data) => {
+                //   updateDocObj("documentNo", e.target.value);
+                // }}
+              ></Form.Field> */}
+
+              {/* <div className="ui action input" style={{ marginBottom: 18, display: 'flex' }}>
+                <input
+                  style={{ flex: 1 }}
+                  type="text"
+                  placeholder="Document Number"
+                  value={docObj.documentNo || ""}
+                  disabled={loading}
+                  onChange={(e, data) => {
+                    updateDocObj("documentNo", e.target.value);
+                  }} />
+              </div> */}
+
+              <Button
+                loading={loading} disabled={loading || docNoLoading || !imageUrl}
+                content='Save' fluid  onClick={saveBtnClickHandler} color='red' />
+              </Form>
+            </div>
+
+            <div className="six wide column">
+             
+            </div>
+          </div>
         </div>
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   );
 }
-
-const getAllLabel = async (limit, page) => {
-  let response = await apiGET(`/v1/labels/matrix?limit=${limit}&page=${page}`);
-  if (response.status === 200) {
-    return response.data.data;
-  }
-  return {
-    displayNames: [],
-    labels: [],
-    parameterNames: [],
-  };
-};

@@ -38,9 +38,7 @@ function Dashboard() {
     syncCount: '',
     asyncCount: ''
   })
-  const [domainName, setDomainName] = useState('')
   const [jobList, setJobList] = useState([])
-  const [domainOptions, setDomainOptions] = useState([])
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const [label, setlabel] = useState([])
@@ -48,22 +46,20 @@ function Dashboard() {
   const [lastThirtyDaysUploadedDocumentArr, setLastThirtyDaysUploadedDocumentArr] = useState([])
   const [documentUploadedByUsers, setDocumentUploadedByUsers] = useState([])
   const [documentUploadedByShippingLine, setDocumentUploadedByShippingLine] = useState([])
-  const [documentUploadedByDomain, setDocumentUploadedByDomain] = useState([])
   const [range, setRange] = useState([]);
   const [errorObj, setErrorObj] = useState({})
   const { user } = useContext(AuthContext);
   let loggedInUser = JSON.parse(localStorage.getItem("user"))
   const [filterShippingLine, setFilterShippingLine] = useState('')
 
-  const getDocumentsCount = async (range,domainName,filterShippingLine) => {
+  const getDocumentsCount = async (range,filterShippingLine) => {
     setLoading(true);
     try {
       let response
-      if (showDatePicker || domainName || filterShippingLine) {
-        const domainArray = JSON.stringify(domainName) 
+      if (showDatePicker || filterShippingLine) {
         const filterShippingLineArray = JSON.stringify(filterShippingLine) 
         response = await apiGET(
-          `/v1/dashboardAnalysis?fromDate=${range[0]?.startDate ? range[0]?.startDate : ""}&toDate=${range[0]?.endDate ? range[0]?.endDate : ""}&domainName=${domainArray}&shippingLine=${filterShippingLineArray}`
+          `/v1/dashboardAnalysis?fromDate=${range[0]?.startDate ? range[0]?.startDate : ""}&toDate=${range[0]?.endDate ? range[0]?.endDate : ""}&shippingLine=${filterShippingLineArray}`
         );
       }
 
@@ -89,8 +85,6 @@ function Dashboard() {
         setLastThirtyDaysUploadedDocumentArr(response.data.data.data.lastThirtyDaysUploadedDocumentCount)
         setDocumentUploadedByUsers(response.data.data.data.documentUploadedByUser)
         setDocumentUploadedByShippingLine(response.data.data.data.documentUploadedByShippingLine)
-        setDocumentUploadedByDomain(response.data.data.data.documentUploadedByDomainName)
-
       } else if (response.status === 400) {
         Swal.fire({
           title: "Error!",
@@ -173,21 +167,21 @@ function Dashboard() {
   };
 
   //Data of Uploaded Documents
-  const documentUploadedByDomainName = {
-    labels: documentUploadedByDomain.map(item => item._id),
-    datasets: [
-      {
-        label: `Document By Domain`,
-        data: documentUploadedByDomain.map(item => item.count),
-        borderColor: '#35C69D',
-        backgroundColor: '#35C69D',
-        cubicInterpolationMode: 'monotone',
-        yAxisID: 'y',
-        tension: 0.4,
-        barThickness: 30, // Adjust the bar thickness as needed
-      },
-    ],
-  };
+  // const documentUploadedByDomainName = {
+  //   labels: documentUploadedByDomain.map(item => item._id),
+  //   datasets: [
+  //     {
+  //       label: `Document By Domain`,
+  //       data: documentUploadedByDomain.map(item => item.count),
+  //       borderColor: '#35C69D',
+  //       backgroundColor: '#35C69D',
+  //       cubicInterpolationMode: 'monotone',
+  //       yAxisID: 'y',
+  //       tension: 0.4,
+  //       barThickness: 30, // Adjust the bar thickness as needed
+  //     },
+  //   ],
+  // };
 
   // Data for hbl mbl Documents
   const mblHblData = {
@@ -303,65 +297,11 @@ function Dashboard() {
       return [parentPath];
     }
   }
-  const getDomain = async () => {
-    try {
-      let response = await apiGET('/v1/domain/');
-      if (response.status === 200) {
-        const arr = transformData(response.data.data);
-        let list = arr;
-        if (list && list.length) {
-          list = list.map((item) => {
-            return {
-              key: item,
-              text: item,
-              value: item,
-            };
-          });
-        }
-        setDomainOptions(list)
-      } else {
-        Swal.fire({
-          title: 'Error!',
-          text: response?.data?.data,
-          icon: 'error',
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error!',
-        text: error,
-        icon: 'error',
-      });
-    }
-  };
-
-  const getDomainOptions=()=> {
-    if (user.role === "superAdmin") {
-       getDomain()
-    }else{
-      let list = user?.domain;
-      if (list && list.length) {
-        list = list.map((item) => {
-          return {
-            key: item,
-            text: item,
-            value: item,
-          };
-        });
-      }
-    setDomainOptions(list)
-    }
-}
 
 
   useEffect(() => {
-    getDomainOptions()
-  }, [user])  
-
-
-  useEffect(() => {
-    getDocumentsCount(range,domainName,filterShippingLine)
-  }, [range,domainName,filterShippingLine])
+    getDocumentsCount(range,filterShippingLine)
+  }, [range,filterShippingLine])
 
   return (
     <div className="fadeIn  page-content-wrapper">

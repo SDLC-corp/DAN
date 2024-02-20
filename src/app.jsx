@@ -2,43 +2,37 @@ import React, { useContext, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Layout from './layouts/basic';
 import AuthRequired from './contexts/auth/authRequired';
-import AuthProvider from './contexts/auth/authProvide';
 import { authProtectedRoutes, publicRoutes } from './routes';
 import ErrorPage from './utils/error-page';
 import { ProSidebarProvider } from 'react-pro-sidebar';
 import { AuthContext } from './contexts';
 import {  apiPOST } from './utils/apiHelper';
-import { alertError, alertWarning } from './utils/alerts';
 import ViewDocument from './modules/docupload/viewDocumentV3';
 import AccessRequired from './utils/accessRequired';
+import { axiosApi } from './services/axios';
+import { DELETE_DOCUMENT_PAGE, REUPLOAD_PDF, VIEW_DOCUMENT, VIEW_DOCUMENT_PAGE, hasAccess } from './utils/accessHelper';
+import UnAuthorized from './utils/unAuthorized';
 
 export default function App() {
 
-  const navigate = useNavigate()
-  const location = useLocation()
-    const {updateContext} = useContext(AuthContext)
+  const {updateContext} = useContext(AuthContext)
 
-    const  getCurrentUsr = async(token)=> {
-        const response = await apiPOST(`/v1/auth/getCurrentUser`,{token:token})
-        if (response?.status == 200) {
-            let userData = response?.data?.data?.userData
-            window.localStorage.setItem('user', JSON.stringify(userData));
-            updateContext(userData)
-        } else {
-          window.localStorage.clear()
-          alertError("Your login session has expired. Please log in again.")
-          setTimeout(() => {
-            navigate('/login', {state: { from: location }, replace: true})
-          }, 3000);
-        }
+  const  getCurrentUser = async () => {
+    try {
+      const response = await axiosApi.post(`/v1/auth/getCurrentUser`, {token: localStorage.getItem('refreshToken')})
+      if(response?.data.data) {
+        let userData = response.data.data.userData
+        window.localStorage.setItem('user', JSON.stringify(userData));
+        updateContext(userData)
+      }
+    } catch (error) {
+      
     }
+  }
 
-    useEffect(() => {
-        let refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-          getCurrentUsr(refreshToken)
-        }
-    }, [])
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
     
 
   return (
@@ -76,25 +70,45 @@ export default function App() {
               ))}
             </Route>
 
-            <Route
+          {
+            (hasAccess(VIEW_DOCUMENT) || hasAccess(VIEW_DOCUMENT_PAGE)) ? <Route
                 errorElement={<ErrorPage />}
                 path="/dashboard/studio/:id"
                 element={ <AuthRequired><ViewDocument/></AuthRequired>}
                 key={"asdasd"}
               />
+              : <Route
+              errorElement={<ErrorPage />}
+              path="/dashboard/studio/:id"
+              element={<UnAuthorized/>}
+              key={"asdasd"}
+            />
+          }
 
             <Route
                 errorElement={<ErrorPage />}
                 path="/dashboard/studio/reupload/:id"
-                element={ <AuthRequired><ViewDocument/></AuthRequired>}
-                key={"klkdl"}
+                element={ <AuthRequired>
+                  <AccessRequired
+                  module = {REUPLOAD_PDF}
+                  >
+                    <ViewDocument/>
+                  </AccessRequired>
+                  </AuthRequired>}
+                key={"klkdlkgh"}
               />
                        
             <Route
                 errorElement={<ErrorPage />}
                 path="/dashboard/studio/:id/delete"
-                element={ <AuthRequired><ViewDocument/></AuthRequired>}
-                key={"klkdl"}
+                element={ <AuthRequired>
+                <AccessRequired
+                  module = {DELETE_DOCUMENT_PAGE}
+                  >
+                    <ViewDocument/>
+                </AccessRequired>
+                </AuthRequired>}
+                key={"klkdppl"}
               /> 
              
            

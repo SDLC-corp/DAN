@@ -17,28 +17,28 @@ const StatusView = ({ count,documentId, modalOpen, blNo, docNo,getAllDocuments,g
     const [pushLoading, setPushLoading] = useState(false);
     let { user } = useContext(AuthContext);
 
-    const getJobByDocumentId = async (id) => {
-        try {
-            const response = await apiGET(`/v1/job/document/${id}`);
-            const result = response?.data?.data;
-            setJobData(result);
+    // const getJobByDocumentId = async (id) => {
+    //     try {
+    //         const response = await apiGET(`/v1/job/document/${id}`);
+    //         const result = response?.data?.data;
+    //         setJobData(result);
 
-            const newTableArr = Object.keys(result?.status).map(key => {
-                const arr = [];
-                if (typeof result?.status[key] === "object") {
-                    Object.keys(result?.status[key]).forEach(key2 => {
-                        if (result?.status[key].hasOwnProperty(key2)) {
-                            arr.push({ [key2]: result?.status[key][key2] });
-                        }
-                    });
-                }
-                return { name: key, tdArr: arr };
-            });
-            setTableArr(newTableArr);
-        } catch (error) {
-            console.log("error", error);
-        }
-    };
+    //         const newTableArr = Object.keys(result?.status).map(key => {
+    //             const arr = [];
+    //             if (typeof result?.status[key] === "object") {
+    //                 Object.keys(result?.status[key]).forEach(key2 => {
+    //                     if (result?.status[key].hasOwnProperty(key2)) {
+    //                         arr.push({ [key2]: result?.status[key][key2] });
+    //                     }
+    //                 });
+    //             }
+    //             return { name: key, tdArr: arr };
+    //         });
+    //         setTableArr(newTableArr);
+    //     } catch (error) {
+    //         console.log("error", error);
+    //     }
+    // };
 
     function getDifference(startTime, endTime) {
         if (!startTime || !endTime) return "--";
@@ -67,11 +67,11 @@ const StatusView = ({ count,documentId, modalOpen, blNo, docNo,getAllDocuments,g
         }
   };
 
-    useEffect(() => {
-        if (documentId) {
-            getJobByDocumentId(documentId);
-        }
-    }, [documentId,count]);
+    // useEffect(() => {
+    //     if (documentId) {
+    //         getJobByDocumentId(documentId);
+    //     }
+    // }, [documentId,count]);
 
     return (
         <div className="fadeIn page-content-wrapper">

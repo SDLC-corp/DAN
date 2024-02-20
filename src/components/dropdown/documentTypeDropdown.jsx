@@ -5,11 +5,11 @@ import Swal from "sweetalert2"
 import { useState } from "react"
 import { useEffect } from "react"
 
-const ShippingLineNameDropdown = ({
+const DocumentTypeDropdown = ({
     shippingLineId,shippingId,refresh,multiselect,setSelectedShippingLineName,height
 }) => {
-    const [shippingLineArr, setShippingLineArr] = useState([])
-    const getAllShippingLineList = async() => {
+    const [documentTypeOptions, setDocumentTypeOptions] = useState([])
+    const getAllDocumentTypeList = async() => {
         try {
             let response = await apiGET(`/v1/document-type/list`,);
             if (response.status === 200) {
@@ -32,7 +32,7 @@ const ShippingLineNameDropdown = ({
                   };
                 });
               }
-              setShippingLineArr(list)
+              setDocumentTypeOptions(list)
             }
             else {
               Swal.fire({
@@ -51,13 +51,13 @@ const ShippingLineNameDropdown = ({
     }
 
     useEffect(() => {
-      getAllShippingLineList()
+      getAllDocumentTypeList()
     }, [refresh])
 
-    const onChangeShippingLineId = (e,data) => { 
+    const onChangeDocumentTypeId = (e,data) => { 
       shippingLineId(data.value)
         if (setSelectedShippingLineName) {
-           const selectedOption = shippingLineArr?.find(option => option.value === data.value);
+           const selectedOption = documentTypeOptions?.find(option => option.value === data.value);
             setSelectedShippingLineName(selectedOption?.text) 
         }
      }
@@ -69,16 +69,16 @@ const ShippingLineNameDropdown = ({
             <Dropdown
               clearable
               value={shippingId ? shippingId: ""}
-              placeholder='Select Shipping line'
+              placeholder='Select Document Types'
               style={{ marginRight: '10px',height:height }}
               search
               selection
-              options={shippingLineArr}
-              onChange={onChangeShippingLineId}
+              options={documentTypeOptions}
+              onChange={onChangeDocumentTypeId}
               multiple={multiselect? true: false}
             />            
         </div>
     )
 }
 
-export default ShippingLineNameDropdown
+export default DocumentTypeDropdown

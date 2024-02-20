@@ -6,7 +6,11 @@ const axiosApi = axios.create({
   baseURL,
 });
 
-axiosApi.interceptors.request.use(
+const privateAxios = axios.create({
+  baseURL,
+});
+
+privateAxios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accesstoken');
     if (token) {
@@ -19,7 +23,7 @@ axiosApi.interceptors.request.use(
   }
 );
 
-axiosApi.interceptors.response.use(
+privateAxios.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -28,13 +32,13 @@ axiosApi.interceptors.response.use(
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axiosApi.post('/api/refresh-token', { refreshToken });
+        const response = await axiosApi.post('/v1/auth/refresh-token', { refreshToken });
         const { accessToken } = response.data;
 
         localStorage.setItem('accesstoken', accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return axiosApi(originalRequest);
+        return privateAxios(originalRequest);
       } catch (error) {
         // Handle refresh token error or redirect to login
         localStorage.clear()
@@ -46,4 +50,7 @@ axiosApi.interceptors.response.use(
   }
 );
 
-export default axiosApi;
+export {
+  axiosApi,
+  privateAxios
+};

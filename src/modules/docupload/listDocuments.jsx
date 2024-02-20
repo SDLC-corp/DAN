@@ -5,15 +5,13 @@ import TableWrapper from '../../utils/tableWrapper';
 import { apiGET, apiPUT, objectToQueryParam } from '../../utils/apiHelper';
 import Swal from 'sweetalert2'
 import moment from 'moment';
-import ShippingLineNameDropdown from '../../components/dropdown/shippingLineDropdown';
+import ShippingLineNameDropdown from '../../components/dropdown/documentTypeDropdown';
 import useDebounce from '../../utils/useDebounce';
 import DateRangeFilter from '../../components/filter/daterangeFilter';
 import Documentnotes from '../../components/notes/documentnotes';
 import { useContext } from 'react';
 import { AuthContext } from '../../contexts';
 import StatusView from '../job/viewStatus';
-import MyTreeComponent from '../managedomain/domainTree';
-import NestedDomain from '../../components/nodetree/nestedDomain';
 import Papa from 'papaparse';
 import { ADD_NOTES, DELETE_DOCUMENT, EXPORT_DOCUMENTS, VIEW_DOCUMENT, VIEW_STATUS, hasAccess } from '../../utils/accessHelper';
 
@@ -30,14 +28,14 @@ function DocumentList() {
   const queryLimit = params.get('limit');
   const queryPage = params.get('page');
   const querySearchFilter = params.get('search');
-  const queryShippingLineFilter = params.get('shippingline');
+  const queryDocumentTypeFilter = params.get('documentType');
   const [page, setPage] = useState(+queryPage || 1);
   const [limit, setLimit] = useState(+queryLimit || 10);
   const [search, setSearch] = useState(querySearchFilter || '')
   const [modalOpen, setModalOpen] = useState(false)
   const [shippingLineData, setShippingLineData] = useState()
   const [percentCount, setPercentCount] = useState([])
-  const [shippingLineId, setShippingLineId] = useState('')
+  const [documentTypeId, setDocumentTypeId] = useState('')
   const [filterModalOpen, setFilterModalOpen] = useState(false)
   const [checkDropDown, setCheckDropDown] = useState(false)
   const [documentType, setDocumentType] = useState('')
@@ -47,15 +45,13 @@ function DocumentList() {
   const [documentId, setDocumentId] = useState('')
   const validInputRegex = /^[a-zA-Z0-9\s/_]*$/;
   const [selectedNodePath, setSelectedNodePath] = useState([]);
-  const [selectedShippingLineName, setSelectedShippingLineName] = useState(queryShippingLineFilter || "")
-  let {user} = useContext(AuthContext);
+  const [selectedDocumentTypeName, setSelectedDocumentTypeName] = useState(queryDocumentTypeFilter || "")
   const [viewStatusModal, setViewStatusModal] = useState(false)
   const [docObj, setDocObj] = useState({})
 
-  const documentOptions = [
-    { key: 1, text: 'HBL', value: "HBL" },
-    { key: 2, text: 'MBL', value: 'MBL' },
-  ]
+console.log("queryDocumentTypeFilter",queryDocumentTypeFilter);
+console.log("queryLimit",queryLimit);
+console.log("querySearchFilter",querySearchFilter);
 
 
   const sections = [
@@ -73,19 +69,17 @@ function DocumentList() {
     }
   };
 
-  const getAllDocuments = async (shippingLine, documentType, fromDate, toDate,selectedNodePath) => {
+  const getAllDocuments = async (search,documentTypeId, fromDate, toDate,selectedNodePath) => {
     try {
       setLoading(true);
       let res
-      if (search || shippingLine || documentType || fromDate || toDate || selectedNodePath) {
+      if (search || documentTypeId || fromDate || toDate || selectedNodePath) {
         const payload = {
           search: {
             searchTxt: search.trim(),
-            shippingLineId: shippingLine,
-            documentType: documentType,
+            documentTypeId: documentTypeId,
             fromDate: fromDate,
             toDate: toDate,
-            domainName: selectedNodePath
           }
         }
         const queryParams = objectToQueryParam(payload)
@@ -131,10 +125,7 @@ function DocumentList() {
     }
   }
 
-  const showDataExtracted = (data) => {
-    if (!data) return console.log("No Data Extracted")
-    console.table(data.fields)
-  }
+
 
 
   useEffect(() => {
@@ -176,6 +167,15 @@ function DocumentList() {
     }
     return ''
   }
+
+  const getInvoiceId = (fieldsAndValues) => {
+    if (fieldsAndValues) {
+      let found = fieldsAndValues?.filter(item => item.fieldName == 'invoice_no')
+      if (found[0]) return found[0].fieldValue
+    }
+    return ''
+  }
+
   const onClickDeleteButton = async (id) => {
     Swal.fire({
       title: `Are you sure ? `,
@@ -196,7 +196,7 @@ function DocumentList() {
               text: "Document Deleted successfully",
               icon: "success",
             });
-            getAllDocuments()
+            getAllDocuments(search,documentTypeId, fromDate, toDate,selectedNodePath)
           }
           else {
             Swal.fire({
@@ -222,16 +222,15 @@ function DocumentList() {
       width: '6%',
     },
     {
-      name: <p>Document No</p>,
+      name: <p>Invoice Id</p>,
       selector: (row) =>
         row && (
             <Link style={{color:"black"}}  to={`/dashboard/studio/${row._id}`}>
                 <p>
-                  <strong>{row && row?.documentNo}</strong>
+                  <strong>{row && getInvoiceId(row.fieldsAndValues)}</strong>
                 </p>
             </Link>
         ),
-      width: '16%',
     },
     {
       name: <p>Document Type</p>,
@@ -239,15 +238,28 @@ function DocumentList() {
         <div>
           {row && (
             <p>
-              <strong>{row?.shippingLine?.code}</strong>
+              <span>{row?.documentType?.code}</span>
             </p>
           )}
         </div>
       ),
-      width: '16%',
     },
     {
-      name: <p>Extraction Info / Sync</p>,
+      name: <p>Document Info</p>,
+      selector: (row) => (
+        <div style={{ marginTop: 5, marginBottom: 5 }}>
+          {row && (
+            <>
+              {/* {calculatePercentage(row._id)} | {showRemainingFeilds(row._id)} */}
+              <p>{moment(row?.createdAt).format('DD/MM/YYYY')}</p>
+          {moment(row?.createdAt).format('HH:mm a')}
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      name: <p>Extraction Info</p>,
       selector: (row) => (
         <div style={{ marginTop: 5, marginBottom: 5 }}>
           {row && (
@@ -255,7 +267,7 @@ function DocumentList() {
               {calculatePercentage(row._id)} | {showRemainingFeilds(row._id)}
             </>
           )}
-          {row?.syncWithOtm ? (
+           {/* {row?.syncWithOtm ? (
             <List style={{ marginTop: 5 }}>
               <List.Item>
                 <Popup
@@ -276,11 +288,9 @@ function DocumentList() {
                   ERP SYNC : NO
                 </Label>
               </List.Item>
-            </List>
-          )}
+            </List>)} */}
         </div>
       ),
-      width: '15%',
     },
     {
       name: 'Created On',
@@ -291,16 +301,12 @@ function DocumentList() {
           {moment(row?.createdAt).format('HH:mm a')}
         </>
       ),
-      width: '10%',
     },
     {
-      name: <p>Assign To</p>,
+      name: 'Uploaded By',
       selector: (row) => (
         <>
-          {/* <Icon name="eye" onClick={() => {
-          onClickOpenModal(row._id)
-        }} /> */}
-          {row?.assignToUser ? row?.assignToUser?.name : "--"}
+          <p>{row.user.name}</p>
         </>
       ),
     },
@@ -308,7 +314,6 @@ function DocumentList() {
       name: <p style={{ marginLeft: '1rem' }}>Action</p>,
       cell: (row) => (
         <div style={{ display: 'flex' }}>
-
           
         {
              hasAccess(VIEW_DOCUMENT) &&  <Link to={`/dashboard/studio/${row._id}`} className="ui icon button">
@@ -401,40 +406,40 @@ function DocumentList() {
 
 
      useEffect(() => {
-            if (!shippingLineId) {
-                setSelectedShippingLineName(false)
+            if (!documentTypeId) {
+              setSelectedDocumentTypeName(false)
             }
-        }, [shippingLineId])
+        }, [documentTypeId])
 
   useEffect(() => {
 
-    if (search?.trim() && selectedShippingLineName && documentType) {
-    setParams({ page: page, limit: limit, search: search, type :documentType ,shippingline:selectedShippingLineName})
+    if (search?.trim() && selectedDocumentTypeName && documentType) {
+    setParams({ page: page, limit: limit, search: search, type :documentType ,documentType:selectedDocumentTypeName})
     }else if (search?.trim() && documentType) {
     setParams({ page: page, limit: limit, search: search, type :documentType })
-    } else if (search?.trim() && selectedShippingLineName) {
-    setParams({ page: page, limit: limit, search: search, shippingline:selectedShippingLineName })
+    } else if (search?.trim() && selectedDocumentTypeName) {
+    setParams({ page: page, limit: limit, search: search, documentType:selectedDocumentTypeName })
     } else if (search?.trim()) {
     setParams({ page: page, limit: limit, search: search })
-    }else if (selectedShippingLineName && documentType) {
-    setParams({ page: page, limit: limit ,shippingline:selectedShippingLineName,type: documentType})   
+    }else if (selectedDocumentTypeName && documentType) {
+    setParams({ page: page, limit: limit ,documentType:selectedDocumentTypeName,type: documentType})   
     } else if (documentType) {
     setParams({ page: page, limit: limit, type: documentType })
-    } else if (selectedShippingLineName) {
-    setParams({ page: page, limit: limit, shippingline: selectedShippingLineName })
+    } else if (selectedDocumentTypeName) {
+    setParams({ page: page, limit: limit, documentType: selectedDocumentTypeName })
     }else {
     setParams({ page: page, limit: limit })
     }
-  }, [page, limit, search,documentType,selectedShippingLineName]);
+  }, [page, limit, search,documentType,selectedDocumentTypeName]);
 
     useEffect(() => {
-      getAllDocuments(shippingLineId, documentType, fromDate, toDate,selectedNodePath)
+      getAllDocuments(search,documentTypeId, fromDate, toDate,selectedNodePath)
     }, [page,limit])
     
 
   const dependencies = [search];
   useDebounce(() => {
-    getAllDocuments(shippingLineId, documentType, fromDate, toDate,selectedNodePath);
+    getAllDocuments(search,documentTypeId, fromDate, toDate,selectedNodePath);
   }, 300, dependencies);
 
      const downloadCSV = (sheetData) => {
@@ -567,7 +572,7 @@ function DocumentList() {
               <div style={{ display: "flex", alignItems: "center", marginRight: "2rem" }}>
                 <strong>REFRESH</strong>
                 <p style={{ marginLeft: "1rem", cursor: "pointer" }}><Icon onClick={() => {
-                  getAllDocuments(shippingLineId, documentType, fromDate, toDate,selectedNodePath)
+                  getAllDocuments(search,documentTypeId, fromDate, toDate,selectedNodePath)
                 }} className='ui right aligned blue' name="refresh"></Icon></p>
               </div>
               {/* <Button
@@ -588,7 +593,7 @@ function DocumentList() {
                 style={{ display: "flex", marginRight: "1rem", height: 37 ,alignItems:'center',width:'100%'}}
                 onClick={() => {
                   setFilterModalOpen(false)
-                  setShippingLineId('')
+                  setDocumentTypeId('')
                   setDocumentType('')
                   setFromDate('')
                   setToDate('')
@@ -596,7 +601,7 @@ function DocumentList() {
                   setSelectedNodePath([])
                   getAllDocuments()
                   setCheckDropDown(false)
-                  setSelectedShippingLineName("")
+                  setSelectedDocumentTypeName("")
                 }}>
                 Clear Filter
               </Button>
@@ -732,7 +737,7 @@ function DocumentList() {
                   <label className='container-count-text' >Select Document Types</label>
                 </div>
                 <ShippingLineNameDropdown
-                  shippingLineId={setShippingLineId} shippingId={shippingLineId} setSelectedShippingLineName={setSelectedShippingLineName}
+                  shippingLineId={setDocumentTypeId} shippingId={documentTypeId} setSelectedShippingLineName={setSelectedDocumentTypeName}
                 />
               </div>
               {/* <div>
@@ -779,20 +784,20 @@ function DocumentList() {
           <Modal.Actions>
             <Button color='gray' onClick={() => {
               setFilterModalOpen(false)
-              setShippingLineId('')
+              setDocumentTypeId('')
               setDocumentType('')
               setFromDate('')
               setToDate('')
               setSelectedNodePath([])
               getAllDocuments()
               setCheckDropDown(false)
-              setSelectedShippingLineName("")
+              setSelectedDocumentTypeName("")
             }}>
               Clear
             </Button>
             <Button color='gray' onClick={() => {
               setFilterModalOpen(false);
-              getAllDocuments(shippingLineId, documentType, fromDate, toDate,selectedNodePath);
+              getAllDocuments(search,documentTypeId, fromDate, toDate,selectedNodePath);
             }}>
               Apply
             </Button>

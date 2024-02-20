@@ -114,7 +114,7 @@ const ReuploadDocument = ({ fromURL, visible, setVisible,getAllData }) => {
     const getListOfShippingLine = async (shippingType) => {
 
         try {
-            const response = await apiGET(`/v1/shipping-lines?type=${shippingType}`)
+            const response = await apiGET(`/v1/document-type?type=${shippingType}`)
             if (response.status === 200) {
                 console.log("response?.data?.data?.data", response?.data);
                 let list = response?.data?.data?.data;
