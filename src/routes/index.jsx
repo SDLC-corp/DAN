@@ -13,6 +13,8 @@ import CustomLogic from '../modules/logic/customLogic';
 import ListFieldGroup from '../modules/fieldGroup/listFieldGroup';
 import RoleList from '../modules/role/listRole';
 import UnAuthorized from '../utils/unAuthorized';
+import OrganizationsRegistration from '../modules/organizationsRegistration/organizationsRegistration';
+import VerifyRegistration from '../modules/organizationsRegistration/verifyRegistration';
 import { AIR, AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_ROLE, MANAGE_USER, OCEAN, PORT_MASTERS, REUPLOAD_PDF, SHIPPING_LINE, VIEW_DOCUMENT } from '../utils/accessHelper';
 
 // These path are relative to /dashboard/
@@ -62,6 +64,8 @@ const publicRoutes = [
   { path: '/login', component: <Login /> },
   { path: '/un-authorized', component: <UnAuthorized /> },
   { path: '/', component: <Login /> },
+  { path: '/registration', component: <OrganizationsRegistration/>},
+  { path: '/registration/verify', component: <VerifyRegistration/>}
 ];
 
 export { authProtectedRoutes, publicRoutes };
