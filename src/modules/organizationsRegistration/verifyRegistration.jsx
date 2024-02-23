@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 import { apiPOST } from '../../utils/apiHelper';
@@ -8,24 +8,25 @@ import { apiPOST } from '../../utils/apiHelper';
 const VerifyRegistration = ({ numInputs = 6 }) => {
     const inputRefs = useRef([]);
     const location = useLocation();
+    const navigate = useNavigate()
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
     const [otp, setOtp] = useState(Array(numInputs).fill(''));
     const [error, setError] = useState("");
 
 
-    
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer)
-      toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-  })
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
 
     const handleSubmit = async () => {
         const isOtpComplete = otp.every(val => val.trim() !== '');
@@ -42,13 +43,14 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
                     token: token
                 }
                 const res = await apiPOST(`/v1/auth/register/verify-otp`, payload)
-                console.log(res);
                 if (res.status === 200) {
                     Swal.fire({
                         title: "Success!",
-                        text: "OTP Verified Su",
+                        text: "OTP Verified Successfully",
                         icon: "success",
                     });
+                    const encodedToken = encodeURIComponent(token);
+                    navigate(`/registration/set-password?token=${encodedToken}`)
                 }
                 else {
                     Toast.fire('Error!', res?.data?.data || "Something went wrong!", 'error');
