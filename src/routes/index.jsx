@@ -15,8 +15,9 @@ import RoleList from '../modules/role/listRole';
 import UnAuthorized from '../utils/unAuthorized';
 import OrganizationsRegistration from '../modules/organizationsRegistration/organizationsRegistration';
 import VerifyRegistration from '../modules/organizationsRegistration/verifyRegistration';
-import { AIR, AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_ROLE, MANAGE_USER, OCEAN, PORT_MASTERS, REUPLOAD_PDF, SHIPPING_LINE, VIEW_DOCUMENT } from '../utils/accessHelper';
+import { ADD_DOCUMENT_TYPE, AIR, AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_ROLE, MANAGE_USER, OCEAN, PORT_MASTERS, REUPLOAD_PDF, SHIPPING_LINE, VIEW_DOCUMENT } from '../utils/accessHelper';
 import SetPassword from '../modules/organizationsRegistration/setPassword';
+import DocumentTypeList from '../modules/docupload/documentTypes/listDocumentType';
 
 // These path are relative to /dashboard/
 const authProtectedRoutes = [
@@ -32,6 +33,11 @@ const authProtectedRoutes = [
   { path: '/dashboard/document-list', component: <DocumentList />, acccessModuleName : MANAGE_DOCUMENT },
   { path: '/dashboard/document-list/view/:id', component: <ViewDocument />, acccessModuleName: VIEW_DOCUMENT },
   { path: '/dashboard/document-list/reupload/:id', component: <ViewDocument />,acccessModuleName : REUPLOAD_PDF },
+
+
+  { path: 'document-type', component: <DocumentTypeList />,acccessModuleName: DOCUMENT_TYPE},
+  { path: 'document-type/:action', component: <DocumentTypeList />, acccessModuleName: ADD_DOCUMENT_TYPE },
+  { path: 'document-type/:action/:id', component: <DocumentTypeList />, acccessModuleName: EDIT_DOCUMENT_TYPE },
 
   { path: 'fields', component: <FieldList /> , acccessModuleName: FIELDS},
   { path: 'fields/:action', component: <FieldList />, acccessModuleName:FIELD_MAPPING },

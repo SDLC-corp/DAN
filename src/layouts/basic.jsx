@@ -6,6 +6,7 @@ import { Button, Icon, Image } from 'semantic-ui-react';
 import LogoImg from '../assets/images/sdlc-logo2.png';
 import LogoImgWITHCOMAPNYNAME from '../assets/images/sdlc-logo2.png';
 import getMenus from './menu';
+import { apiGET } from '../utils/apiHelper';
 
 function Layout() {
 
@@ -22,14 +23,23 @@ function Layout() {
     setUser(authContext.user.name)
     if (roles == "superAdmin") {
       setUserRole("Super Admin")
-    } 
-    else{
+    }
+    else {
       setUserRole(authContext.user.roleName)
+    }
+  }
+  const getOrganizationName = async() => {
+    try {
+      const response = await apiGET('/v1/organizations')
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   }
 
   useEffect(() => {
     roleSelection()
+    getOrganizationName()
   }, [])
 
 
@@ -39,13 +49,13 @@ function Layout() {
       <div className="sidebar-wrapper">
         <Sidebar backgroundColor="#0f182a" width="270px" style={{ maxWidth: '270px', borderWidth: 0 }}>
           <div className="sidebar-header">
-            {collapsed ? <Image src={LogoImg}  centered /> : null} {!collapsed ? <Image src={LogoImgWITHCOMAPNYNAME} style={{height: 65}} centered /> : null}
+            {collapsed ? <Image src={LogoImg} centered /> : null} {!collapsed ? <Image src={LogoImgWITHCOMAPNYNAME} style={{ height: 65 }} centered /> : null}
           </div>
           <Menu
             user={authContext.user}
             style={{
-              paddingBottom : 100,
-              height : '100%',
+              paddingBottom: 100,
+              height: '100%',
               overflow: "auto"
             }}
             rootStyles={{
@@ -80,12 +90,12 @@ function Layout() {
                     }}
                   >
                     <Icon bordered={false} name={aMenu.icon} style={{ padding: '0 30px 0 10px' }}></Icon>
-                      {aMenu.title}
+                    {aMenu.title}
                   </MenuItem>
                 </Link>
               ) : null
             )}
-            <div style={{height:50}}>
+            <div style={{ height: 50 }}>
 
             </div>
           </Menu>
@@ -112,12 +122,15 @@ function Layout() {
             paddingRight: 27,
             boxShadow: '0 1px 2px 0 rgba(34,36,38,.15)',
           }}>
-          <div
-            style={{ paddingLeft: 28, cursor: 'pointer' }}
-            onClick={() => {
-              collapseSidebar();
-            }}>
-            <Icon name="bars" size="large"></Icon>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div
+              style={{ paddingLeft: 28, cursor: 'pointer' }}
+              onClick={() => {
+                collapseSidebar();
+              }}>
+              <Icon name="bars" size="large"></Icon>
+            </div>
+            <div></div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -127,7 +140,7 @@ function Layout() {
             <Button
               animated="fade"
               onClick={() => {
-                authContext.signout(() => {});
+                authContext.signout(() => { });
               }}>
               <Button.Content visible>Logout</Button.Content>
               <Button.Content hidden>

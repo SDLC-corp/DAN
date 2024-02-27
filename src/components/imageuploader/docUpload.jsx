@@ -12,6 +12,7 @@ const DocumentUploadDrop = ({
     isApproved,
     disabled = false,
     uploadType: propsUploadType,
+    minHeight="37vh"
 }) => {
     const [imageUrl, setImageUrl] = useState(propsImageUrl);
     const [uploadType, setUploadType] = useState(propsUploadType);
@@ -147,7 +148,7 @@ const DocumentUploadDrop = ({
                         backgroundColor: 'white',
                         borderRadius: '5px',
                         padding: "30px",
-                        minHeight: "37vh"
+                        minHeight: minHeight
                     }}
                 >
                     {imageUrl && !loading ? (

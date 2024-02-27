@@ -49,6 +49,10 @@ export const VIEW_DOCUMENT_PAGE = "VIEW_DOCUMENT_PAGE"
 export const AIR = "AIR"
 export const OCEAN = "OCEAN"
 
+export const DOCUMENT_TYPE = "DOCUMENT_TYPE"
+export const ADD_DOCUMENT_TYPE = "ADD_DOCUMENT_TYPE"
+export const EDIT_DOCUMENT_TYPE = "EDIT_DOCUMENT_TYPE"
+
 // All accessible
 export const MANAGE_DASHBOARD = "MANAGE_DASHBOARD"
 export const VIEW_DASHBOARD = "VIEW_DASHBOARD"
