@@ -144,10 +144,7 @@ function DocumentTypeList() {
       name: 'Model Id',
       selector: (row) => row.modelId,
     },
-    {
-      name: 'Type',
-      selector: (row) => <p style={{textTransform:"capitalize"}}>{row?.type}</p>,
-    },
+  
     {
       name: 'Created On',
       selector: (row) => row && <><p>{moment(row?.createdAt).format('DD/MM/YYYY')}</p>{moment(row?.createdAt).format('HH:mm a')}</>,

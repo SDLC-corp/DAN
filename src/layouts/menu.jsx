@@ -7,7 +7,7 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Dashboard', path: '/dashboard', icon: 'home' },
     { type: 'menu', title: 'Document Upload', path: '/dashboard/document-upload', icon: 'upload' },
     { type: 'menu', title: 'Document List', path: '/dashboard/document-list', icon: 'file alternate outline icon' },
-    { type: 'menu', title: 'Document Types', path: '/dashboard/document-type', icon: 'file alternate outline icon' },
+    { type: 'menu', title: 'Document Types', path: '/dashboard/document-type', icon: 'file' },
 
     { type: 'label', title: 'Field Mapping' },
     {

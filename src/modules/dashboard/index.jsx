@@ -42,11 +42,11 @@ function Dashboard() {
 
 
   const saveBtnClickHandler = async () => {
-    if(refNo =='' || refNo==undefined){
-        setRefNoError('Please Provide Reference Number')
-        return
+    if (refNo == '' || refNo == undefined) {
+      setRefNoError('Please Provide Reference Number')
+      return
     }
-  
+
     let payload = {
       "documentTypeId": docObj.documentTypeId,
       "documentUrl": docObj.documentUrl || "https://artyfactassests.s3.ap-south-1.amazonaws.com/uploads/1692697809182/How-to-submit-shipping-instruction_0.pdf",
@@ -116,14 +116,16 @@ function Dashboard() {
           });
           list = list.map((item) => {
             return {
-              key: item?.name,
-              text: item?.code,
+              key: item?.code,
+              text: item?.name,
               value: item?._id,
+              logo: item?.logo,
+              description: item?.description
             };
           });
         }
         setDocumentTypeOptions(list)
-        updateDocObj("documentTypeId", list[0].value)
+        updateDocObj("documentTypeId", list?.[0]?.value)
       }
       else {
         Swal.fire({
@@ -151,20 +153,25 @@ function Dashboard() {
     getAllDocumentTypeList()
   }, [])
   return (
-    <div className="fadeIn  page-content-wrapper "  >
+    <div className="fadeIn  page-content-wrapper " style={{paddingBottom:'150px'}} >
       <div style={{ padding: '20px', display: 'flex', flexDirection: 'row ', flexWrap: "wrap", gap: '25px' }}>
-        {documentTypeOptions.length > 0 && documentTypeOptions.map((type, index) => (
+        {documentTypeOptions.length > 0 ? documentTypeOptions.map((type, index) => (
           <div key={index} style={{ width: '258px' }}>
-            <div style={{ width: '254px', height: '140px', backgroundColor: '#F0EFEF', borderRadius: '10.4px' }} ></div>
+            {type?.logo ?
+              <img src={type?.logo} style={{ width: '254px', height: '140px', borderRadius: '10.4px' }} ></img>
+              :
+              <div style={{ width: '254px', height: '140px', borderRadius: '10.4px', backgroundColor: '#F0EFEF' }}></div>}
             <div style={{ marginTop: '8px', fontWeight: '700' }}>{type.text}</div>
             <div style={{ fontSize: '12px' }}>
-              Extract invoice ID customer details.
-              vendor details, shop to, bill to. total tax.
-              subtotal. line items and more.
+             {type.description}
             </div>
             <button onClick={() => { setOpenModal(!openModal); updateDocObj("documentTypeId", type.value); }} style={{ border: 'none', color: '#048DEF', background: 'transparent', fontWeight: '500', cursor: 'pointer', marginTop: '10px' }}><Icon name='upload' /> Upload Document</button>
           </div>
-        ))}
+        )) :
+          <div style={{ width: '100%', height: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: '700', color: '#acbdcd' }}>
+            There are no records to display
+          </div>
+        }
         <CardComponent
           loading={loading}
           docNoLoading={docNoLoading}
@@ -199,25 +206,25 @@ const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, o
   >
     <div>
       <h2>Upload Document</h2>
-      <div style={{marginBottom:'10px'}}>Document Number (Reference No.)</div>
+      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.) <span style={{color:"red"}}>*</span></div>
       <Form.Field
         id="form-input-control-first-name"
         control={Input}
-        placeholder="Enter Reference No"
+        placeholder="Enter Document No."
         required={true}
         value={refNo}
         onChange={(e) => {
           setRefNoError('')
-          setRefNo(e.target.value );
+          setRefNo(e.target.value);
         }}
         style={{ width: '100%' }}
-        error={refNoError ? true :false}
-        
+        error={refNoError ? true : false}
+
       />
-      {refNoError ?<div style={{color:'#ab3a38', padding:'10px 0', fontSize:'10px'}}>{refNoError}</div> :''}
+      {refNoError ? <div style={{ color: '#ab3a38', padding: '10px 0', fontSize: '10px' }}>{refNoError}</div> : ''}
     </div>
-    <div style={{ paddingBottom: '30px', paddingTop:'20px' }}>
-    <div style={{marginBottom:'10px'}}>Upload Document</div>
+    <div style={{ paddingBottom: '30px', paddingTop: '20px' }}>
+      <div style={{ marginBottom: '10px' }}>Upload Document <span style={{color:"red"}}>*</span></div>
       <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight='15vh' />
     </div>
     <Button

@@ -17,6 +17,7 @@ function Layout() {
 
   const [user, setUser] = useState('')
   const [userRole, setUserRole] = useState("")
+  const [orgName, setOrgName] = useState('')
   const MenuData = getMenus(authContext.user)
 
   const roleSelection = () => {
@@ -28,10 +29,14 @@ function Layout() {
       setUserRole(authContext.user.roleName)
     }
   }
-  const getOrganizationName = async() => {
+  const getOrganizationName = async () => {
     try {
       const response = await apiGET('/v1/organizations')
-      console.log(response);
+      if (response.status === 200) {
+        setOrgName(response.data.data.name);
+      }else {
+        console.log(response);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -130,7 +135,7 @@ function Layout() {
               }}>
               <Icon name="bars" size="large"></Icon>
             </div>
-            <div></div>
+            <div style={{fontSize:'x-large', marginLeft:'20px', color:'#9093a9', fontWeight:'600'}}>{orgName}</div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center' }}>

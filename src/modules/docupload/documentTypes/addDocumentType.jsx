@@ -23,9 +23,7 @@ function AddDocumentType(props) {
     description: "",
     modelId: "",
     code:"",
-    locationName:'',
-    locationId:'',
-    type:"ocean"
+   
   })
   const [errorObj, setErrorObj] = useState()
   const [loading, setLoading] = useState(false)
@@ -59,20 +57,8 @@ function AddDocumentType(props) {
       setErrorObj({ ...errorObj, code: "Short Hand Name is required" })
       return false
     }
-    if (!data.type?.trim()) {
-      setErrorObj({ ...errorObj, type: "Type is required" })
-      return false
-    }
     if (!data.modelId.trim()) {
       setErrorObj({ ...errorObj, modelId: "Model Id is required" })
-      return false
-    }
-    if (!data.locationName.trim()) {
-      setErrorObj({ ...errorObj, locationName: "location Name is required" })
-      return false
-    }
-    if (!data.locationId.trim()) {
-      setErrorObj({ ...errorObj, locationId: "location Id is required" })
       return false
     }
     return true
@@ -87,11 +73,10 @@ function AddDocumentType(props) {
         logo:imageUrl,
         description:ShippingListObj.description,
         code:ShippingListObj.code,
-        locationName:ShippingListObj.locationName,
-        locationId:ShippingListObj.locationId,
-        type:ShippingListObj.type
       }
+
       const isValid = await validate(ShippingListObj)
+      console.log(isValid);
       if (isValid) {
         setLoading(true)
         const response = await apiPOST('v1/document-type/', payload)
@@ -124,9 +109,6 @@ function AddDocumentType(props) {
         logo:imageUrl,
         description:ShippingListObj.description,
         code:ShippingListObj.code,
-        locationName:ShippingListObj.locationName,
-        locationId:ShippingListObj.locationId,
-        type:ShippingListObj?.type
       }
       const isValid = await validate(payload)
         console.log(isValid,errorObj);
@@ -165,9 +147,7 @@ function AddDocumentType(props) {
           description:response.data.data.description,
           modelId:response.data.data.modelId,
           code:response.data.data.code,
-          locationName: response.data.data.locationName,
-          locationId: response.data.data.locationId,
-          type: response.data.data.type
+        
         })
         setImageUrl(response.data.data.logo)
         }
@@ -296,30 +276,8 @@ function AddDocumentType(props) {
             }}
             error={errorObj && errorObj.code}
           />
-        <Form.Field label="Choose Type" required error={errorObj && errorObj.type}/>
-        <Form.Field>
-            <span>
-          <Radio
-            label='Ocean'
-            name='radioGroup'
-            value={ShippingListObj.type}
-            checked={ShippingListObj.type === 'ocean'}
-            onChange={(e)=>{
-                setShippingListObj({...ShippingListObj,type:"ocean"})
-                delete errorObj.type
-                }}
-          />
-        </span>
-        <span style={{marginLeft:15}}>
-          <Radio
-            label='Air'
-            name='radioGroup'
-            value={ShippingListObj.type}
-            checked={ShippingListObj.type === 'air'}
-            onChange={(e)=>setShippingListObj({...ShippingListObj,type:"air"})}
-          />
-        </span>
-        </Form.Field>
+         
+        
 
           <Form.Field
             id="form-textarea-control-opinion"
@@ -346,33 +304,6 @@ function AddDocumentType(props) {
             error={errorObj && errorObj.modelId}
           />
 
-          <Form.Field
-            id="form-textarea-control-opinion"
-            control={Input}
-            label="Location Name"
-            placeholder="Location Name"
-            required={true}
-            value={ShippingListObj.locationName || ""}
-            onChange={(e) => {
-              setShippingListObj({ ...ShippingListObj, locationName: e.target.value });
-              delete errorObj?.locationName
-            }}
-            error={errorObj && errorObj.locationName}
-          />
-
-          <Form.Field
-            id="form-textarea-control-opinion"
-            control={Input}
-            label="Location ID"
-            placeholder="Location ID"
-            required={true}
-            value={ShippingListObj.locationId || ""}
-            onChange={(e) => {
-              setShippingListObj({ ...ShippingListObj, locationId: e.target.value });
-              delete errorObj?.locationId
-            }}
-            error={errorObj && errorObj.locationId}
-          />
 
           <Form.Field
             width={4}

@@ -79,7 +79,7 @@ export default function labelsManagement() {
               });
             }
             setDocumentTypeOptions(list)
-            updateDocObj("documentTypeId",list[0].value)
+            updateDocObj("documentTypeId",list?.[0]?.value)
           }
           else {
             Swal.fire({
