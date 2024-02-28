@@ -1,144 +1,63 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { apiGET, apiPOST, objectToQueryParam } from '../../utils/apiHelper';
-import TableWrapper from '../../utils/tableWrapper';
-import { Breadcrumb, Sidebar, Grid, Form, Input, Radio, Button, Tab } from 'semantic-ui-react';
-import DocumentUploadDrop from '../../components/imageuploader/docUpload';
-import { AuthContext } from '../../contexts';
+import React, { useContext, useEffect, useState } from 'react';
+import { Breadcrumb, Button, Form, Icon, Image, Input, Modal } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
-import { alertError, alertInfo, alertSuccess, alertWarning } from '../../utils/alerts';
+import { apiGET, apiPOST } from '../../utils/apiHelper';
+import { Chart as ChartsJs, BarElement, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
+
 import { useNavigate } from 'react-router-dom';
-import AssignToModal from '../../components/modal/assignToModal';
-import UserListDropDown from '../../components/dropdown/userListDropDown';
-import { AIR, OCEAN, hasAccess } from '../../utils/accessHelper';
+import { alertError } from '../../utils/alerts';
+import { AuthContext } from '../../contexts';
+import DocumentUploadDrop from '../../components/imageuploader/docUpload';
 
-const sections = [
-  { key: 'Dashboard', content: 'Dashboard', link: true },
-  { key: 'label_List', content: 'Document Upload', active: true },
-];
+ChartsJs.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  BarElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+)
 
-export default function labelsManagement() {
+function labelsManagement() {
   const navigate = useNavigate()
-  const [imageUrl, setImageUrl] = useState('')
-  const [errorObj, setErrorObj] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [docNoLoading, setDocNoLoading] = useState(false)
   const { user } = useContext(AuthContext);
-  const [assignToUserId, setAssignToUserId] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [shippingType, setShippingType] = useState("ocean")
-  const [documentTypeOptions, setDocumentTypeOptions] = useState([])
-
+  const sections = [
+    { key: 'Dashboard', content: 'Dashboard', link: true },
+    { key: 'label_List', content: 'Document Upload', active: true },
+  ];
   const initialDocObj = {
     documentUrl: "",
     documentTypeId: "",
   }
-
-
-
-  const [docObj, setDocObj] = useState({...initialDocObj})
-
-  const updateDocObj = (key, value) => {
-    setDocObj({ ...docObj, [key]: value })
-  }
-
-  useEffect(() => {
-    updateDocObj("documentUrl", imageUrl)
-  }, [imageUrl])
-
-
-  function updateUpload(url) {
-    setImageUrl(url)
-  }
-
-  const onUploadDone = (data) => {
-    updateUpload(data)
-
-  }
-
-  const getAllDocumentTypeList = async() => {
-      try {
-          let response = await apiGET(`/v1/document-type/list`,);
-          if (response.status === 200) {
-            let list = response?.data?.data?.data;
-            if (list && list.length) {
-              const uniqueTexts = new Set();
-              list = list.filter((item) => {
-                const text = item?.name;
-                if (!uniqueTexts.has(text)) {
-                  uniqueTexts.add(text);
-                  return true;
-                }
-                return false;
-              });
-              list = list.map((item) => {
-                return {
-                  key: item?.name,
-                  text: item?.code,
-                  value: item?._id,
-                };
-              });
-            }
-            setDocumentTypeOptions(list)
-            updateDocObj("documentTypeId",list?.[0]?.value)
-          }
-          else {
-            Swal.fire({
-              title: "Error!",
-              text: response?.data?.data || "Something went wrong!",
-              icon: "error",
-            });
-          }
-        } catch (error) {
-          Swal.fire({
-            title: "Error!",
-            text: error || "Something went wrong!",
-            icon: "error",
-          });
-        }        
-  }
-
-  useEffect(() => {
-    getAllDocumentTypeList()
-  }, [])
-
-
-
-  async function verifyDocument(orderBaseXid, domainName) {
-
-    setDocNoLoading(true)
-    let response = await apiGET(`/v1/documents/check/orderBases?documentNo=${orderBaseXid}&domainName=${domainName}&type=${shippingType}`)
-
-    if (response.status == "200") {
-      response = response.data
-
-      if (response.data && response.data.docPresent) {
-        alertSuccess("Document found in ERP", "Document No: " + orderBaseXid)
-        updateDocObj("documentNoVerified", true)
-      } else if (response.data && response.data.orderReleasesExisted) {
-        alertWarning("Order Already Released", "Document No: " + orderBaseXid)
-        updateDocObj("documentNoVerified", false)
-      } else {
-        alertWarning("Document not found in ERP")
-        updateDocObj("documentNoVerified", false)
-      }
-    } else {
-      alertError("Something went wrong")
-      updateDocObj("documentNoVerified", false)
-    }
-
-    setDocNoLoading(false)
-
-  }
+  const [openModal, setOpenModal] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [assignToUserId, setAssignToUserId] = useState("")
+  const [docNoLoading, setDocNoLoading] = useState(false)
+  const [docObj, setDocObj] = useState({ ...initialDocObj })
+  const [documentTypeOptions, setDocumentTypeOptions] = useState([])
+  const [uploadType, setUploadType] = useState(null)
+  const [refNo, setRefNo] = useState('')
+  const [refNoError, setRefNoError] = useState(false)
 
 
   const saveBtnClickHandler = async () => {
+    if (refNo == '' || refNo == undefined) {
+      setRefNoError('Please Provide Reference Number')
+      return
+    }
+
     let payload = {
       "documentTypeId": docObj.documentTypeId,
       "documentUrl": docObj.documentUrl || "https://artyfactassests.s3.ap-south-1.amazonaws.com/uploads/1692697809182/How-to-submit-shipping-instruction_0.pdf",
+      "documentNo": refNo
     }
 
     if (user.role != "documentation" && assignToUserId) {
-        payload={...payload,assignToUserId:assignToUserId}
+      payload = { ...payload, assignToUserId: assignToUserId }
     }
 
     setLoading(true)
@@ -156,131 +75,175 @@ export default function labelsManagement() {
       setAssignToUserId("")
       navigate("/dashboard/document-list")
     } else {
-        if (response?.status == "403") {
-            Swal.fire({
-                title: "Alredy Exist!",
-                html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`,
-                icon: "error",
-         });
-        }else{
-            alertError(response?.data?.data)
-        }
+      if (response?.status == "403") {
+        Swal.fire({
+          title: "Alredy Exist!",
+          html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`,
+          icon: "error",
+        });
+      } else {
+        alertError(response?.data?.data)
+      }
     }
 
 
   }
 
-    const panes = [
-  {
-    menuItem: 'Ocean',
-    value:"ocean"
-    // render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane>,
-  },
-  {
-    menuItem: 'Air',
-    value:"air"
-    // render: () => <Tab.Pane attached={false}>Tab 1 Content</Tab.Pane>,
-  },
-]
 
+  function updateUpload(url) {
+    setImageUrl(url)
+  }
 
+  const onUploadDone = (data) => {
+    updateUpload(data)
 
+  }
+  const updateDocObj = (key, value) => {
+    setDocObj({ ...docObj, [key]: value })
+  }
 
-
-    const handleShippingLineSearchQuery = (e, { searchQuery }) => { 
-        setSearchQuery(searchQuery)
+  const getAllDocumentTypeList = async () => {
+    try {
+      let response = await apiGET(`/v1/document-type/list`,);
+      if (response.status === 200) {
+        let list = response?.data?.data?.data;
+        if (list && list.length) {
+          const uniqueTexts = new Set();
+          list = list.filter((item) => {
+            const text = item?.name;
+            if (!uniqueTexts.has(text)) {
+              uniqueTexts.add(text);
+              return true;
+            }
+            return false;
+          });
+          list = list.map((item) => {
+            return {
+              key: item?.code,
+              text: item?.name,
+              value: item?._id,
+              logo: item?.logo,
+              description: item?.description
+            };
+          });
+        }
+        setDocumentTypeOptions(list)
+        updateDocObj("documentTypeId", list?.[0]?.value)
+      }
+      else {
+        Swal.fire({
+          title: "Error!",
+          text: response?.data?.data || "Something went wrong!",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: error || "Something went wrong!",
+        icon: "error",
+      });
     }
+  }
 
-    const handleTabChangeShippingLine=(val)=>{
-        setShippingType(val)
-    }
-    useEffect(() => {
-        if(hasAccess(AIR))  setShippingType("air")
-        if(hasAccess(OCEAN))  setShippingType("ocean")
-    }, [])
-    
 
+  useEffect(() => {
+    updateDocObj("documentUrl", imageUrl)
+  }, [imageUrl])
+
+
+  useEffect(() => {
+    getAllDocumentTypeList()
+  }, [])
   return (
-    <Sidebar.Pushable>
-      <Sidebar.Pusher className="fadeIn">
-        <div className="page-header">
-          <div>
-            <Breadcrumb icon="right angle" sections={sections} />
-            <div className="header-text">Document Upload</div>
-            <div className="sub-text">
-              Upload document to extract the fields
-            </div>
+    <div className="fadeIn  page-content-wrapper " style={{ paddingBottom: '150px' }} >
+      <div className="page-header">
+        <div>
+          <Breadcrumb icon="right angle" sections={sections} />
+          <div className="header-text">Document Upload</div>
+          <div className="sub-text">
+            Upload document to extract the fields
           </div>
         </div>
-             <span>
-                    {/* <Tab menu={{ secondary: true,pointing: true }} panes={panes} 
-                        onTabChange={handleTabChangeShippingLine} /> */}
-              
-                    {/* <div class="ui pointing secondary menu">
-                        {  hasAccess(OCEAN) && <a class={`${shippingType == "ocean" && "active"} item`} onClick={()=>handleTabChangeShippingLine("ocean")}>Ocean</a>}
-                        {  hasAccess(AIR) && <a class={`${shippingType == "air" && "active"} item`} onClick={()=>handleTabChangeShippingLine("air")}>Air</a>}
-                    </div> */}
-                    
-                </span>
-        <div style={{ padding: 25, flex: 1 }} >
-          <div class="ui grid">
-            <div class="ten wide column">
-                <label><strong>Upload Document<span style={{color:"red"}}>*</span> </strong></label>
-              <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} />
-              <Form style={{ width: '100%',marginTop:10 }}>
-
-              <Form.Dropdown
-                label="Document Types"
-                placeholder="Select Document Types"
-                options={documentTypeOptions || []}
-                required={true}
-                selection
-                onFocus={() => {
-                  setErrorObj();
-                }}
-                value={docObj.documentTypeId}
-                disabled={loading}
-                onChange={(e, data) => {
-                  updateDocObj("documentTypeId", data.value);
-                }}
-              />
-              
-              {/* <Form.Field
-                id="form-input-control-token-tracker"
-                label="INVOICE Id"
-                required={true}
-                style={{ marginTop: "18px",marginBottom:0 }}
-                disabled={loading}
-                // value={docObj.documentNo || ""}
-                // onChange={(e, data) => {
-                //   updateDocObj("documentNo", e.target.value);
-                // }}
-              ></Form.Field> */}
-
-              {/* <div className="ui action input" style={{ marginBottom: 18, display: 'flex' }}>
-                <input
-                  style={{ flex: 1 }}
-                  type="text"
-                  placeholder="Document Number"
-                  value={docObj.documentNo || ""}
-                  disabled={loading}
-                  onChange={(e, data) => {
-                    updateDocObj("documentNo", e.target.value);
-                  }} />
-              </div> */}
-
-              <Button
-                loading={loading} disabled={loading || docNoLoading || !imageUrl}
-                content='Save' fluid  onClick={saveBtnClickHandler} primary/>
-              </Form>
+      </div>
+      <div style={{ padding: '28px', display: 'flex', flexDirection: 'row ', flexWrap: "wrap", gap: '25px' }}>
+        {documentTypeOptions.length > 0 ? documentTypeOptions.map((type, index) => (
+          <div key={index} style={{ width: '258px' }}>
+            {type?.logo ?
+              <img src={type?.logo} style={{ width: '254px', height: '140px', borderRadius: '10.4px' }} ></img>
+              :
+              <div style={{ width: '254px', height: '140px', borderRadius: '10.4px', backgroundColor: '#F0EFEF' }}></div>}
+            <div style={{ marginTop: '8px', fontWeight: '700' }}>{type.text}</div>
+            <div style={{ fontSize: '12px' }}>
+              {type.description}
             </div>
-
-            <div className="six wide column">
-             
-            </div>
+            <button onClick={() => { setOpenModal(!openModal); updateDocObj("documentTypeId", type.value); }} style={{ border: 'none', color: '#048DEF', background: 'transparent', fontWeight: '500', cursor: 'pointer', marginTop: '10px' }}><Icon name='upload' /> Upload Document</button>
           </div>
-        </div>
-      </Sidebar.Pusher>
-    </Sidebar.Pushable>
+        )) :
+          <div style={{ width: '100%', height: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: '700', color: '#acbdcd' }}>
+            There are no records to display
+          </div>
+        }
+        <CardComponent
+          loading={loading}
+          docNoLoading={docNoLoading}
+          imageUrl={imageUrl}
+          saveBtnClickHandler={saveBtnClickHandler}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          onUploadDone={onUploadDone}
+          docObj={docObj}
+          uploadType={uploadType}
+          setRefNo={setRefNo}
+          refNo={refNo}
+          refNoError={refNoError}
+          setRefNoError={setRefNoError}
+        />
+      </div>
+    </div>
   );
 }
+
+
+
+const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, openModal, setOpenModal, onUploadDone, docObj, refNo, setRefNo, refNoError, setRefNoError }) =>
+(
+  <Modal
+    size={'mini'}
+    open={openModal}
+    closeIcon={'close'}
+    onClose={() => setOpenModal(!openModal)}
+    closeOnDimmerClick={false}
+    style={{ padding: '20px', borderRadius: '20px' }}
+  >
+    <div>
+      <h2>Upload Document</h2>
+      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.) <span style={{ color: "red" }}>*</span></div>
+      <Form.Field
+        id="form-input-control-first-name"
+        control={Input}
+        placeholder="Enter Document No."
+        required={true}
+        value={refNo}
+        onChange={(e) => {
+          setRefNoError('')
+          setRefNo(e.target.value);
+        }}
+        style={{ width: '100%' }}
+        error={refNoError ? true : false}
+
+      />
+      {refNoError ? <div style={{ color: '#ab3a38', padding: '10px 0', fontSize: '10px' }}>{refNoError}</div> : ''}
+    </div>
+    <div style={{ paddingBottom: '30px', paddingTop: '20px' }}>
+      <div style={{ marginBottom: '10px' }}>Upload Document <span style={{ color: "red" }}>*</span></div>
+      <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight='15vh' />
+    </div>
+    <Button
+      loading={loading} disabled={loading || docNoLoading || !imageUrl}
+      content='Save' fluid onClick={saveBtnClickHandler} primary />
+  </Modal>
+);
+
+
+export default labelsManagement;
