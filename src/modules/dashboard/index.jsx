@@ -153,7 +153,7 @@ function Dashboard() {
     getAllDocumentTypeList()
   }, [])
   return (
-    <div className="fadeIn  page-content-wrapper " style={{paddingBottom:'150px'}} >
+    <div className="fadeIn  page-content-wrapper " style={{paddingBottom:'150px', margin:'10px'}} >
       <div style={{ padding: '20px', display: 'flex', flexDirection: 'row ', flexWrap: "wrap", gap: '25px' }}>
         {documentTypeOptions.length > 0 ? documentTypeOptions.map((type, index) => (
           <div key={index} style={{ width: '258px' }}>

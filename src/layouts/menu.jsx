@@ -14,7 +14,7 @@ export default function getMenus(user = {}) {
       type: 'menu',
       title: 'Label Matrix',
       path: '/dashboard/labels/manage',
-      icon: 'box',
+      icon: 'modx',
     },
     {
       type: 'menu',
