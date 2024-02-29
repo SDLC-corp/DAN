@@ -106,6 +106,7 @@ const OrganizationsRegistration = () => {
         <DataGeoComp />
       </div>
       <div style={{ width: '40%', padding: '35px', display:'flex', justifyContent:'center',alignItems:'center' }}>
+        <div>
         <Form onSubmit={handleSubmit} style={{ width: '400px' }}>
           <Header size="huge" style={{ marginBottom: '16px' }}>
             Sign up
@@ -202,7 +203,9 @@ const OrganizationsRegistration = () => {
             </Button>
           </div>
         </Form>
-        <p style={{position: 'absolute' ,bottom: '30px'}}>Don't have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}> Login</Link></p>
+        </div>
+        
+        <div style={{position: 'absolute' ,bottom: '30px'}}>Don't have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}> Login</Link></div>
 
       </div>
     </div>

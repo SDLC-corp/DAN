@@ -134,7 +134,7 @@ function LoginPage() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '17px' }}>
               <a href="/forgot-password" style={{ fontSize: '14px', fontWeight: '500' }}>
-                Forgot Password?
+                {/* Forgot Password? */}
               </a>
               <div>
                 <Button content="Login" primary loading={loading} disabled={loading} size="large" onClick={handleSubmit} style={{ borderRadius: '65px', fontSize: '15px', fontWeight: '400', padding: '11px 34px 11px 34px' }} />
