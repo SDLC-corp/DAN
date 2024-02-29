@@ -391,6 +391,19 @@ color: white !important;
     left: 100%;
     margin: 0 0 0 -1.5em !important;
 }
+
+.ui.form .field .ui.input input, .ui.form .fields .field .ui.input input{
+  border-radius: 8px;
+}
+
+.ui.action.input:not([class*='left action']) > .button:last-child, .ui.action.input:not([class*='left action']) > .buttons:last-child > .button, .ui.action.input:not([class*='left action']) > .dropdown:last-child{
+  border-radius: 0 8px 8px 0px;
+  background-color: white;
+  border-top: 1px solid #DEDEDE;
+  border-bottom: 1px solid #DEDEDE;
+ border-right: 1px solid #DEDEDE;
+}
+
 .collapsed-sidebar-icon:hover{
   color: 'black';
   background-color: '#acbdcd';

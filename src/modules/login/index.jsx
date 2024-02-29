@@ -1,8 +1,11 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../contexts';
-import { Button, Form, Grid, Segment, Image, Message } from 'semantic-ui-react';
+import { Button, Form, Grid, Segment, Image, Message, Label } from 'semantic-ui-react';
 import LogoImg from '../../assets/images/sdlc-logo.png';
+import DataGeoComp from '../../components/authComponent/DataGeoComp';
+import { intlFormat } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 function LoginPage() {
   let navigate = useNavigate();
@@ -13,7 +16,11 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorstate, setErrorstate] = useState(false);
-  
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const [emailError, setEmailError] = useState('');
+
+
   let from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
@@ -24,114 +31,125 @@ function LoginPage() {
   }, []);
 
 
-  const check_validation = (userDetails)=>{
-    if (!userDetails.email && !userDetails.password) {
-      setErrorMessage('Please provide Email and password !');
+  const check_validation = (userDetails) => {
+    let flag = false
+    if (!userDetails.email) {
+      setEmailError('Please provide Email');
       setErrorstate(true);
       setLoading(false);
+      flag = true
+    }
+    if (!userDetails.password) {
+      console.log(userDetails);
+      setErrorMessage('Please Provide Password');
+      setErrorstate(true);
+      setLoading(false);
+      flag = true
+    }
+    if(flag == true){
       return false
-    } else if (!userDetails.email) {
-      setErrorMessage('Please provide Email !');
-      setErrorstate(true);
-      setLoading(false);
-      return(false)
-    } else if (!userDetails.password) {
-      setErrorMessage('Please Provide password !');
-      setErrorstate(true);
-      setLoading(false);
-      return(false)
-    } else{
+    }else{
       return true
     }
-  }
 
+  };
   function handleSubmit() {
     setLoading(true);
     let userDetails = {
       email: email,
       password: password,
     };
-    const validated = check_validation(userDetails)
-      if (validated) {
-
-        
+    const validated = check_validation(userDetails);
+    if (validated) {
       auth.signin(userDetails, (type) => {
-
         let userObj = localStorage.getItem('user');
-        type.type == 'success'
-          ? navigate(JSON.parse(userObj).role =="superAdmin" ? from : '/dashboard', { replace: true })
-          : setErrorMessage(type.type),
-          setErrorstate(true),
-          setLoading(false);
+        type.type == 'success' ? navigate(JSON.parse(userObj).role == 'superAdmin' ? from : '/dashboard', { replace: true }) : setErrorMessage(type.type), setErrorstate(true), setLoading(false);
       });
     }
-   
   }
-
   return (
-    <div className="fadeIn full-page-container">
-      <Segment placeholder style={{ width: 350 }}>
-        <Grid.Row>
-          <Grid.Column>
-            {/* <Image src={LogoImg} size="small" centered /> */}
-            <div style={{textAlign: 'center'}}>
-              <img style={{height: 80}}  src={LogoImg} alt="SDLC" />
-            </div>
-          </Grid.Column>
-          <Grid.Column>
-            {/* {email} */}
-            <Form style={{ paddingTop: 30, paddingBottom: 30 }}>
-              <Form.Input
-                icon="user"
-                iconPosition="left"
-                label="Email"
-                placeholder="Email"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-                onFocus={() => {
-                  setErrorstate(false);
-                }}
-              />
-              <Form.Input
-                icon="lock"
-                iconPosition="left"
-                label="Password"
-                type="password"
-                
-                onFocus={() => {
-                  setErrorstate(false);
-                }}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ width: '60%', height: '100%' }}>
+        <DataGeoComp />
+      </div>
+      <div style={{ width: '40%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div>
+          <label style={{ fontSize: '24px', fontWeight: 600 }}>Login</label>
+          <Form style={{ marginTop: '10px' }} noValidate>
+            <Form.Input
+              style={{ width: '400px' }}
+              label="Email"
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              onFocus={() => {
+                setErrorstate(false);
+                setEmailError('');
+                setErrorMessage('')
+              }}
+              error={errorstate ? true : false}
+            />
+            {errorstate && emailError?.trim() ? (
+              <div style={{ width: '70%', marginBottom: '5px' }}>
+                <Message className="fadeIn" color="red" size="small">
+                  <Message.Content>{emailError}</Message.Content>
+                </Message>
+              </div>
+            ) : (
+              ''
+            )}
 
-              {(errorstate && errorMessage?.trim()) ? (
-                <div style={{ padding: '10px', width: '70%', margin: 'auto' }}>
-                  <Message className="fadeIn" color="red" size="small">
-                    <Message.Content>{errorMessage}</Message.Content>
-                  </Message>{' '}
-                </div>
-              ) : (
-                ''
-              )}
-              <Button
-                content="Login"
-                primary
-                loading={loading}
-                disabled={loading}
-                size="large"
-                onClick={handleSubmit}
-              />
-            </Form>
-          </Grid.Column>
-        </Grid.Row>
-      </Segment>
+            <Form.Input
+              style={{ width: '400px', margin: '0' }}
+              label="Password"
+              type={passwordVisible ? 'text' : 'password'}
+              onFocus={() => {
+                setErrorMessage('')
+                setErrorstate(false)
+                setEmailError(''); 
+              }}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              action={{
+                icon: passwordVisible ? 'eye slash' : 'eye',
+                onClick: () => setPasswordVisible(!passwordVisible),
+              }}
+              error={ errorMessage ? true : false}
+            />
+            {errorstate && errorMessage?.trim() ? (
+              <div style={{ width: '70%', marginBottom: '5px' }}>
+                <Message className="fadeIn" color="red" size="small">
+                  <Message.Content>{errorMessage}</Message.Content>
+                </Message>{' '}
+              </div>
+            ) : (
+              ''
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '17px' }}>
+              <a href="/forgot-password" style={{ fontSize: '14px', fontWeight: '500' }}>
+                Forgot Password?
+              </a>
+              <div>
+                <Button content="Login" primary loading={loading} disabled={loading} size="large" onClick={handleSubmit} style={{ borderRadius: '65px', fontSize: '15px', fontWeight: '400', padding: '11px 34px 11px 34px' }} />
+              </div>
+            </div>
+          </Form>
+        </div>
+        <div style={{ position: 'absolute', bottom: '30px' }}>
+          Already have an account?
+          <Link to="/registration" style={{ fontWeight: '600', fontSize: '15px' }}>
+            {' '}
+            Sign Up
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

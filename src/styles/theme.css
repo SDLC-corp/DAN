@@ -13059,8 +13059,6 @@ ol.ui.horizontal.list li:before {
 .ui.placeholder.segment textarea,
 .ui.placeholder.segment > .ui.input {
   max-width: 15rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 .ui.placeholder.segment .column .button,
 .ui.placeholder.segment .column .field,
@@ -14085,7 +14083,7 @@ ol.ui.horizontal.list li:before {
 }
 .ui.form .field {
   clear: both;
-  margin: 0 0 1em;
+  margin: 0 0 0.5em;
 }
 .ui.form .field:last-child,
 .ui.form .fields:last-child .field {
@@ -18023,14 +18021,14 @@ ol.ui.horizontal.list li:before {
   position: relative;
   min-height: 1em;
   margin: 1em 0;
-  background: #f8f8f9;
-  padding: 1em 1.5em;
+  /* background: #f8f8f9; */
+  /* padding: 1em 1.5em; */
   line-height: 1.4285em;
   color: rgba(0, 0, 0, 0.87);
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease,
     box-shadow 0.1s ease;
   border-radius: 0.28571429rem;
-  box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent;
+  /* box-shadow: 0 0 0 1px rgba(34, 36, 38, 0.22) inset, 0 0 0 0 transparent; */
 }
 .ui.message:first-child {
   margin-top: 0;
@@ -18256,9 +18254,9 @@ ol.ui.horizontal.list li:before {
   color: rgba(255, 255, 255, 0.9);
 }
 .ui.red.message {
-  background-color: #ffe8e6;
+  /* background-color: #ffe8e6; */
   color: #db2828;
-  box-shadow: 0 0 0 1px #db2828 inset, 0 0 0 0 transparent;
+  /* box-shadow: 0 0 0 1px #db2828 inset, 0 0 0 0 transparent; */
 }
 .ui.red.message .header {
   color: #c82121;
