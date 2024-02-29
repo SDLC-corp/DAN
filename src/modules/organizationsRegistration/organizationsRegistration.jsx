@@ -202,7 +202,7 @@ const OrganizationsRegistration = () => {
             </Button>
           </div>
         </Form>
-        <p style={{position: 'absolute' ,bottom: '30px'}}>Already have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}> Login</Link></p>
+        <p style={{position: 'absolute' ,bottom: '30px'}}>Don't have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}> Login</Link></p>
 
       </div>
     </div>
