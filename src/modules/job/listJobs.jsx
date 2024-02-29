@@ -250,6 +250,8 @@ function JobList() {
                 onClose={() => setFilterModalOpen(false)}
                 onOpen={() => setFilterModalOpen(true)}
                 open={filterModalOpen}
+                style={{ padding: '10px', borderRadius: '20px' }}
+
             >
                 <Modal.Header>Date Filter</Modal.Header>
                 <Modal.Content>

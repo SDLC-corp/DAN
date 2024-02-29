@@ -248,7 +248,7 @@ function FieldList() {
             </div>
             <div className="page-header-actions">
                <Button
-                style={{ marginRight: 10 }}
+                style={{ marginRight: 10, borderRadius:'20px' }}
                 onClick={() => {
                   navigate('/dashboard/field-group');
                 }}>
@@ -265,6 +265,7 @@ function FieldList() {
                   floating
                   labeled
                   button
+                  style={{ borderRadius:'20px'}}
                   className='icon'
                   onClick={() => {
                     setFilterModalOpen(true)
@@ -273,6 +274,7 @@ function FieldList() {
               </div>
               <Button
                 primary
+                style={{ borderRadius:'20px'}}
                 onClick={() => {
                   navigate('/dashboard/fields/add');
                 }}>
@@ -300,6 +302,8 @@ function FieldList() {
         onClose={() => setFilterModalOpen(false)}
         onOpen={() => setFilterModalOpen(true)}
         open={filterModalOpen}
+        style={{ padding: '10px', borderRadius: '20px' }}
+
       >
         <Modal.Header>Date Filter</Modal.Header>
         <Modal.Content>

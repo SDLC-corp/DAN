@@ -242,6 +242,7 @@ function DocumentTypeList() {
                   text='Filter'
                   icon='filter'
                   floating
+                  style={{borderRadius:'20px'}}
                   labeled
                   button
                   className='icon'
@@ -252,6 +253,7 @@ function DocumentTypeList() {
                 </div>
             {
                 hasAccess(ADD_SHIPPING_LINE) && <Button
+                style={{borderRadius:'20px'}}
                 primary
                 onClick={() => {
                   navigate('/dashboard/document-type/add');
@@ -280,6 +282,7 @@ function DocumentTypeList() {
         onClose={() => setFilterModalOpen(false)}
         onOpen={() => setFilterModalOpen(true)}
         open={filterModalOpen}
+        style={{ padding: '10px', borderRadius: '20px' }}
       >
         <Modal.Header>Date Filter</Modal.Header>
         <Modal.Content>
@@ -293,7 +296,7 @@ function DocumentTypeList() {
           </div>
         </Modal.Content>
         <Modal.Actions>
-          <Button color='gray' onClick={() => {
+          <Button style={{borderRadius:'20px'}} color='gray' onClick={() => {
             setFromDate('')
             setToDate('')
             setFilterModalOpen(false)
@@ -301,7 +304,7 @@ function DocumentTypeList() {
           }}>
             Clear Filter
           </Button>
-          <Button color='gray' onClick={() => {
+          <Button  style={{borderRadius:'20px'}} color='gray' onClick={() => {
             setFilterModalOpen(false);
             getAllShippingLine(fromDate, toDate);
           }}>

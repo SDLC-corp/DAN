@@ -75,7 +75,7 @@ function LoginPage() {
       <div style={{ width: '40%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <div>
           <label style={{ fontSize: '24px', fontWeight: 600 }}>Login</label>
-          <Form style={{ marginTop: '10px' }} noValidate>
+          <Form style={{ marginTop: '20px' }} noValidate>
             <Form.Input
               style={{ width: '400px' }}
               label="Email"

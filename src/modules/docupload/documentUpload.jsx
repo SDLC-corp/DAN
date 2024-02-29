@@ -209,12 +209,12 @@ function labelsManagement() {
 const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, openModal, setOpenModal, onUploadDone, docObj, refNo, setRefNo, refNoError, setRefNoError }) =>
 (
   <Modal
-    size={'mini'}
+   
     open={openModal}
     closeIcon={'close'}
     onClose={() => setOpenModal(!openModal)}
     closeOnDimmerClick={false}
-    style={{ padding: '20px', borderRadius: '20px' }}
+    style={{ padding: '25px', borderRadius: '20px', width:'500px' }}
   >
     <div>
       <h2>Upload Document</h2>
@@ -239,9 +239,14 @@ const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, o
       <div style={{ marginBottom: '10px' }}>Upload Document <span style={{ color: "red" }}>*</span></div>
       <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight='15vh' />
     </div>
-    <Button
-      loading={loading} disabled={loading || docNoLoading || !imageUrl}
-      content='Save' fluid onClick={saveBtnClickHandler} primary />
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'end' }}>
+
+      <Button
+        style={{ width: '100px', borderRadius: '20px' }}
+        icon='upload'
+        loading={loading} disabled={loading || docNoLoading || !imageUrl}
+        content='Save' fluid onClick={saveBtnClickHandler} primary />
+    </div>
   </Modal>
 );
 

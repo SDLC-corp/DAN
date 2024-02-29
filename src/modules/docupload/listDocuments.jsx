@@ -80,6 +80,7 @@ function DocumentList() {
       else {
         res = await apiGET(`/v1/documents/?limit=${limit}&page=${page}`,);
       }
+      console.log(res);
       setLoading(false);
       if (res.status === 200) {
         let response = res?.data?.data
@@ -182,6 +183,7 @@ function DocumentList() {
       try {
         if (result.isConfirmed) {
           const response = await apiPUT(`/v1/documents/${id}`)
+          console.log(response);
           if (response.status === 200) {
             Swal.fire({
               title: "Success!",
@@ -276,7 +278,7 @@ function DocumentList() {
       name: 'Uploaded By',
       selector: (row) => (
         <>
-          <p>{row.user.name}</p>
+          <p>{row?.user?.name}</p>
         </>
       ),
     },
@@ -540,22 +542,14 @@ function DocumentList() {
                   getAllDocuments(search, documentTypeId, fromDate, toDate, selectedNodePath)
                 }} className='ui right aligned blue' name="refresh"></Icon></p>
               </div>
-              {/* <Button
-                style={{display:"flex",marginLeft:"1rem"}}
-                primary
-                onClick={() => {
-                getAllDocuments(shippingLineId, documentType, fromDate, toDate)
-                }}>
-                <span>Refresh</span>
-                <Icon className='ui right aligned' name="refresh"></Icon>
-        </Button> */}
+
               <Input icon='search' placeholder='Document Number'
                 value={search || ''}
                 style={{ height: 37, marginRight: 17, width: '100%' }}
                 onChange={handleInputChange}
               />
               <Button
-                style={{ display: "flex", marginRight: "1rem", height: 37, alignItems: 'center', width: '100%' }}
+                style={{ display: "flex", marginRight: "1rem", height: 37, alignItems: 'center', width: '100%', borderRadius: '20px' }}
                 onClick={() => {
                   setFilterModalOpen(false)
                   setDocumentTypeId('')
@@ -572,7 +566,7 @@ function DocumentList() {
               <Dropdown
                 text='Filter'
                 icon='filter'
-
+                style={{ borderRadius: '20px' }}
                 floating
                 labeled
                 button
@@ -584,7 +578,7 @@ function DocumentList() {
               {
                 hasAccess(EXPORT_DOCUMENTS) &&
                 <Button
-                  style={{ display: "flex", gap: '10px', padding: '12px 10px', marginLeft: 10 }}
+                  style={{ display: "flex", gap: '10px', padding: '12px 16px', marginLeft: 10, borderRadius: '20px' }}
                   onClick={getAllDocumentsForExport}>
                   <span>export</span> <Icon style={{ color: "green", margin: 0 }} name="file excel outline" />
                 </Button>
@@ -692,6 +686,8 @@ function DocumentList() {
           onClose={() => setFilterModalOpen(false)}
           onOpen={() => setFilterModalOpen(true)}
           open={filterModalOpen}
+          style={{ padding: '10px', borderRadius: '20px' }}
+
         >
           <Modal.Header>Filters</Modal.Header>
           <Modal.Content>
@@ -704,21 +700,7 @@ function DocumentList() {
                   shippingLineId={setDocumentTypeId} shippingId={documentTypeId} setSelectedShippingLineName={setSelectedDocumentTypeName}
                 />
               </div>
-              {/* <div>
-                <div style={{ marginBottom: 7 }}>
-                  <label className='container-count-text'>Select Document Types</label>
-                </div>
-                <Dropdown
-                  clearable
-                  search
-                  selection
-                  options={documentOptions}
-                  onChange={onChangeDocumentType}
-                  placeholder='Select Document Types'
-                  value={documentType}
-                />
-                
-              </div> */}
+
               <div style={{ marginLeft: 10 }}>
                 <DateRangeFilter
                   fromDat={fromDate}
@@ -729,39 +711,31 @@ function DocumentList() {
               </div>
 
             </div>
-            {/* <div style={{marginTop:5}}>
-              <label className='container-count-text'>Select Domain</label>
-            </div>
-            <div >
-                <NestedDomain nodePathFn={setSelectedNodePath} />
-                <div style={{ marginTop: 12 }}>
-                  {selectedNodePath?.length > 0 && (
-                    <div style={{ overflowX: 'auto', width: '100%' }}>
-                        Path : {selectedNodePath?.map(item=> <Label color="gray" style={{marginTop:2}} horizontal>
-                  {item}
-                </Label>)}
-                    </div>
-                  )}
-                </div>
-            </div> */}
+
           </Modal.Content>
           <Modal.Actions>
-            <Button color='gray' onClick={() => {
-              setFilterModalOpen(false)
-              setDocumentTypeId('')
-              setDocumentType('')
-              setFromDate('')
-              setToDate('')
-              setSelectedNodePath([])
-              getAllDocuments()
-              setSelectedDocumentTypeName("")
-            }}>
+            <Button
+              style={{ borderRadius: '20px' }}
+              color='gray'
+              onClick={() => {
+                setFilterModalOpen(false)
+                setDocumentTypeId('')
+                setDocumentType('')
+                setFromDate('')
+                setToDate('')
+                setSelectedNodePath([])
+                getAllDocuments()
+                setSelectedDocumentTypeName("")
+              }}>
               Clear
             </Button>
-            <Button color='gray' onClick={() => {
-              setFilterModalOpen(false);
-              getAllDocuments(search, documentTypeId, fromDate, toDate, selectedNodePath);
-            }}>
+            <Button
+              style={{ borderRadius: '20px' }}
+              color='gray'
+              onClick={() => {
+                setFilterModalOpen(false);
+                getAllDocuments(search, documentTypeId, fromDate, toDate, selectedNodePath);
+              }}>
               Apply
             </Button>
           </Modal.Actions>

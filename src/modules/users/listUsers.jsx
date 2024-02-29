@@ -253,6 +253,7 @@ function UserList() {
                 floating
                 labeled
                 button
+                style={{borderRadius:'20px'}}
                 className='icon'
                 onClick={() => {
                   setFilterModalOpen(true)
@@ -262,6 +263,7 @@ function UserList() {
                 {
                 hasAccess(ADD_USER) && <Button
                     primary
+                    style={{borderRadius:'20px'}}
                     onClick={() => {
                     setVisible(true)
                     navigate('/dashboard/users/add');
@@ -290,6 +292,8 @@ function UserList() {
         onClose={() => setFilterModalOpen(false)}
         onOpen={() => setFilterModalOpen(true)}
         open={filterModalOpen}
+        style={{ padding: '10px', borderRadius: '20px' }}
+
       >
         <Modal.Header>Date Filter</Modal.Header>
         <Modal.Content>

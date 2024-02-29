@@ -70,7 +70,7 @@ const DocumentTypeDropdown = ({
               clearable
               value={shippingId ? shippingId: ""}
               placeholder='Select Document Types'
-              style={{ marginRight: '10px',height:height }}
+              style={{ marginRight: '10px',height:height, borderRadius:'20px' }}
               search
               selection
               options={documentTypeOptions}

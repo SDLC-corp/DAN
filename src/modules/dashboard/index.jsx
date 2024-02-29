@@ -153,7 +153,7 @@ function Dashboard() {
     getAllDocumentTypeList()
   }, [])
   return (
-    <div className="fadeIn  page-content-wrapper " style={{paddingBottom:'150px', margin:'10px'}} >
+    <div className="fadeIn  page-content-wrapper " style={{ paddingBottom: '150px', margin: '10px' }} >
       <div style={{ padding: '20px', display: 'flex', flexDirection: 'row ', flexWrap: "wrap", gap: '25px' }}>
         {documentTypeOptions.length > 0 ? documentTypeOptions.map((type, index) => (
           <div key={index} style={{ width: '258px' }}>
@@ -163,7 +163,7 @@ function Dashboard() {
               <div style={{ width: '254px', height: '140px', borderRadius: '10.4px', backgroundColor: '#F0EFEF' }}></div>}
             <div style={{ marginTop: '8px', fontWeight: '700' }}>{type.text}</div>
             <div style={{ fontSize: '12px' }}>
-             {type.description}
+              {type.description}
             </div>
             <button onClick={() => { setOpenModal(!openModal); updateDocObj("documentTypeId", type.value); }} style={{ border: 'none', color: '#048DEF', background: 'transparent', fontWeight: '500', cursor: 'pointer', marginTop: '10px' }}><Icon name='upload' /> Upload Document</button>
           </div>
@@ -197,16 +197,16 @@ function Dashboard() {
 const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, openModal, setOpenModal, onUploadDone, docObj, refNo, setRefNo, refNoError, setRefNoError }) =>
 (
   <Modal
-    size={'mini'}
+    
     open={openModal}
     closeIcon={'close'}
     onClose={() => setOpenModal(!openModal)}
     closeOnDimmerClick={false}
-    style={{ padding: '20px', borderRadius: '20px' }}
+    style={{ padding: '25px', borderRadius: '20px', width:'500px' }}
   >
     <div>
       <h2>Upload Document</h2>
-      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.) <span style={{color:"red"}}>*</span></div>
+      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.) <span style={{ color: "red" }}>*</span></div>
       <Form.Field
         id="form-input-control-first-name"
         control={Input}
@@ -224,12 +224,17 @@ const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, o
       {refNoError ? <div style={{ color: '#ab3a38', padding: '10px 0', fontSize: '10px' }}>{refNoError}</div> : ''}
     </div>
     <div style={{ paddingBottom: '30px', paddingTop: '20px' }}>
-      <div style={{ marginBottom: '10px' }}>Upload Document <span style={{color:"red"}}>*</span></div>
+      <div style={{ marginBottom: '10px' }}>Upload Document <span style={{ color: "red" }}>*</span></div>
       <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight='15vh' />
     </div>
-    <Button
-      loading={loading} disabled={loading || docNoLoading || !imageUrl}
-      content='Save' fluid onClick={saveBtnClickHandler} primary />
+    <div style={{ width: '100%', display: 'flex', justifyContent: 'end' }}>
+      <Button
+        style={{ width: '100px', borderRadius: '20px' }}
+        icon='upload'
+
+        loading={loading} disabled={loading || docNoLoading || !imageUrl}
+        content='Save' fluid onClick={saveBtnClickHandler} primary />
+    </div>
   </Modal>
 );
 

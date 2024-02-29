@@ -70,7 +70,7 @@ const ShippingLineNameDropdown = ({
               clearable
               value={shippingId ? shippingId: ""}
               placeholder='Select Shipping line'
-              style={{ marginRight: '10px',height:height }}
+              style={{ marginRight: '10px',height:height , borderRadius:'20px'}}
               search
               selection
               options={shippingLineArr}

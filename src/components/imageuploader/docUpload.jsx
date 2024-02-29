@@ -146,7 +146,7 @@ const DocumentUploadDrop = ({
                         justifyContent: "center",
                         alignItems: "center",
                         backgroundColor: 'white',
-                        borderRadius: '5px',
+                        borderRadius: '20px',
                         padding: "30px",
                         minHeight: minHeight
                     }}

@@ -248,6 +248,7 @@ function RoleList() {
                                     floating
                                     labeled
                                     button
+                                    style={{borderRadius:'20px'}}
                                     className='icon'
                                     onClick={() => {
                                         setFilterModalOpen(true)
@@ -256,6 +257,7 @@ function RoleList() {
                             </div>
                         {
                                 hasAccess(ADD_ROLE) &&  <Button
+                                style={{borderRadius:'20px'}}
                                 primary
                                 onClick={() => {
                                     navigate('/dashboard/manage-role/add');
@@ -285,6 +287,8 @@ function RoleList() {
                 onClose={() => setFilterModalOpen(false)}
                 onOpen={() => setFilterModalOpen(true)}
                 open={filterModalOpen}
+                style={{ padding: '10px', borderRadius: '20px' }}
+
             >
                 <Modal.Header>Date Filter</Modal.Header>
                 <Modal.Content>

@@ -10186,7 +10186,7 @@ img.ui.bordered.image {
   background: #fff;
   border: 1px solid rgba(34, 36, 38, 0.15);
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.28571429rem;
+  border-radius: 20px;
   transition: box-shadow 0.1s ease, border-color 0.1s ease;
   box-shadow: none;
 }
@@ -10338,6 +10338,7 @@ img.ui.bordered.image {
 }
 .ui.icon.input > input {
   padding-right: 2.67142857em !important;
+  border-radius: 20px;
 }
 .ui.icon.input > i.icon:after,
 .ui.icon.input > i.icon:before {
