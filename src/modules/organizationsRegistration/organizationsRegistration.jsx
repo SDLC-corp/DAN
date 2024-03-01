@@ -101,10 +101,19 @@ const OrganizationsRegistration = () => {
   };
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-      <div style={{ width: '60%', height: '100%' }}>
+    <div className='compdiv' style={{width: '100%', display: 'flex', justifyContent: 'center' }}>
+
+<div className='imgtext'>
+    <div style={{display: 'flex',width: '222px',height: '147px', flexDirection: 'column', alignItems: 'center'}}>
+      <img  src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px'}}/>
+      <p style={{fontSize: '28px', fontWeight: '600', color: '#048DEF'}}>Data Geometry</p>
+    </div>
+    </div>
+
+      <div className='datageocomp' style={{ width: '60%', height: '100%' }}>
         <DataGeoComp />
       </div>
+
       <div style={{ width: '40%', padding: '35px', display:'flex', justifyContent:'center',alignItems:'center' }}>
         <div>
         <Form onSubmit={handleSubmit} style={{ width: '400px' }}>

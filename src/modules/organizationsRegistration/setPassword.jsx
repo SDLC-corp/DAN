@@ -3,6 +3,7 @@ import { Button, Form, Header, Input } from 'semantic-ui-react';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
+import DataGeoComp from '../../components/authComponent/DataGeoComp';
 
 const SetPassword = () => {
     const location = useLocation();
@@ -87,9 +88,16 @@ const SetPassword = () => {
     };
 
     return (
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', }}>
-            <div style={{ width: '60%', height: '100%' }}>
-                <div style={{ maxWidth: '100%', height: '94%', margin: '20px', backgroundColor: '#048def', borderRadius: '20px' }}></div>
+        <div className='compdiv' style={{ width: '100%', display: 'flex', justifyContent: 'space-between', }}>
+
+<div className='imgtext'>
+    <div style={{display: 'flex',width: '222px',height: '147px', flexDirection: 'column', alignItems: 'center'}}>
+      <img  src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px'}}/>
+      <p style={{fontSize: '28px', fontWeight: '600', color: '#048DEF'}}>Data Geometry</p>
+    </div>
+    </div>
+            <div className='datageocomp' style={{ width: '60%', height: '100%' }}>
+                    <DataGeoComp/>
             </div>
             <div style={{ width: '40%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Form>
@@ -98,6 +106,7 @@ const SetPassword = () => {
                         control={Input}
                         label="New Password"
                         placeholder="Enter New Password"
+                        type='password'
                         name="password"
                         style={{ marginBottom: `${!errors.password ? '10px' : '0px'}`, margin: '0', width: '360px' }}
                         value={formData.password}
@@ -109,6 +118,7 @@ const SetPassword = () => {
                         control={Input}
                         label="Confirm New Password"
                         placeholder="Confirm New Password"
+                        type='password'
                         name="rePassword"
                         style={{ marginBottom: `${!errors.rePassword ? '10px' : '0px'}`, padding: '0px', width: '360px' }}
                         value={formData.rePassword}

@@ -408,3 +408,29 @@ color: white !important;
   color: 'black';
   background-color: '#acbdcd';
 }
+
+
+@media screen and (max-width: 900px) {
+  .datageocomp {
+    display: block;
+    display: none; /* Show the login form */
+  }
+  .compdiv{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media screen and (min-width: 900px) {
+  .imgtext {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    display: none;
+
+  }
+  
+}

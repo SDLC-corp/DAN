@@ -4,6 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 import { apiPOST } from '../../utils/apiHelper';
+import DataGeoComp from '../../components/authComponent/DataGeoComp';
+
 
 const VerifyRegistration = ({ numInputs = 6 }) => {
     const inputRefs = useRef([]);
@@ -86,9 +88,18 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
     };
 
     return (
-        <div style={{ width: '100%', display: 'flex' }}>
-            <div style={{ width: '60%', height: '100%' }}>
-                <div style={{ maxWidth: '100%', height: '94%', margin: '20px', backgroundColor: '#048def', borderRadius: '20px' }}></div>
+        <div className='compdiv' style={{ width: '100%', display: 'flex' }}>
+
+            <div className='imgtext'>
+    <div style={{display: 'flex',width: '222px',height: '147px', flexDirection: 'column', alignItems: 'center'}}>
+      <img  src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px'}}/>
+      <p style={{fontSize: '28px', fontWeight: '600', color: '#048DEF'}}>Data Geometry</p>
+    </div>
+    </div>
+
+
+            <div className='datageocomp' style={{ width: '60%', height: '100%' }}>
+            <DataGeoComp/>
             </div>
             <div style={{ width: '40%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div>
