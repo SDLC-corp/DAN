@@ -209,6 +209,7 @@ justify-content: space-between;
 .text-bold {
   font-weight: 700;
 }
+
 .doc-container {
   /* height: 100vh; */
   /* min-width: 200px; */
@@ -273,7 +274,6 @@ justify-content: space-between;
   font-size: 15px;
   color: #2e333a;
   font-weight: 500;
- 
 }
 
 .container-header-text{
@@ -415,6 +415,11 @@ color: white !important;
     display: block;
     display: none; /* Show the login form */
   }
+  .mobdiv{
+    width: 340px;
+    display: flex;
+    flex-wrap: wrap;
+  }
   .compdiv{
     display: flex;
     justify-content: center;
@@ -432,5 +437,5 @@ color: white !important;
     display: none;
 
   }
-  
+
 }

@@ -115,7 +115,7 @@ const OrganizationsRegistration = () => {
       </div>
 
       <div style={{ width: '40%', padding: '35px', display:'flex', justifyContent:'center',alignItems:'center' }}>
-        <div>
+        <div className='mobdiv'>
         <Form onSubmit={handleSubmit} style={{ width: '400px' }}>
           <Header size="huge" style={{ marginBottom: '16px' }}>
             Sign up
@@ -125,7 +125,7 @@ const OrganizationsRegistration = () => {
           label="Full Name" 
           placeholder="Enter your name" 
           name="name" 
-          style={{ marginBottom: `${!errors.name ? '10px' : '0px'}`, padding: '0px', }} 
+          style={{ marginBottom: `${!errors.name ? '10px' : '0px'}`, padding: '0px',  width:window.innerWidth < 900 ? '335px' :  '400px'}} 
           value={formData.name} 
           onChange={handleChange} 
           error={errors.name ? true : false}
@@ -145,7 +145,7 @@ const OrganizationsRegistration = () => {
           label="Work Email" 
           placeholder="Enter your email" 
           name="email" 
-          style={{ marginBottom: `${!errors.email ? '10px' : '0px'}`, padding: '0px'}}  
+          style={{ marginBottom: `${!errors.email ? '10px' : '0px'}`, padding: '0px',  width:window.innerWidth < 900 ? '335px' :  '400px'}}  
           value={formData.email} 
           onChange={handleChange} 
           onFocus={handleFoucsed} 
@@ -165,7 +165,7 @@ const OrganizationsRegistration = () => {
           label="Organization Name" 
           placeholder="Enter your organization name" 
           name="orgName" 
-          style={{ marginBottom: `${!errors.orgName ? '10px' : '0px'}`, padding: '0px', }} 
+          style={{ marginBottom: `${!errors.orgName ? '10px' : '0px'}`, padding: '0px',  width:window.innerWidth < 900 ? '335px' :  '400px'}} 
           value={formData.orgName} onChange={handleChange} 
           error={errors.orgName ? true : false}
           onFocus={handleFoucsed}
@@ -181,7 +181,7 @@ const OrganizationsRegistration = () => {
             )}
           <Form.Field control={Input} label="Website" placeholder="Enter your website URL" 
           name="website" 
-          style={{ marginBottom: `${!errors.website ? '10px' : '0px'}`, padding: '0px', }} 
+          style={{ marginBottom: `${!errors.website ? '10px' : '0px'}`, padding: '0px', width:window.innerWidth < 900 ? '335px' :  '400px' }} 
           value={formData.website}
           onChange={handleChange} 
           error={errors.website ? true : false}
@@ -214,7 +214,10 @@ const OrganizationsRegistration = () => {
         </Form>
         </div>
         
-        <div style={{position: 'absolute' ,bottom: '30px'}}>Don't have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}> Login</Link></div>
+        <div style={{position: 'absolute' ,bottom: '30px'}}>Don't have an account?<Link to="/" style={{fontWeight: '600', fontSize: '15px'}}
+        onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+      onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+        > Login</Link></div>
 
       </div>
     </div>
