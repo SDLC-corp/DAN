@@ -15,7 +15,7 @@ import RoleList from '../modules/role/listRole';
 import UnAuthorized from '../utils/unAuthorized';
 import OrganizationsRegistration from '../modules/organizationsRegistration/organizationsRegistration';
 import VerifyRegistration from '../modules/organizationsRegistration/verifyRegistration';
-import { ADD_DOCUMENT_TYPE, AIR, AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_ROLE, MANAGE_USER, OCEAN, PORT_MASTERS, REUPLOAD_PDF, SHIPPING_LINE, VIEW_DOCUMENT } from '../utils/accessHelper';
+import { ADD_DOCUMENT_TYPE, AIR, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_USER, OCEAN, REUPLOAD_PDF, VIEW_CUSTOM_LOGIC, VIEW_DOCUMENT, VIEW_FIELD, VIEW_LABEL_MATRIX } from '../utils/accessHelper';
 import SetPassword from '../modules/organizationsRegistration/setPassword';
 import DocumentTypeList from '../modules/docupload/documentTypes/listDocumentType';
 
@@ -39,28 +39,28 @@ const authProtectedRoutes = [
   { path: 'document-type/:action', component: <DocumentTypeList />, acccessModuleName: ADD_DOCUMENT_TYPE },
   { path: 'document-type/:action/:id', component: <DocumentTypeList />, acccessModuleName: EDIT_DOCUMENT_TYPE },
 
-  { path: 'fields', component: <FieldList /> , acccessModuleName: FIELDS},
-  { path: 'fields/:action', component: <FieldList />, acccessModuleName:FIELD_MAPPING },
-  { path: 'fields/:action/:id', component: <FieldList />, acccessModuleName:FIELD_MAPPING },
+  { path: 'fields', component: <FieldList /> , acccessModuleName: VIEW_FIELD},
+  { path: 'fields/:action', component: <FieldList />, acccessModuleName:VIEW_FIELD },
+  { path: 'fields/:action/:id', component: <FieldList />, acccessModuleName:VIEW_FIELD },
 
-  { path: 'field-group', component: <ListFieldGroup />, acccessModuleName: FIELDS },
-  { path: 'field-group/:action', component: <ListFieldGroup />,acccessModuleName : FIELDS },
-  { path: 'field-group/:action/:id', component: <ListFieldGroup />,acccessModuleName :FIELDS },
+  { path: 'field-group', component: <ListFieldGroup />, acccessModuleName: VIEW_FIELD },
+  { path: 'field-group/:action', component: <ListFieldGroup />,acccessModuleName : VIEW_FIELD },
+  { path: 'field-group/:action/:id', component: <ListFieldGroup />,acccessModuleName :VIEW_FIELD },
 
-  { path: 'custom-logic', component: <CustomLogic />,acccessModuleName : CUSTOM_LOGIC },
-  { path: 'custom-logic/:action', component: <CustomLogic />,acccessModuleName : CUSTOM_LOGIC },
-  { path: 'custom-logic/:action/:id', component: <CustomLogic />,acccessModuleName : CUSTOM_LOGIC },
+  { path: 'custom-logic', component: <CustomLogic />,acccessModuleName : VIEW_CUSTOM_LOGIC },
+  { path: 'custom-logic/:action', component: <CustomLogic />,acccessModuleName : VIEW_CUSTOM_LOGIC },
+  { path: 'custom-logic/:action/:id', component: <CustomLogic />,acccessModuleName : VIEW_CUSTOM_LOGIC },
 
   { path: 'manage-role', component: <RoleList />, acccessModuleName: MANAGE_ROLE },
   { path: 'manage-role/:action', component: <RoleList />, acccessModuleName: MANAGE_ROLE },
   { path: 'manage-role/:action/:id', component: <RoleList />, acccessModuleName: MANAGE_ROLE },
 
-  { path: 'labels', component: <LabelList />, acccessModuleName:LABEL_MATRIX },
-  { path: 'labels/manage', component: <LabelsManagement />, acccessModuleName:LABEL_MATRIX },
-  { path: 'labels/manage/:action/:id', component: <LabelsManagement />, acccessModuleName:LABEL_MATRIX },
-  { path: 'labels/manage/:action', component: <LabelsManagement />, acccessModuleName:LABEL_MATRIX },
-  { path: 'labels/:action', component: <LabelList />, acccessModuleName:LABEL_MATRIX },
-  { path: 'labels/:action/:id', component: <LabelList />, acccessModuleName:LABEL_MATRIX },
+  { path: 'labels', component: <LabelList />, acccessModuleName: MANAGE_LABEL_MATRIX },
+  { path: 'labels/manage', component: <LabelsManagement />, acccessModuleName: VIEW_LABEL_MATRIX },
+  { path: 'labels/manage/:action/:id', component: <LabelsManagement />, acccessModuleName:VIEW_LABEL_MATRIX },
+  { path: 'labels/manage/:action', component: <LabelsManagement />, acccessModuleName:VIEW_LABEL_MATRIX },
+  { path: 'labels/:action', component: <LabelList />, acccessModuleName:VIEW_LABEL_MATRIX },
+  { path: 'labels/:action/:id', component: <LabelList />, acccessModuleName:VIEW_LABEL_MATRIX },
 
   { path: 'jobs', component: <JobList /> },
 

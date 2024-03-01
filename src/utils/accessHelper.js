@@ -59,9 +59,13 @@ export const VIEW_DASHBOARD = "VIEW_DASHBOARD"
 
 // Super Admin Only 
 export const FIELD_MAPPING = "FIELD_MAPPING"
+export const MANAGE_LABEL_MATRIX = "MANAGE_LABEL_MATRIX"
+export const VIEW_LABEL_MATRIX = "VIEW_LABEL_MATRIX"
+export const VIEW_CUSTOM_LOGIC = "VIEW_CUSTOM_LOGIC"
 export const LABEL_MATRIX = "LABEL_MATRIX"
 export const CUSTOM_LOGIC = "CUSTOM_LOGIC"
 export const FIELDS = "FIELDS"
+export const VIEW_FIELD = "VIEW_FIELD"
 
 const getCurrentUser =()=>{
     try {

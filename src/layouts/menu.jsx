@@ -1,4 +1,4 @@
-import { AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_ROLE, MANAGE_USER, PORT_MASTERS, SHIPPING_LINE, VIEW_DASHBOARD, hasAccess } from "../utils/accessHelper";
+import { AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_USER, PORT_MASTERS, SHIPPING_LINE, VIEW_CUSTOM_LOGIC, VIEW_DASHBOARD, VIEW_FIELD, VIEW_LABEL_MATRIX, hasAccess } from "../utils/accessHelper";
 
 export default function getMenus(user = {}) {
 
@@ -39,9 +39,10 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Document Upload', path: '/dashboard/document-upload', icon: 'upload' ,accessModule : DOCUMENT_UPLOAD },
     { type: 'menu', title: 'Document List', path: '/dashboard/document-list', icon: 'file alternate outline icon', accessModule : MANAGE_DOCUMENT },
 
-    { type: 'label', title: 'Field Mapping' ,accessModule: FIELD_MAPPING},
-    { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'box',accessModule:LABEL_MATRIX },
-    { type: 'menu', title: 'Custom Logic', path: '/dashboard/custom-logic', icon: 'js square',accessModule : CUSTOM_LOGIC},
+    { type: 'label', title: 'Field Mapping' ,accessModule: MANAGE_LABEL_MATRIX},
+    { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'box',accessModule: VIEW_LABEL_MATRIX },
+    { type: 'menu', title: 'Custom Logic', path: '/dashboard/custom-logic', icon: 'js square',accessModule : VIEW_CUSTOM_LOGIC},
+    { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',accessModule : VIEW_FIELD},
 
     // { type: 'label', title: 'Delete Requests' , accessModule: DELETE_REQUEST},
     // {type: 'menu',title: 'Delete Requests',path: '/dashboard/document/deleterequest',icon: 'upload', accessModule:DELETE_REQUEST},
@@ -50,8 +51,6 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Manage Role', path: '/dashboard/manage-role', icon: 'square',accessModule:MANAGE_ROLE},
     {type: 'menu',title: 'Users',path: '/dashboard/users',icon: 'users',accessModule:MANAGE_USER},
     
-    { type: 'label', title: 'Masters' ,accessModule: PORT_MASTERS},
-    { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',accessModule : FIELDS},
 
   ];
 
