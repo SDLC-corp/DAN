@@ -43,7 +43,7 @@ export default function ViewDocument() {
             if (data.status == '200') {
                 const doc = data.data.data;
                 setDocObj(doc);
-
+                console.log(doc?.extractedData?.documents[0]?.fields);
                 // console.log("DOCOBJECT::::::::::",doc.domainName);
                 if (doc?.extractedData?.documents) {
                     setRawModalData(doc?.extractedData?.documents[0]?.fields)
@@ -93,7 +93,7 @@ export default function ViewDocument() {
                         toast.dismiss(toastId);
                         alertSuccess("API Synchronization Started.");
                     }, 1000);
-                    
+
                 }
 
             } catch (error) {
@@ -236,41 +236,41 @@ export default function ViewDocument() {
     const onClickDeleteButton = async () => {
 
         Swal.fire({
-          title: `Are you sure ? `,
-          icon: 'warning',
-          html: `Do you want to delete this Document? <br> This document will be deleted immediately`,
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Yes',
-          buttons: true,
+            title: `Are you sure ? `,
+            icon: 'warning',
+            html: `Do you want to delete this Document? <br> This document will be deleted immediately`,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            buttons: true,
         }).then(async (result) => {
-          try {
-            if (result.isConfirmed) {
-                const response = await apiPUT(`/v1/documents/${id}`)
-                if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                  text: "Document Deleted successfully",
-                  icon: "success",
-                });
-                navigate(`/dashboard/document-list`)
-            }
-              else {
+            try {
+                if (result.isConfirmed) {
+                    const response = await apiPUT(`/v1/documents/${id}`)
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Document Deleted successfully",
+                            icon: "success",
+                        });
+                        navigate(`/dashboard/document-list`)
+                    }
+                    else {
+                        Swal.fire({
+                            title: "Error!",
+                            text: response?.data?.data || "Something went wrong!",
+                            icon: "error",
+                        });
+                    }
+                }
+            } catch (error) {
                 Swal.fire({
-                  title: "Error!",
-                  text: response?.data?.data || "Something went wrong!",
-                  icon: "error",
+                    title: 'Error !',
+                    text: error || "Something went wrong !",
+                    icon: 'error',
                 });
-              }
             }
-          } catch (error) {
-            Swal.fire({
-              title: 'Error !',
-              text: error || "Something went wrong !",
-              icon: 'error',
-            });
-          }
         });
     }
 
@@ -281,14 +281,14 @@ export default function ViewDocument() {
         if (location.pathname === `/dashboard/studio/${id}/delete`) {
             onClickDeleteButton()
         }
-        
+
         // if (location.pathname === `/dashboard/studio/approved/${id}/${requestedUserId}`) {
         //     onClickApprovedButton()
         // }
     }, [location.pathname])
 
 
-    
+
 
 
     return (
@@ -343,7 +343,7 @@ export default function ViewDocument() {
                                         className='icon headerMenu' >
                                         <Dropdown.Menu>
                                             {
-                                            hasAccess(EXTRACTION) && <Dropdown.Item text='Extract' onClick={extract} />
+                                                hasAccess(EXTRACTION) && <Dropdown.Item text='Extract' onClick={extract} />
                                             }
                                             {/* {
                                                 // user?.role != "documentation" ?
@@ -358,11 +358,11 @@ export default function ViewDocument() {
                                             {
 
                                                 <Dropdown.Item onClick={() => {
-                                                        console.log("clicked deleted");
-                                                        onClickDeleteButton()
-                                                    }} text='Delete Document' />
+                                                    console.log("clicked deleted");
+                                                    onClickDeleteButton()
+                                                }} text='Delete Document' />
                                                 // user?.role === "superAdmin" || (access && user.role == "admin")  ?                                                    <Dropdown.Item onClick={() => {
-                                                
+
                                                 // hasAccess(DELETE_DOCUMENT)  
                                                 //     ?<Dropdown.Item onClick={() => {
                                                 //         console.log("clicked deleted");
@@ -883,25 +883,25 @@ const EditableMasterItem = ({ _setDocObj, docObj, compact, field, documentId, th
 
 
         if (field.shipUnit && field.shipUnit.attr) {
-             const found = results.find(item=>item.value == value)
-                if (found) {
-                    newData = {
+            const found = results.find(item => item.value == value)
+            if (found) {
+                newData = {
                     isShipUnit: true,
                     overrideValue: value,
                     fieldName: {
                         attr: field.shipUnit.attr,
                         itemId: field.shipUnit.itemId
                     }
-            }
-                }else{
-                    toast.error('Please select an option from the dropdown!', {
-                        position: 'bottom-left',
-                    });
-                    dispatch({
-                        type: 'CLEAN_QUERY'
-                    })
-                    return
                 }
+            } else {
+                toast.error('Please select an option from the dropdown!', {
+                    position: 'bottom-left',
+                });
+                dispatch({
+                    type: 'CLEAN_QUERY'
+                })
+                return
+            }
 
             console.log("newData : ", newData);
 
@@ -1272,7 +1272,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         }
         setFieldsAndValues(JSON.parse(JSON.stringify(fieldsAndValues)));
     }
-    console.log('fieldsAndValues -----> main',fieldsAndValues);
+    console.log('fieldsAndValues -----> main', fieldsAndValues);
 
     let renderTable = (aField, idx) => {
         return <Table compact className='shipUnitTable'>
@@ -2431,38 +2431,41 @@ function RawModal({ rawModalData }) {
         if (value.kind === "string" || value.kind === "date") {
             return value.value;
         } else if (value.kind === "address") {
-            return  value.value.road + ", " + value.value.city + ", " + value.value.postalCode + ", " + value.value.streetAddress
+            return value.value.road + ", " + value.value.city + ", " + value.value.postalCode + ", " + value.value.streetAddress
         } else if (value?.kind === "currency") {
-            return  value?.value?.amount + " " +  value?.value?.currencyCode
-        } else if (value.values) {
-            return value.values.map((item, index) => (
+            return value?.value?.amount + " " + value?.value?.currencyCode
+        } else if (value?.values) {
+            console.log(value?.values);
+            return value?.values?.map((item, index) => (
+                
                 <div key={index}>
-                {  Object.entries(item.properties).length 
-                    ?  <Table celled basic="very">
-                        <Table.Header>
-                            <Table.Row>
-                                <Table.HeaderCell>Keys</Table.HeaderCell>
-                                <Table.HeaderCell>Values</Table.HeaderCell>
-                            </Table.Row>
-                        </Table.Header>
-                        <Table.Body>
-                            {Object.entries(item.properties).map(([key, value]) => (
-                                <Table.Row key={key}>
-                                    <Table.Cell>{key}</Table.Cell>
-                                    <Table.Cell>{ 
-                                        // JSON.stringify(value?.value)
-                                        (value.kind == "currency") 
-                                        ? value?.value?.amount + " " + value?.value?.currencyCode
-                                        :  value.value
-                                    }</Table.Cell>
-                                    
+                    {item?.properties ? Object?.entries(item?.properties)?.length
+                        ? <Table celled basic="very">
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell>Keys</Table.HeaderCell>
+                                    <Table.HeaderCell>Values</Table.HeaderCell>
                                 </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                : null
-                }
-                   
+                            </Table.Header>
+                            <Table.Body>
+                                {Object?.entries(item.properties).map(([key, value]) => (
+                                    <Table.Row key={key}>
+                                        <Table.Cell>{key}</Table.Cell>
+                                        <Table.Cell>{
+                                            // JSON.stringify(value?.value)
+                                            (value.kind == "currency")
+                                                ? value?.value?.amount + " " + value?.value?.currencyCode
+                                                : value.value
+                                        }</Table.Cell>
+
+                                    </Table.Row>
+                                ))}
+                            </Table.Body>
+                        </Table>
+                        : null
+                        : null
+                    }
+
                 </div>
             ));
         }
@@ -2478,7 +2481,7 @@ function RawModal({ rawModalData }) {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {Object.entries(rawModalData).map(([key, value]) => (
+                    {Object?.entries(rawModalData).map(([key, value]) => (
                         <Table.Row key={key}>
                             <Table.Cell>{key}</Table.Cell>
                             <Table.Cell>{renderValue(value)}</Table.Cell>

@@ -123,11 +123,8 @@ function AddLabel(props) {
                 const response = await apiPOST('v1/labels/', labelObj)
                 setLoading(false)
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Labels added successfully",
-                        icon: "success",
-                    });
+
+                    Toast.fire("Success!",  "Labels added successfully", 'success');
                     setLoading(false)
                     clearFields()
                     props.getAllLabel()

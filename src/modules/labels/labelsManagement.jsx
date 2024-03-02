@@ -167,59 +167,12 @@ export default function labelsManagement() {
                                 multiselect={true}
                                 shippingLineId={setShippingLineId} shippingId={shippingLineId} refresh={refresh}
                             />
-                            {/* <Button
-                                primary
-                                onClick={async() => {
-                                    await getMatrixData();
-                                    setRefresh(!refresh)
-                                    // setSearch("")    
-                                    // setShippingLineId("")
-                                }}>
-                                <span>Refresh</span>
-                                <Icon className='ui right aligned' name="refresh" active={true}></Icon>
-                            </Button> */}
+                           
                         </div>
                     </div>
                 </div>
 
-                {/* <div style={{ padding: 10 }}>
-                    <table class="ui compact celled definition table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                {shippingLines.map(shippingLine => <th id={shippingLine._id}>
-                                    <div data-tooltip={shippingLine.name} data-position="bottom left" >
-                                        <span>{shippingLine.code || shippingLine.name}</span>
-                                        <span style={{ marginLeft: "1rem" }}>
-                                            ({getTotalFieldCount(shippingLine._id)})
-                                        </span>
-                                    </div>
-                                </th>)}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                fields?.length ?
-                                    fields.map(field => {
-                                        return (
-                                            <tr>
-                                                <td style={{ width: '15%' }}><h5>{field.displayName}</h5></td>
-                                                {shippingLines.map((shipLine) => {
-                                                    let labelObj = keyMap[field._id + '-' + shipLine._id] || { shippingLineId: shipLine._id, fieldId: field._id, fieldName: field.displayName }
-                                                    return <TableData
-                                                        label={labelObj}
-                                                        setIdsData={setIdsData}
-                                                    />
-                                                })}
-                                            </tr>
-                                        );
-                                    })
-                                    :
-                                    <div style={{ textAlign: 'center' }}>No records found</div>
-                            }
-                        </tbody>
-                    </table>
-                </div>  */}
+                
                 <div style={{ display: 'flex',padding:5 }}>
                     <div style={{ width: '300px' }}>
 
@@ -245,7 +198,7 @@ export default function labelsManagement() {
                             </tbody>
                         </table>
                     </div>
-                    <div style={{ width: '100%', overflowX: 'scroll' }}>
+                    <div style={{ width: '100%', overflowX: 'scroll' }} className='label-manage-doctype'>
                         <table className="ui celled table">
                             <thead>
                                 <tr  >
@@ -253,7 +206,7 @@ export default function labelsManagement() {
                                     style={{height:'50px',whiteSpace:'nowrap'}}
                                     >
                                         <div data-tooltip={documentType.name} data-position="bottom left"  >
-                                            <span >{documentType.code || documentType.name}</span>
+                                            <span >{documentType.name || documentType.code }</span>
                                             <span style={{ marginLeft: "1rem" }}>
                                                 ({getTotalFieldCount(documentType._id)})
                                             </span>
