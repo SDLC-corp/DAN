@@ -71,9 +71,9 @@ const publicRoutes = [
   { path: '/login', component: <Login /> },
   { path: '/un-authorized', component: <UnAuthorized /> },
   { path: '/', component: <Login /> },
-  { path: '/registration', component: <OrganizationsRegistration/>},
-  { path: '/registration/verify', component: <VerifyRegistration/>},
-  { path: '/registration/set-password', component: <SetPassword/>}
+  { path: '/signup', component: <OrganizationsRegistration/>},
+  { path: '/signup/verify', component: <VerifyRegistration/>},
+  { path: '/signup/set-password', component: <SetPassword/>}
 ];
 
 export { authProtectedRoutes, publicRoutes };

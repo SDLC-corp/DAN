@@ -20,7 +20,6 @@ function LoginPage() {
 
   const [emailError, setEmailError] = useState('');
 
-
   let from = location.state?.from?.pathname || '/dashboard';
 
   useEffect(() => {
@@ -30,34 +29,32 @@ function LoginPage() {
     }
   }, []);
 
-
   const check_validation = (userDetails) => {
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    console.log(gmailRegex.test(userDetails.email))
-    let flag = false
+    console.log(gmailRegex.test(userDetails.email));
+    let flag = false;
     if (!userDetails.email) {
       setEmailError('Please provide Email');
       setErrorstate(true);
       setLoading(false);
-      flag = true
-    }else if(!gmailRegex.test(userDetails.email)){
-      setEmailError('Please provide valid Email')
+      flag = true;
+    } else if (!gmailRegex.test(userDetails.email)) {
+      setEmailError('Please provide valid Email');
       setErrorstate(true);
       setLoading(false);
-      flag = true
+      flag = true;
     }
     if (!userDetails.password) {
       setErrorMessage('Please Provide Password');
       setErrorstate(true);
       setLoading(false);
-      flag = true
+      flag = true;
     }
-    if(flag == true){
-      return false
-    }else{
-      return true
+    if (flag == true) {
+      return false;
+    } else {
+      return true;
     }
-
   };
   function handleSubmit() {
     setLoading(true);
@@ -74,25 +71,24 @@ function LoginPage() {
     }
   }
   return (
-    <div className='compdiv' style={{ width: '100%', display: 'flex', justifyContent: 'center'}}>
-    
-    <div className='imgtext' style={{position: 'absolute', top: '50px'}}>
-    <div style={{display: 'flex',width: '222px',height: '147px', flexDirection: 'column', alignItems: 'center'}}>
-      <img  src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px'}}/>
-      <p style={{fontSize: '28px', fontWeight: '600', color: '#048DEF'}}>Data Geometry</p>
-    </div>
-    </div>
-      
-      <div className='datageocomp' style={{ width: '60%', height: '100%' }}>
+    <div className="compdiv" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+      <div className="imgtext" style={{ position: 'absolute', top: '50px' }}>
+        <div style={{ display: 'flex', width: '222px', height: '147px', flexDirection: 'column', alignItems: 'center' }}>
+          <img src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px' }} />
+          <p style={{ fontSize: '28px', fontWeight: '600', color: '#048DEF' }}>Data Geometry</p>
+        </div>
+      </div>
+
+      <div className="datageocomp" style={{ width: '60%', height: '100%' }}>
         <DataGeoComp />
       </div>
 
       <div style={{ width: '40%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className='mobdiv'>
+        <div className="mobdiv">
           <label style={{ fontSize: '24px', fontWeight: 600 }}>Login</label>
           <Form style={{ marginTop: '20px' }} noValidate>
             <Form.Input
-              style={{ width:window.innerWidth < 900 ? '335px' :  '400px' }}
+              style={{ width: window.innerWidth < 900 ? '335px' : '400px' }}
               label="Email"
               placeholder="Email"
               type="email"
@@ -103,7 +99,7 @@ function LoginPage() {
               onFocus={() => {
                 setErrorstate(false);
                 setEmailError('');
-                setErrorMessage('')
+                setErrorMessage('');
               }}
               error={emailError ? true : false}
             />
@@ -118,14 +114,13 @@ function LoginPage() {
             )}
 
             <Form.Input
-            
-              style={{width:window.innerWidth < 900 ? '335px' :  '400px', margin: '0' }}
+              style={{ width: window.innerWidth < 900 ? '335px' : '400px', margin: '0' }}
               label="Password"
               type={passwordVisible ? 'text' : 'password'}
               onFocus={() => {
-                setErrorMessage('')
-                setErrorstate(false)
-                setEmailError(''); 
+                setErrorMessage('');
+                setErrorstate(false);
+                setEmailError('');
               }}
               placeholder="Password"
               value={password}
@@ -136,7 +131,7 @@ function LoginPage() {
                 icon: passwordVisible ? 'eye slash' : 'eye',
                 onClick: () => setPasswordVisible(!passwordVisible),
               }}
-              error={ errorMessage ? true : false}
+              error={errorMessage ? true : false}
             />
             {errorstate && errorMessage?.trim() ? (
               <div style={{ width: '70%', marginBottom: '5px' }}>
@@ -160,10 +155,7 @@ function LoginPage() {
         </div>
         <div style={{ position: 'absolute', bottom: '30px' }}>
           Already have an account?
-          <Link to="/registration" style={{ fontWeight: '600', fontSize: '15px',  }}
-          onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-      onMouseOut={(e) => e.target.style.textDecoration = 'none'}
-          >
+          <Link to="/signup" style={{ fontWeight: '600', fontSize: '15px' }} onMouseOver={(e) => (e.target.style.textDecoration = 'underline')} onMouseOut={(e) => (e.target.style.textDecoration = 'none')}>
             {' '}
             Sign Up
           </Link>

@@ -426,6 +426,12 @@ color: white !important;
     flex-direction: column;
     align-items: center;
   }
+  .setpassformdiv{
+    width: 94% !important;
+  }
+  .verifyotpdiv {
+    width: 200%;
+  }
 }
 
 @media screen and (min-width: 900px) {
