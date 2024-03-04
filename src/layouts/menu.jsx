@@ -40,7 +40,7 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Document List', path: '/dashboard/document-list', icon: 'file alternate outline icon', accessModule : MANAGE_DOCUMENT },
 
     { type: 'label', title: 'Field Mapping' ,accessModule: MANAGE_LABEL_MATRIX},
-    { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'box',accessModule: VIEW_LABEL_MATRIX },
+    { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'modx',accessModule: VIEW_LABEL_MATRIX },
     { type: 'menu', title: 'Custom Logic', path: '/dashboard/custom-logic', icon: 'js square',accessModule : VIEW_CUSTOM_LOGIC},
     { type: 'menu', title: 'Fields',      path: '/dashboard/fields',icon: 'exchange',accessModule : VIEW_FIELD},
 

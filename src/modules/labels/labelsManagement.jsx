@@ -27,6 +27,8 @@ export default function labelsManagement() {
     const [shippingLineForFilter, setShippingLineForFilter] = useState([])
     const [shippingLineId, setShippingLineId] = useState('');
     const [refresh, setRefresh] = useState(false)
+    const [totalFieldCount, setTotalFieldCount] = useState(null);
+
     async function getMatrixData() {
         // setRefresh(true)
         setLoading(true);
@@ -109,8 +111,11 @@ export default function labelsManagement() {
 
     const getTotalFieldCount = (id) => {
         let arr = Object.keys(keyMap)
-        return arr.filter(cusId => cusId.indexOf(id) != -1).length
+        console.log(arr);
+        let count = arr.filter(cusId => cusId.indexOf(id) != -1).length
+        return count
     }
+
     return (
         <Sidebar.Pushable className='isSidebar'>
             <Sidebar

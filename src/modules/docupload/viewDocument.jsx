@@ -1241,7 +1241,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "ship_unit_table") {
+            if (aFieldValue.fieldName == "invoice_table") {
                 // splice || filter
                 const copy = aFieldValue.fieldValue.filter((item, i) => item.itemId !== deleteItemID);
                 aFieldValue.fieldValue = [...copy]
@@ -1257,7 +1257,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "ship_unit_table") {
+            if (aFieldValue.fieldName == "invoice_table") {
                 aFieldValue.fieldValue.push({
                     itemId: Math.random().toString(36).slice(2),
                     container: '',
@@ -1279,22 +1279,21 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell></Table.HeaderCell>
-                    <Table.HeaderCell>Container</Table.HeaderCell>
-                    <Table.HeaderCell>Type</Table.HeaderCell>
-                    <Table.HeaderCell>Liner Seal</Table.HeaderCell>
-                    <Table.HeaderCell>Shipper Seal</Table.HeaderCell>
-                    <Table.HeaderCell>Custom Seal</Table.HeaderCell>
-                    <Table.HeaderCell>Item</Table.HeaderCell>
-                    <Table.HeaderCell>Pkg Type</Table.HeaderCell>
-                    <Table.HeaderCell>Pkg Count</Table.HeaderCell>
-                    <Table.HeaderCell>Weight/ UOM</Table.HeaderCell>
-                    <Table.HeaderCell>Measu./ UOM</Table.HeaderCell>
+                    <Table.HeaderCell>Amount</Table.HeaderCell>
+                    <Table.HeaderCell>Description</Table.HeaderCell>
+                    <Table.HeaderCell>ProductCode</Table.HeaderCell>
+                    <Table.HeaderCell>Quantity</Table.HeaderCell>
+                    <Table.HeaderCell>Tax</Table.HeaderCell>
+                    <Table.HeaderCell>TaxRate</Table.HeaderCell>
+                    <Table.HeaderCell>UnitPrice</Table.HeaderCell>
+
                     {/* <Table.HeaderCell></Table.HeaderCell> */}
                 </Table.Row>
             </Table.Header>
 
             <Table.Body>
                 {aField.fieldValue?.map((aRow, rowIndex) => {
+                    console.log(aRow);
                     return (
                         <Table.Row key={aRow.itemId}>
                             <Table.Cell>
@@ -1308,7 +1307,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "2"} field={{
-                                    fieldValue: aRow.container,
+                                    fieldValue: aRow.uom.amount + " "+aRow.uom.currencyCode ,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'container'
@@ -1318,7 +1317,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             <Table.Cell>
 
                                 <EditableMasterItem compact={true} key={idx + "4"} field={{
-                                    fieldValue: aRow.type,
+                                    fieldValue: aRow.description,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'type'
@@ -1335,7 +1334,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "6"} field={{
-                                    fieldValue: aRow.liner,
+                                    fieldValue: aRow.quantity,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'liner'
@@ -1345,7 +1344,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "8"} field={{
-                                    fieldValue: aRow.shipper,
+                                    fieldValue: aRow.item_cost,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'shipper'
@@ -1354,7 +1353,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "10"} field={{
-                                    fieldValue: aRow.custom,
+                                    fieldValue: aRow.item_code.amount + " " + aRow.item_code.currencyCode,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'custom'
@@ -1363,7 +1362,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableMasterItem compact={true} key={idx + "12"} field={{
-                                    fieldValue: aRow.item,
+                                    fieldValue: aRow.packing,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'item'
@@ -1379,7 +1378,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                             </Table.Cell>
                             <Table.Cell>
                                 <EditableMasterItem compact={true} key={idx + "13"} field={{
-                                    fieldValue: aRow.packageType,
+                                    fieldValue: aRow.batch_no.amount + " " +aRow.batch_no.currencyCode ,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'packageType'
@@ -1393,64 +1392,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
                             </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "14"} field={{
-                                    fieldValue: aRow.packageCount,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'packageCount'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "15"} field={{
-                                    fieldValue: aRow.weight,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'weight'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-
-                                <EditableMasterItem compact={true} key={idx + "16"} field={{
-                                    fieldValue: aRow.uom,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'uom'
-                                    },
-                                    field: {
-                                        master: {
-                                            collectionName: "weight_uom",
-                                            search: 'text',
-                                            value: "code"
-                                        }
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-
-                            </Table.Cell>
-                            <Table.Cell>
-                                <EditableTextItem compact={true} key={idx + "17"} field={{
-                                    fieldValue: aRow.measurement,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'measurement'
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-
-                                <EditableMasterItem compact={true} key={idx + "18"} field={{
-                                    fieldValue: aRow.m_uom,
-                                    shipUnit: {
-                                        itemId: aRow.itemId,
-                                        attr: 'm_uom'
-                                    },
-                                    field: {
-                                        master: {
-                                            collectionName: "measurement_uom",
-                                            search: 'text',
-                                            value: "code"
-                                        }
-                                    }
-                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
+                        
                         </Table.Row>
                     );
                 })}
@@ -1494,7 +1436,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
             <div style={{ flex: 1, display: 'flex', alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
                 {
                     fieldsAndValues && fieldsAndValues?.map((aField, idx) => {
-                        if (aField.fieldName == "ship_unit_table") {
+                        if (aField.fieldName == "invoice_table") {
                             return renderTable(aField, idx)
                         }
                     })}

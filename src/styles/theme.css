@@ -101,6 +101,21 @@ html {
 .label-manage-doctype::-webkit-scrollbar-thumb:hover {
   background:  #e1eeff; 
 }
+.cqZVqh::-webkit-scrollbar{
+  width: 4px;
+  height: 4px;
+  border-radius: 10px;
+}
+.cqZVqh::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cqZVqh::-webkit-scrollbar-thumb {
+  background: #d0dceb; 
+}
+.cqZVqh::-webkit-scrollbar-thumb:hover {
+  background:  #e1eeff; 
+}   
+
 
 
 body {

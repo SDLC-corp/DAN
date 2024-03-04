@@ -232,7 +232,7 @@ function DocumentList() {
         <div>
           {row && (
             <p>
-              <span>{row?.documentType?.code}</span>
+              <span>{row?.documentType?.name}</span>
             </p>
           )}
         </div>
