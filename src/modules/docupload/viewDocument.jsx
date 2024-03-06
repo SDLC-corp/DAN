@@ -128,7 +128,7 @@ export default function ViewDocument() {
     const getPercentage = (fieldsAndValues) => {
         let count = 0;
         for (let i = 0; i < fieldsAndValues?.length; i++) {
-            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0)  || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number') ))) {
+            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number')))) {
                 count = count + 1;
             }
         }
@@ -152,7 +152,7 @@ export default function ViewDocument() {
     const getRemainingFileds = (fieldsAndValues) => {
         let count = 0;
         for (let i = 0; i < fieldsAndValues?.length; i++) {
-            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number') ))) {
+            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number')))) {
                 count = count + 1;
             }
         }
@@ -1180,7 +1180,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table") {
+            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table" || aFieldValue.fieldName == 'receipts_item_table') {
                 // splice || filter
                 const copy = aFieldValue.fieldValue.filter((item, i) => item.itemId !== deleteItemID);
                 aFieldValue.fieldValue = [...copy]
@@ -1196,7 +1196,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table") {
+            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table" || aFieldValue.fieldName == 'receipts_item_table') {
                 aFieldValue.fieldValue.push({
                     itemId: Math.random().toString(36).slice(2),
                     container: '',
@@ -1463,7 +1463,88 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
             </Table.Body>
         </Table>
     }
+    let renderReceiptItemTable = (aField, idx) => {
+        return <Table compact className='shipUnitTable'>
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell>Description</Table.HeaderCell>
+                    <Table.HeaderCell>Price</Table.HeaderCell>
+                    <Table.HeaderCell>Quantity</Table.HeaderCell>
+                    <Table.HeaderCell>Total Price</Table.HeaderCell>
 
+                </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+
+                {aField?.fieldValue ? aField?.fieldValue?.map((aRow, rowIndex) => {
+                    console.log(aRow);
+                    return (
+                        <Table.Row key={aRow.itemId}>
+                            <Table.Cell>
+                                <Button
+                                    icon size='mini' compact
+                                    onClick={() => {
+                                        removeRow(aRow.itemId)
+                                    }}>
+                                    <Icon name="trash alternate" />
+                                </Button>
+                            </Table.Cell>
+                            <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "2"} field={{
+                                    fieldValue: aRow.description ? aRow.description : '',
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'container'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell>
+                            <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "2"} field={{
+                                    fieldValue: aRow.price ? aRow.price : '',
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'container'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell>
+                            <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "2"} field={{
+                                    fieldValue: aRow.quantity ? aRow.quantity : '',
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'container'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell>
+                            <Table.Cell>
+
+                                <EditableMasterItem compact={true} key={idx + "4"} field={{
+                                    fieldValue: aRow.totalPrice ? aRow.totalPrice : '',
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'type'
+                                    },
+                                    field: {
+                                        master: {
+                                            collectionName: "container_iso_codes",
+                                            search: 'text',
+                                            value: "code"
+                                        }
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+
+                            </Table.Cell>
+
+                        </Table.Row>
+                    );
+                }
+                )
+                    : ''}
+            </Table.Body>
+        </Table>
+    }
     return <>
         <div style={{ width: '100%', display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div
@@ -1501,8 +1582,9 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                         if (aField.fieldName == "invoice_table") {
                             return renderInvoiceTable(aField, idx)
                         } else if (aField.fieldName == "business_card_table") {
-                            console.log(aField);
                             return renderBusinessCardTable(aField, idx)
+                        } else if (aField.fieldName == 'receipts_item_table') {
+                            return renderReceiptItemTable(aField, idx)
                         }
                     })}
             </div>
@@ -2424,7 +2506,7 @@ class DocViewerCmp extends React.Component {
 
 function RawModal({ rawModalData }) {
     const renderValue = (value) => {
-        if (value.kind === "string" || value.kind === "date" || value.kind ==='number') {
+        if (value.kind === "string" || value.kind === "date" || value.kind === 'number') {
             return value.value;
         } else if (value.kind === "address") {
             return value.value.road + ", " + value.value.city + ", " + value.value.postalCode + ", " + value.value.streetAddress
