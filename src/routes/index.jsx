@@ -18,6 +18,7 @@ import VerifyRegistration from '../modules/organizationsRegistration/verifyRegis
 import { ADD_DOCUMENT_TYPE, AIR, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_USER, OCEAN, REUPLOAD_PDF, VIEW_CUSTOM_LOGIC, VIEW_DOCUMENT, VIEW_FIELD, VIEW_LABEL_MATRIX } from '../utils/accessHelper';
 import SetPassword from '../modules/organizationsRegistration/setPassword';
 import DocumentTypeList from '../modules/docupload/documentTypes/listDocumentType';
+import Setting from '../modules/settings';
 
 // These path are relative to /dashboard/
 const authProtectedRoutes = [
@@ -63,6 +64,9 @@ const authProtectedRoutes = [
   { path: 'labels/:action/:id', component: <LabelList />, acccessModuleName:VIEW_LABEL_MATRIX },
 
   { path: 'jobs', component: <JobList /> },
+
+  { path: 'setting', component: <Setting /> , acccessModuleName: VIEW_FIELD},
+
 
 
 ];

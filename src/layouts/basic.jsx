@@ -109,7 +109,7 @@ function Layout() {
                         color: location.pathname == aMenu.path ? 'white' : 'black',
                         margin: '5px 14px',
                         borderRadius: '30px',
-                        marginBottom: aMenu.title == 'Users' ? '30px' : ''
+                        marginBottom: userRole==='Organization Admin'?aMenu.title == 'Setting' ? '30px' : '' : aMenu.title == 'Users' ? '30px' : ''
                       }}
                     >
                       <Icon bordered={false} name={aMenu.icon} style={{ padding: collapsed ? "" : '0 30px 0 10px', color: location.pathname == aMenu.path ? 'white' : '#9C9393', }}></Icon>

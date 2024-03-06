@@ -66,6 +66,9 @@ export const LABEL_MATRIX = "LABEL_MATRIX"
 export const CUSTOM_LOGIC = "CUSTOM_LOGIC"
 export const FIELDS = "FIELDS"
 export const VIEW_FIELD = "VIEW_FIELD"
+export const MANAGE_SETTING = "MANAGE_SETTING"
+export const SETTING = "SETTING"
+
 
 const getCurrentUser =()=>{
     try {

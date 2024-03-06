@@ -80,7 +80,6 @@ function DocumentList() {
       else {
         res = await apiGET(`/v1/documents/?limit=${limit}&page=${page}`,);
       }
-      console.log(res);
       setLoading(false);
       if (res.status === 200) {
         let response = res?.data?.data
@@ -125,8 +124,9 @@ function DocumentList() {
     for (let i = 0; i < documentsdata.length; i++) {
       result.length = documentsdata.length
       let count = 0, total = documentsdata[i]?.fieldsAndValues
+
       for (let j = 0; j < total?.length; j++) {
-        if ((total[j]?.fieldValue) != null && (((typeof (total[j]?.fieldValue) == 'string') && (total[j].fieldValue.trim() != "")) || ((typeof (total[j]?.fieldValue) == 'object') && total[j]?.fieldValue?.length > 0))) {
+        if ((total[j]?.fieldValue) != null && (((typeof (total[j]?.fieldValue) == 'string') && (total[j].fieldValue.trim() != "")) || ((typeof (total[j]?.fieldValue) == 'object') && total[j]?.fieldValue?.length > 0) || ((typeof (total[j]?.fieldValue) == 'number' )))) {
           count = count + 1
         }
       }

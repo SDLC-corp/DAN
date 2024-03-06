@@ -132,7 +132,7 @@ export default function ViewDocument() {
     const getPercentage = (fieldsAndValues) => {
         let count = 0;
         for (let i = 0; i < fieldsAndValues?.length; i++) {
-            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0))) {
+            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0)  || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number') ))) {
                 count = count + 1;
             }
         }
@@ -156,7 +156,7 @@ export default function ViewDocument() {
     const getRemainingFileds = (fieldsAndValues) => {
         let count = 0;
         for (let i = 0; i < fieldsAndValues?.length; i++) {
-            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0))) {
+            if (fieldsAndValues[i]?.fieldValue != null && (((typeof (fieldsAndValues[i]?.fieldValue) == 'string') && (fieldsAndValues[i].fieldValue.trim() != "")) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'object') && fieldsAndValues[i]?.fieldValue?.length > 0) || ((typeof (fieldsAndValues[i]?.fieldValue) == 'number') ))) {
                 count = count + 1;
             }
         }
@@ -906,20 +906,7 @@ const EditableMasterItem = ({ _setDocObj, docObj, compact, field, documentId, th
             console.log("newData : ", newData);
 
         } else {
-            // if(selected) {
-            //     if ((value != orginalText) && (results.length == 1)) {
-            //         newData = {
-            //             overrideValue: value,
-            //             fieldName: field.fieldName
-            //         }
-            //     } else if((results.length > 0)) {
-            //         console.log("Else Ala na");
-            //         newData = {
-            //             overrideValue: null,
-            //             fieldName: field.fieldName
-            //         };
-            //     }
-            // }
+
             console.log("Editable save ::", results[0], value);
             const found = results.find(item => item.value == value)
             if (found) {
@@ -1085,11 +1072,7 @@ const EditableMasterItem = ({ _setDocObj, docObj, compact, field, documentId, th
             })
         }, 300)
     }
-    // useEffect(() => {
-    //     if (selected) {
-    //         dispatch({ type: 'UPDATE_SELECTION', selection: selected.result.title?.split("|")[1] ? selected.result.title?.split("|")[1].trim() : "" })
-    //     }
-    // }, [selected])
+
 
     useEffect(() => {
         if (isEditing) {
@@ -1135,16 +1118,6 @@ const EditableMasterItem = ({ _setDocObj, docObj, compact, field, documentId, th
 
                         {compact ? <Button icon size='mini' compact onClick={closeEdit}> <Icon name="ban" /> </Button> : <Button size='mini' compact onClick={closeEdit}>Cancel</Button>}
 
-
-
-
-                        {/* <Button className='saveandback' size='mini' compact primary onClick={saveField} style={{ paddingLeft: '30px !important' }} loading={buttonLoading} labelPosition="left" icon>
-                            Save
-                            <Icon name="save" />
-                        </Button>
-                        <Button size='mini' compact onClick={resetToOrginal}>Set to Original</Button>
-
-                        <Button size='mini' compact onClick={closeEdit}>Cancel</Button> */}
                     </div>
                 </div>
             ) : (
@@ -1161,18 +1134,12 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
     setDocObj, data, clearSelection, onChangeClearCanvas, setOnChangeClearCanvas }) {
 
     const [docObj, _setDocObj] = useState(_docObj);
-    const [search, setSearch] = useState('');
     const [selectedForEditing, setSelectedForEditing] = useState({});
-    const [btnLoading, setButtonLoading] = useState(false);
     const [fieldsAndValues, setFieldsAndValues] = useState(docObj.fieldsAndValues);
     const [onFocusRow, setOnFocusRow] = useState({});
-    const [sortData, setSortData] = useState();
     const [thisSelectedSentence, setThisSelectedSentence] = useState('');
     const [thisSelectedSentence2, setThisSelectedSentence2] = useState(selectedSentence);
-    const [documentsData, setDocumentsData] = useState();
-    const [docDropDownValue, setDocDropDownValue] = useState('')
-    const [hideTextAreaCheck, setHideTextAreaCheck] = useState(false)
-    const [dateValue, setDateValue] = useState('');
+
 
     const [initialClientY, setInitialClientY] = useState("")
 
@@ -1241,7 +1208,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "invoice_table") {
+            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table") {
                 // splice || filter
                 const copy = aFieldValue.fieldValue.filter((item, i) => item.itemId !== deleteItemID);
                 aFieldValue.fieldValue = [...copy]
@@ -1257,13 +1224,13 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
         for (let index = 0; index < fieldsAndValues.length; index++) {
             const aFieldValue = fieldsAndValues[index];
 
-            if (aFieldValue.fieldName == "invoice_table") {
+            if (aFieldValue.fieldName == "invoice_table" || aFieldValue.fieldName == "business_card_table") {
                 aFieldValue.fieldValue.push({
                     itemId: Math.random().toString(36).slice(2),
                     container: '',
                     type: '',
                     weight: '',
-                    uom: '',
+                    amount: '',
                     shipper: '',
                     custom: '',
                     liner: '',
@@ -1274,7 +1241,7 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
     }
     console.log('fieldsAndValues -----> main', fieldsAndValues);
 
-    let renderTable = (aField, idx) => {
+    let renderInvoiceTable = (aField, idx) => {
         return <Table compact className='shipUnitTable'>
             <Table.Header>
                 <Table.Row>
@@ -1292,8 +1259,8 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
             </Table.Header>
 
             <Table.Body>
-                {aField.fieldValue?.map((aRow, rowIndex) => {
-                    console.log(aRow);
+
+                {aField?.fieldValue ? aField?.fieldValue?.map((aRow, rowIndex) => {
                     return (
                         <Table.Row key={aRow.itemId}>
                             <Table.Cell>
@@ -1305,16 +1272,16 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                                     <Icon name="trash alternate" />
                                 </Button>
                             </Table.Cell>
-                            <Table.Cell>
+                            {aRow.amount ? <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "2"} field={{
-                                    fieldValue: aRow.uom.amount + " "+aRow.uom.currencyCode ,
+                                    fieldValue: aRow.amount.amount + " " + aRow.amount.currencyCode,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'container'
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ''}
+                            {aRow.description ? <Table.Cell>
 
                                 <EditableMasterItem compact={true} key={idx + "4"} field={{
                                     fieldValue: aRow.description,
@@ -1331,38 +1298,38 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
 
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ""}
+                            {aRow.productCode ? <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "6"} field={{
-                                    fieldValue: aRow.quantity,
+                                    fieldValue: aRow.productCode,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'liner'
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
 
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ''}
+                            {aRow.quantity ? <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "8"} field={{
-                                    fieldValue: aRow.item_cost,
+                                    fieldValue: aRow.quantity,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'shipper'
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ''}
+                            {aRow.tax ? <Table.Cell>
                                 <EditableTextItem compact={true} key={idx + "10"} field={{
-                                    fieldValue: aRow.item_code.amount + " " + aRow.item_code.currencyCode,
+                                    fieldValue: aRow.tax.amount + " " + aRow.tax.currencyCode,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'custom'
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ""}
+                            {aRow.taxRate ? <Table.Cell>
                                 <EditableMasterItem compact={true} key={idx + "12"} field={{
-                                    fieldValue: aRow.packing,
+                                    fieldValue: aRow.taxRate,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'item'
@@ -1375,10 +1342,10 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                                         }
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                            <Table.Cell>
+                            </Table.Cell> : ""}
+                            {aRow.unitPrice ? <Table.Cell>
                                 <EditableMasterItem compact={true} key={idx + "13"} field={{
-                                    fieldValue: aRow.batch_no.amount + " " +aRow.batch_no.currencyCode ,
+                                    fieldValue: aRow.unitPrice.amount + " " + aRow.unitPrice.currencyCode,
                                     shipUnit: {
                                         itemId: aRow.itemId,
                                         attr: 'packageType'
@@ -1391,16 +1358,139 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                                         }
                                     }
                                 }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
-                            </Table.Cell>
-                        
+                            </Table.Cell> : ""
+                            }
                         </Table.Row>
                     );
-                })}
+                }
+                )
+                    : ''}
             </Table.Body>
         </Table>
 
     }
 
+    let renderBusinessCardTable = (aField, idx) => {
+        console.log(aField);
+        return <Table compact className='shipUnitTable'>
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell>First Name</Table.HeaderCell>
+                    <Table.HeaderCell>Last Name</Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+
+                {aField?.fieldValue ? aField?.fieldValue?.map((aRow, rowIndex) => {
+                    return (
+                        <Table.Row key={aRow.itemId}>
+                            <Table.Cell>
+                                <Button
+                                    icon size='mini' compact
+                                    onClick={() => {
+                                        removeRow(aRow.itemId)
+                                    }}>
+                                    <Icon name="trash alternate" />
+                                </Button>
+                            </Table.Cell>
+                            {aRow.fName ? <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "2"} field={{
+                                    fieldValue: aRow.fName,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'container'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell> : ''}
+                            {aRow.lName ? <Table.Cell>
+
+                                <EditableMasterItem compact={true} key={idx + "4"} field={{
+                                    fieldValue: aRow.lName,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'type'
+                                    },
+                                    field: {
+                                        master: {
+                                            collectionName: "container_iso_codes",
+                                            search: 'text',
+                                            value: "code"
+                                        }
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+
+                            </Table.Cell> : ""}
+                            {aRow.productCode ? <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "6"} field={{
+                                    fieldValue: aRow.productCode,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'liner'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+
+                            </Table.Cell> : ''}
+                            {aRow.quantity ? <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "8"} field={{
+                                    fieldValue: aRow.quantity,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'shipper'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell> : ''}
+                            {aRow.tax ? <Table.Cell>
+                                <EditableTextItem compact={true} key={idx + "10"} field={{
+                                    fieldValue: aRow.tax.amount + " " + aRow.tax.currencyCode,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'custom'
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell> : ""}
+                            {aRow.taxRate ? <Table.Cell>
+                                <EditableMasterItem compact={true} key={idx + "12"} field={{
+                                    fieldValue: aRow.taxRate,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'item'
+                                    },
+                                    field: {
+                                        master: {
+                                            collectionName: "itemMaster",
+                                            search: 'text',
+                                            value: "code"
+                                        }
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell> : ""}
+                            {aRow.unitPrice ? <Table.Cell>
+                                <EditableMasterItem compact={true} key={idx + "13"} field={{
+                                    fieldValue: aRow.unitPrice.amount + " " + aRow.unitPrice.currencyCode,
+                                    shipUnit: {
+                                        itemId: aRow.itemId,
+                                        attr: 'packageType'
+                                    },
+                                    field: {
+                                        master: {
+                                            collectionName: "packageTypeMaster",
+                                            search: 'text',
+                                            value: "code"
+                                        }
+                                    }
+                                }} documentId={documentId} thisSelectedSentence={thisSelectedSentence} clearSelection={clearSelection} />
+                            </Table.Cell> : ""
+                            }
+                        </Table.Row>
+                    );
+                }
+                )
+                    : ''}
+            </Table.Body>
+        </Table>
+    }
 
     return <>
         <div style={{ width: '100%', display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1437,7 +1527,10 @@ function ShipunitCmp({ _docObj, extractedData = {}, documentId, selectedSentence
                 {
                     fieldsAndValues && fieldsAndValues?.map((aField, idx) => {
                         if (aField.fieldName == "invoice_table") {
-                            return renderTable(aField, idx)
+                            return renderInvoiceTable(aField, idx)
+                        } else if (aField.fieldName == "business_card_table") {
+                            console.log(aField);
+                            return renderBusinessCardTable(aField, idx)
                         }
                     })}
             </div>
@@ -1717,7 +1810,7 @@ function FieldsAndValuesCmp({ _docObj, extractedData = {}, documentId, selectedS
             container: '',
             type: '',
             weight: '',
-            uom: '',
+            amount: '',
             shipper: '',
             custom: '',
             liner: '',
@@ -1927,18 +2020,7 @@ class DocViewerCmp extends React.Component {
         if (this.state.data && this.state.data.extractedData && this.state.data.extractedData?.pages[this.state.pageNumber - 1]) {
             let aPage = this.state.data.extractedData?.pages[this.state.pageNumber - 1];
 
-            // for (let w = 0; w < aPage.words.length; w++) {
-            //     const aWord = aPage.words[w];
-            //     context.lineWidth = 1;
-            //     context.strokeStyle = '#8eb3ff';
-            //     context.beginPath();
-            //     context.moveTo(aWord.polygon[0].x * multiplier, aWord.polygon[0].y * multiplier);
-            //     context.lineTo(aWord.polygon[1].x * multiplier, aWord.polygon[1].y * multiplier);
-            //     context.lineTo(aWord.polygon[2].x * multiplier, aWord.polygon[2].y * multiplier);
-            //     context.lineTo(aWord.polygon[3].x * multiplier, aWord.polygon[3].y * multiplier);
-            //     context.closePath();
-            //     context.stroke();
-            // }
+
         }
     };
 
@@ -2370,16 +2452,15 @@ class DocViewerCmp extends React.Component {
 
 function RawModal({ rawModalData }) {
     const renderValue = (value) => {
-        if (value.kind === "string" || value.kind === "date") {
+        if (value.kind === "string" || value.kind === "date" || value.kind ==='number') {
             return value.value;
         } else if (value.kind === "address") {
             return value.value.road + ", " + value.value.city + ", " + value.value.postalCode + ", " + value.value.streetAddress
         } else if (value?.kind === "currency") {
             return value?.value?.amount + " " + value?.value?.currencyCode
         } else if (value?.values) {
-            console.log(value?.values);
             return value?.values?.map((item, index) => (
-                
+
                 <div key={index}>
                     {item?.properties ? Object?.entries(item?.properties)?.length
                         ? <Table celled basic="very">
