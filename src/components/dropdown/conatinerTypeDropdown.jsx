@@ -55,18 +55,10 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
                 }
             }
             else {
-                Swal.fire({
-                    title: "Error!",
-                    text: res?.data?.data || "Something went wrong!",
-                    icon: "error",
-                });
+                Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error || "Something went wrong!",
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
     };
     const clearFields = () => {
@@ -96,11 +88,7 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
                 setLoading(false)    
                 console.log("response", response);
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Container ISO Code added successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Container ISO Code added successfully", 'success');
                     setLoading(false)
                     clearFields()
                     getAllIsoCodes()

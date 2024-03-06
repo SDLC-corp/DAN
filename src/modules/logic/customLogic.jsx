@@ -34,6 +34,17 @@ function CustomLogic() {
         { key: 'Custom List', content: 'Custom Logic', active: true },
     ];
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
 
     const onClickEditButton = (id) => {
         navigate(`/dashboard/custom-logic/edit/${id}`);
@@ -58,27 +69,15 @@ function CustomLogic() {
                 if (result.isConfirmed) {
                     const response = await apiPUT(`v1/logic/${id}`)
                     if (response.status === 200) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Logic Deleted successfully",
-                            icon: "success",
-                        });
+                        Toast.fire("Success!","Logic Deleted successfully", 'success');
                         getAllLogics()
                     }
                     else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: response?.data?.data || "Something went wrong!",
-                            icon: "error",
-                        });
+                        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
                     }
                 }
             } catch (error) {
-                Swal.fire({
-                    title: 'Error !',
-                    text: error || "Something went wrong !",
-                    icon: 'error',
-                });
+                Toast.fire('Error!', error|| 'Something went wrong!', 'error');
             }
         });
     }
@@ -119,18 +118,10 @@ function CustomLogic() {
                 setPage(response?.data?.data?.page)
             }
             else {
-                Swal.fire({
-                    title: "Error!",
-                    text: response?.data?.data || "Something went wrong!",
-                    icon: "error",
-                });
+                Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error || "Something went wrong!",
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
     };
 

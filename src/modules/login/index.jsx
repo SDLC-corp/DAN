@@ -31,7 +31,6 @@ function LoginPage() {
 
   const check_validation = (userDetails) => {
     const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    console.log(gmailRegex.test(userDetails.email));
     let flag = false;
     if (!userDetails.email) {
       setEmailError('Please provide Email');

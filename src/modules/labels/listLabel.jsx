@@ -23,6 +23,18 @@ function LabelList() {
   const [page, setPage] = useState(0);
   const [limit, setLimit] = useState(10);
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+})
+
   const sections = [
     { key: 'Dashboard', content: 'Dashboard', link: true },
     { key: 'label List', content: 'label List', active: true },
@@ -47,18 +59,10 @@ function LabelList() {
         setPage(response?.data?.data?.page)
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   };
 
@@ -96,18 +100,10 @@ function LabelList() {
         }
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   };
 
@@ -125,26 +121,14 @@ function LabelList() {
     try {
       const response = await apiDELETE(`/v1/labels/${id}`)
       if (response.status === 200) {
-        Swal.fire({
-          title: "Success!",
-          text: "Shipping item Deleted successfully",
-          icon: "success",
-        });
+        Toast.fire("Success!","Shipping item Deleted successfully", 'success');
         getAllLabel()
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   }
 

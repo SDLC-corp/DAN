@@ -9,6 +9,20 @@ const DocumentTypeDropdown = ({
     shippingLineId,shippingId,refresh,multiselect,setSelectedShippingLineName,height
 }) => {
     const [documentTypeOptions, setDocumentTypeOptions] = useState([])
+
+
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+
     const getAllDocumentTypeList = async() => {
         try {
             let response = await apiGET(`/v1/document-type/list`,);
@@ -35,18 +49,10 @@ const DocumentTypeDropdown = ({
               setDocumentTypeOptions(list)
             }
             else {
-              Swal.fire({
-                title: "Error!",
-                text: response?.data?.data || "Something went wrong!",
-                icon: "error",
-              });
+              Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
             }
           } catch (error) {
-            Swal.fire({
-              title: "Error!",
-              text: error || "Something went wrong!",
-              icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
           }        
     }
 

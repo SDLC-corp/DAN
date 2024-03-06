@@ -82,11 +82,7 @@ function AddDocumentType(props) {
         const response = await apiPOST('v1/document-type/', payload)
         setLoading(false)
         if (response.status === 200) {
-          Swal.fire({
-            title: "Success!",
-            text: "Carrier Line added successfully",
-            icon: "success",
-          });
+          Toast.fire("Success!","Carrier Line added successfully", 'success');
           setLoading(false)
           clearFields()
           props.getAllShippingLine()
@@ -117,11 +113,7 @@ function AddDocumentType(props) {
         const response = await apiPOST(`v1/document-type/${id}`, payload)
         setLoading(false)
         if (response.status === 200) {
-          Swal.fire({
-            title: "Success!",
-            text: "Carrier Line updated successfully",
-            icon: "success",
-          });
+          Toast.fire("Success!","Carrier Line updated successfully", 'success');
           props.getAllShippingLine()
           setLoading(false)
           clearFields()
@@ -208,24 +200,12 @@ function AddDocumentType(props) {
             option: result.value,
           });
           if (response.status === 200) {
-            Swal.fire({
-              title: 'Success!',
-              text: 'All Carrier Line Extraction successfully',
-              icon: 'success',
-            });
+            Toast.fire("Success!","All Carrier Line Extraction successfully", 'success');
           } else {
-            Swal.fire({
-              title: 'Error!',
-              text: response?.data?.data || 'Something went wrong!',
-              icon: 'error',
-            });
+            Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
           }
         } catch (error) {
-          Swal.fire({
-            title: 'Error !',
-            text: error || 'Something went wrong !',
-            icon: 'error',
-          });
+          Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
       }
         

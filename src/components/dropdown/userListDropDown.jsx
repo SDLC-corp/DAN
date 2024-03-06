@@ -10,6 +10,18 @@ const UserListDropDown = ({setAssignToUserId,assignToUserId,disabled}) => {
     const [ddValue, setDDValue] = useState(assignToUserId||"")
     const [errorObj, setErrorObj] = useState({})
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
     const getAllUsers = async () => {
         // setLoading(true);
         try {
@@ -18,25 +30,12 @@ const UserListDropDown = ({setAssignToUserId,assignToUserId,disabled}) => {
                 // setVisible(false)
                 setUsers(response?.data?.data?.data);
             } else if (response.status === 400) {
-                Swal.fire({
-                    title: "Error!",
-                    text: response?.data?.data,
-                    icon: "error",
-                });
-
+                Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
             } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: response?.data?.data,
-                    icon: "error",
-                });
+                Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error,
-                icon: "error",
-            });
+            Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
         } finally {
             //   setLoading(false);
         }

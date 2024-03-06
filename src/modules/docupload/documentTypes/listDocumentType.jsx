@@ -39,6 +39,18 @@ function DocumentTypeList() {
   ];
 
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
+
   const getAllShippingLine = async (fromDate,toDate,search) => {
     try {
       setLoading(true);
@@ -65,18 +77,10 @@ function DocumentTypeList() {
         setPage(response?.data?.data?.page)
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   };
 
@@ -100,27 +104,15 @@ function DocumentTypeList() {
         if (result.isConfirmed) {
           const response = await apiPUT(`/v1/document-type/${id}`)
           if (response.status === 200) {
-            Swal.fire({
-              title: "Success!",
-              text: " Carrier Line Deleted successfully",
-              icon: "success",
-            });
+            Toast.fire("Success!","Carrier Line Deleted successfully", 'success');
             getAllShippingLine(fromDate,toDate,search)
           }
           else {
-            Swal.fire({
-              title: "Error!",
-              text: response?.data?.data || "Something went wrong!",
-              icon: "error",
-            });
+            Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
           }
         }
-      } catch (error) {
-        Swal.fire({
-          title: 'Error !',
-          text: error || "Something went wrong !",
-          icon: 'error',
-        });
+      } catch (error) {;
+        Toast.fire('Error!', error || 'Something went wrong!', 'error');
       }
     });
   }

@@ -25,6 +25,18 @@ const ReuploadDocument = ({ fromURL, visible, setVisible,getAllData }) => {
         { key: 'label_List', content: 'Document Reupload', active: true },
     ];
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
     const getData = async (id) => {
         try {
             let data = await apiGET('/v1/documents/' + id);
@@ -63,15 +75,12 @@ const ReuploadDocument = ({ fromURL, visible, setVisible,getAllData }) => {
                     title: "Success!",
                     text: "Document Reuploaded successfully",
                     icon: "success",
-                  });   
+                  }); 
+                Toast.fire('Error!', error || 'Document Reuploaded successfully', 'error');  
                 clearFields()
             }else{
                 setLoading(false)
-                Swal.fire({
-                    title: "Errror!",
-                    text: "Document Not Reupload",
-                    icon: "error",
-                  });
+                  Toast.fire('Error!', error || 'Document Not Reupload', 'error');
                 clearFields()
                 alertError(data?.data?.data)
             }

@@ -8,6 +8,18 @@ const AssignToModal = ({ modalOpen, setModalOpen, defaultValue, documentId,getDa
     const [ddValue, setDDValue] = useState(defaultValue)
     const [errorObj, setErrorObj] = useState({})
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
 
     const validate = (data) => {
         if (!data.userId) {
@@ -26,27 +38,15 @@ const AssignToModal = ({ modalOpen, setModalOpen, defaultValue, documentId,getDa
                 let response = await apiPOST(`/v1/documents/update-assign-to-user/` + documentId, payload);
             if (response.status === 200) {
                 getData(documentId)
-                Swal.fire({
-                    title: "Success!",
-                    text: "Assign User Updated",
-                    icon: "success",
-                });
+                Toast.fire("Success!","Assign User Updated", 'success');
                 setModalOpen(false)
             } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: response?.data?.data,
-                    icon: "error",
-                });
+                Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
                 setModalOpen(false)
             }
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error,
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
             setModalOpen(false)
         } finally {
             //   setLoading(false);

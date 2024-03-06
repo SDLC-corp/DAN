@@ -86,11 +86,7 @@ function AddFieldGroup(props) {
                 const response = await apiPOST('v1/field-group/', fieldGroupObj)
                 setLoading(false)
                 if (response?.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Field Group added successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Field Group added successfully", 'success');
                     setLoading(false)
                     clearFields()
                     props.getAllField()
@@ -114,11 +110,7 @@ function AddFieldGroup(props) {
                 const response = await apiPOST(`v1/field-group/${id}`, fieldGroupObj)
                 setLoading(false)
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Field Group updated successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Field Group updated successfully", 'success');
                     props.getAllField()
                     setLoading(false)
                     clearFields()

@@ -127,18 +127,10 @@ const getAllFieldGroup = async () => {
                 }
                 setFieldGroupList(list)
         }else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   };
 
@@ -151,11 +143,7 @@ const getAllFieldGroup = async () => {
         const response = await apiPOST('v1/fields/', fieldObj)
         setLoading(false)
         if (response?.status === 200) {
-          Swal.fire({
-            title: "Success!",
-            text: "Field added successfully",
-            icon: "success",
-          });
+          Toast.fire("Success!","Field added successfully", 'success');
           setLoading(false)
           clearFields()
           props.getAllField()
@@ -178,11 +166,7 @@ const getAllFieldGroup = async () => {
         const response = await apiPOST(`v1/fields/${id}`, fieldObj)
         setLoading(false)
         if (response.status === 200) {
-          Swal.fire({
-            title: "Success!",
-            text: "Field updated successfully",
-            icon: "success",
-          });
+          Toast.fire("Success!","Field updated successfully", 'success');
           props.getAllField()
           setLoading(false)
           clearFields()

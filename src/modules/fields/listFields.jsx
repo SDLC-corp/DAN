@@ -25,6 +25,17 @@ function FieldList() {
   const [filterModalOpen, setFilterModalOpen] = useState(false)
   const validInputRegex = /^[a-zA-Z0-9\s]*$/;
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+  })
 
   const sections = [
     { key: 'Dashboard', content: 'Dashboard', link: true },
@@ -58,18 +69,10 @@ function FieldList() {
         setPage(response?.data?.data?.page)
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   };
 
@@ -104,27 +107,15 @@ function FieldList() {
         if (result.isConfirmed) {
           const response = await apiPUT(`/v1/fields/${id}`)
           if (response.status === 200) {
-            Swal.fire({
-              title: "Success!",
-              text: "Fields Deleted successfully",
-              icon: "success",
-            });
+            Toast.fire("Success!","Fields Deleted successfully", 'success');
             getAllField()
           }
           else {
-            Swal.fire({
-              title: "Error!",
-              text: response?.data?.data || "Something went wrong!",
-              icon: "error",
-            });
+            Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
           }
         }
       } catch (error) {
-        Swal.fire({
-          title: 'Error !',
-          text: error || "Something went wrong !",
-          icon: 'error',
-        });
+        Toast.fire('Error!', error || 'Something went wrong!', 'error');
       }
     });
   }

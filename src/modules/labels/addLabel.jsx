@@ -152,11 +152,7 @@ function AddLabel(props) {
                 const response = await apiPOST(`v1/labels/${id}`, result)
                 setLoading(false)
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Label updated successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Label updated successfully", 'success');
                     props.getAllLabel()
                     setLoading(false)
                     clearFields()
@@ -187,21 +183,13 @@ function AddLabel(props) {
             const response = await apiDELETE(`v1/labels/${id}`)
             setLoading(false)
             if (response.status === 200) {
-                Swal.fire({
-                    title: "Success!",
-                    text: "Label Deleted successfully",
-                    icon: "success",
-                });
+                Toast.fire("Success!","Label Deleted", 'success');
                 props.getAllLabel()
                 setLoading(false)
                 clearFields()
             }
             else {
-                Swal.fire({
-                    title: "Error!",
-                    text: response?.data?.data || "Something went wrong!",
-                    icon: "error",
-                });
+                Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
             }
         }
         } catch (error) {

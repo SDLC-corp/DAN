@@ -37,6 +37,18 @@ export default function ViewDocument() {
     const [access, setAccess] = useState(false)
     const navigate = useNavigate();
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
     const getData = async (id) => {
         try {
             let data = await apiGET('/v1/documents/' + id);
@@ -49,27 +61,15 @@ export default function ViewDocument() {
                     setRawModalData(doc?.extractedData?.documents[0]?.fields)
                 }
             } else if (data.status == "401") {
-                Swal.fire({
-                    title: "Error !",
-                    text: data?.data?.data || "Document Not Found",
-                    icon: "error",
-                });
+                Toast.fire('Error!', data?.data?.data || 'Document Not Found', 'error');
                 navigate("/dashboard/document-list")
             } else {
-                Swal.fire({
-                    title: "Error !",
-                    text: "Document Not Found",
-                    icon: "error",
-                });
+                Toast.fire('Error!','Document Not Found', 'error');
                 navigate("/dashboard/document-list")
             }
         } catch (error) {
             console.log('error ---> getDoc Error', error);
-            Swal.fire({
-                title: "Error !",
-                text: error,
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
     };
 
@@ -97,11 +97,7 @@ export default function ViewDocument() {
                 }
 
             } catch (error) {
-                Swal.fire({
-                    title: 'Error !',
-                    text: error || "Something went wrong !",
-                    icon: 'error',
-                });
+                Toast.fire('Error!', error || 'Something went wrong!', 'error');
             }
         });
     };
@@ -207,28 +203,16 @@ export default function ViewDocument() {
                     const response = await apiGET(`/v1/documents/deletebymail/${id}?domainName=${docObj.domainName}`)
                     console.log("response.code", response);
                     if (response.data.code == 200) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: response?.data?.data?.message,
-                            icon: "success",
-                        });
+                        Toast.fire('Success!', response?.data?.data?.message, 'success');
                         toast.dismiss(toastId);
                         navigate("/dashboard/document-list")
                     }
                     else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: response?.data?.data || "Something went wrong!",
-                            icon: "error",
-                        });
+                        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
                     }
                 }
             } catch (error) {
-                Swal.fire({
-                    title: 'Error !',
-                    text: error || "Something went wrong !",
-                    icon: 'error',
-                });
+                Toast.fire('Error!', error || 'Something went wrong!', 'error');
             }
         });
     }
@@ -249,27 +233,15 @@ export default function ViewDocument() {
                 if (result.isConfirmed) {
                     const response = await apiPUT(`/v1/documents/${id}`)
                     if (response.status === 200) {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Document Deleted successfully",
-                            icon: "success",
-                        });
+                        Toast.fire("Success!","Document Deleted successfully", 'success');
                         navigate(`/dashboard/document-list`)
                     }
                     else {
-                        Swal.fire({
-                            title: "Error!",
-                            text: response?.data?.data || "Something went wrong!",
-                            icon: "error",
-                        });
+                        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
                     }
                 }
             } catch (error) {
-                Swal.fire({
-                    title: 'Error !',
-                    text: error || "Something went wrong !",
-                    icon: 'error',
-                });
+                Toast.fire('Error!', error || 'Something went wrong!', 'error');
             }
         });
     }

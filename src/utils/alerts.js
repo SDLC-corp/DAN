@@ -14,11 +14,7 @@ const Toast = Swal.mixin({
 
 export const alertError = (message) => {
   // Toast.fire('Error!', message || 'Something went wrong!', 'error');
-  Swal.fire({
-    title: 'Error!',
-    text: message,
-    icon: 'error',
-  });
+  Toast.fire('Error!', message || 'Something went wrong!', 'error');
 };
 export const alertWarning = (message) => {
     Swal.fire({
@@ -26,13 +22,10 @@ export const alertWarning = (message) => {
       text: message,
       icon: 'warning',
     });
+    
   };
 export const alertSuccess = (message, title) => {
-  Swal.fire({
-    title: title || 'Success!',
-    text: message,
-    icon: 'success',
-  });
+  Toast.fire("Success!",message, 'success');
 };
 
 export const alertInfo = (message, title) => {

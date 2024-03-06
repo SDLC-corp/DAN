@@ -124,18 +124,10 @@ const RemoteDocumentDropdown = ({ value, fieldsObj, setValue, thisSelectedSenten
                     setThisSelectedSentenceTex('')
                 }
             } else {
-                Swal.fire({
-                    title: "Error!",
-                    text: res?.data?.data || "Something went wrong!",
-                    icon: "error",
-                });
+                Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error || "Something went wrong!",
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
     };
 
@@ -162,11 +154,7 @@ const RemoteDocumentDropdown = ({ value, fieldsObj, setValue, thisSelectedSenten
             }
             setLoading(false)
             if (response.status === 200) {
-                Swal.fire({
-                    title: "Success!",
-                    text: "Master added successfully",
-                    icon: "success",
-                });
+                Toast.fire("Success!","Master added successfully", 'success');
                 setLoading(false)
                 getAllMasters(searchQuery || thisSelectedSentenceText)
                 setShowModal(false)

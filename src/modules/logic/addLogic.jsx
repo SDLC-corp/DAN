@@ -82,11 +82,7 @@ const AddLogic = (props) => {
                 setLoading(false)
                 console.log("response", response);
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "logic added successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","logic added successfully", 'success');
                     setLoading(false)
                     clearFields()
                     props.getAllLogics()
@@ -111,11 +107,7 @@ const AddLogic = (props) => {
                 setLoading(false)
                 console.log('response post', response);
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Custom Logic updated successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Custom Logic updated successfully", 'success');
                     props.getAllLogics()
                     setLoading(false)
                     clearFields()

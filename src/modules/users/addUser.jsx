@@ -148,11 +148,7 @@ function AddUser(Props) {
         setLoading(true)
         const response = await apiPOST('/v1/auth/register', payload);
         if (response.status === 201) {
-          Swal.fire({
-            title: 'Success!',
-            text: 'User created successfully!',
-            icon: 'success',
-          })
+          Toast.fire("Success!","User created Successfully", 'success');
           clearFields();
           Props.getAllUsers()
         } else {
@@ -193,11 +189,7 @@ function AddUser(Props) {
         }
         const response = await apiPOST(`v1/users/${id}`, payload)
         if (response.status === 200) {
-          Swal.fire({
-            title: "Success!",
-            text: "User Updated successfully",
-            icon: "success",
-          })
+          Toast.fire("Success!","User Updated successfully", 'success');
           clearFields();
           Props.getAllUsers()
         }
@@ -220,11 +212,7 @@ function AddUser(Props) {
             const response = await apiPOST(`v1/users/update-user-with-pass/${id}`, {password:updatePass})
             if (response.status === 200) {
                 clearPassFields()
-                Swal.fire({
-                    title: "Success!",
-                    text: "Password Updated successfully",
-                    icon: "success",
-                })
+                Toast.fire("Success!","Passwrod Updated successfully", 'success');
             }
             else {
                 clearPassFields()
@@ -250,18 +238,10 @@ const getAllRoles = async () => {
             setRolesData([...list])
         }
         else {
-            Swal.fire({
-                title: "Error!",
-                text: response?.data?.data || "Something went wrong!",
-                icon: "error",
-            });
+            Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
         }
     } catch (error) {
-        Swal.fire({
-            title: "Error!",
-            text: error || "Something went wrong!",
-            icon: "error",
-        });
+        Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
 };
 

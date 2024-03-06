@@ -25,6 +25,7 @@ function Dashboard() {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext);
 
+
   const initialDocObj = {
     documentUrl: "",
     documentTypeId: "",
@@ -40,6 +41,18 @@ function Dashboard() {
   const [refNo, setRefNo] = useState('')
   const [refNoError, setRefNoError] = useState(false)
 
+
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+})
 
   const saveBtnClickHandler = async () => {
     if (refNo == '' || refNo == undefined) {
@@ -61,11 +74,7 @@ function Dashboard() {
     let response = await apiPOST("/v1/documents", payload)
     setLoading(false)
     if (response?.status == "200") {
-      Swal.fire({
-        title: "Success!",
-        text: "Document added successfully",
-        icon: "success",
-      });
+      Toast.fire("Success!","Document added successfully", 'success');
 
       setDocObj(initialDocObj)
       setImageUrl("")
@@ -73,11 +82,12 @@ function Dashboard() {
       navigate("/dashboard/document-list")
     } else {
       if (response?.status == "403") {
-        Swal.fire({
-          title: "Alredy Exist!",
-          html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`,
-          icon: "error",
+        Toast.fire({
+          icon: 'error',
+          title: 'Already Exist!',
+          html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`
         });
+
       } else {
         alertError(response?.data?.data)
       }
@@ -128,21 +138,12 @@ function Dashboard() {
         updateDocObj("documentTypeId", list?.[0]?.value)
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   }
-
 
   useEffect(() => {
     updateDocObj("documentUrl", imageUrl)

@@ -84,11 +84,7 @@ const AddRole = (props) => {
                 const response = await apiPOST('v1/role/', payload)
                 setLoading(false)
                 if (response.status === 200) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Role added successfully",
-                        icon: "success",
-                    });
+                    Toast.fire("Success!","Role added successfully", 'success');
                     setLoading(false)
                     clearFields()
                     props.getAllRoles()

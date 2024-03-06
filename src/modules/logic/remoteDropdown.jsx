@@ -24,6 +24,18 @@ const RemoteDropdown = ({ value, setValue, handleButton }) => {
     const handleChange = (e, { value }) => setValue(value);
     const handleSearchChange = (e, { searchQuery }) => setSearchQuery(searchQuery);
 
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
     const getAllDocuments = async () => {
         try {
             setIsFetching(true)
@@ -34,18 +46,10 @@ const RemoteDropdown = ({ value, setValue, handleButton }) => {
                 setDocumentData(response.data);
             }
             else {
-                Swal.fire({
-                    title: "Error!",
-                    text: res?.data?.data || "Something went wrong!",
-                    icon: "error",
-                });
+                Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
             }
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: error || "Something went wrong!",
-                icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
         }
     };
 

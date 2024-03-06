@@ -32,7 +32,17 @@ const ModulesComp = ({setParentModuleIds,disableModulesIds,setDisableModulesIds}
         return roots;
     };
 
-
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
         // get application-modules
     const getAllModulesList = async() => {
         try {
@@ -46,18 +56,10 @@ const ModulesComp = ({setParentModuleIds,disableModulesIds,setDisableModulesIds}
                 setDomainData(arr);
             }
             else {
-              Swal.fire({
-                title: "Error!",
-                text: response?.data?.data || "Something went wrong!",
-                icon: "error",
-              });
+              Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
             }
           } catch (error) {
-            Swal.fire({
-              title: "Error!",
-              text: error || "Something went wrong!",
-              icon: "error",
-            });
+            Toast.fire('Error!', error || 'Something went wrong!', 'error');
           }        
     }
     useEffect(() => {

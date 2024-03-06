@@ -43,6 +43,17 @@ function labelsManagement() {
   const [refNo, setRefNo] = useState('')
   const [refNoError, setRefNoError] = useState(false)
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+})
 
   const saveBtnClickHandler = async () => {
     if (refNo == '' || refNo == undefined) {
@@ -64,11 +75,7 @@ function labelsManagement() {
     let response = await apiPOST("/v1/documents", payload)
     setLoading(false)
     if (response?.status == "200") {
-      Swal.fire({
-        title: "Success!",
-        text: "Document added successfully",
-        icon: "success",
-      });
+      Toast.fire("Success!","Document added successfully", 'success');
 
       setDocObj(initialDocObj)
       setImageUrl("")
@@ -131,18 +138,10 @@ function labelsManagement() {
         updateDocObj("documentTypeId", list?.[0]?.value)
       }
       else {
-        Swal.fire({
-          title: "Error!",
-          text: response?.data?.data || "Something went wrong!",
-          icon: "error",
-        });
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
-      Swal.fire({
-        title: "Error!",
-        text: error || "Something went wrong!",
-        icon: "error",
-      });
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
   }
 
