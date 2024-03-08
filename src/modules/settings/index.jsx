@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Message, Button } from 'semantic-ui-react';
 import { apiGET, apiPUT } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
+import { AuthContext } from '../../contexts';
 
 const Setting = () => {
 
@@ -16,12 +17,16 @@ const Setting = () => {
       toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
   })
+
+  const { user } = useContext(AuthContext);
+  console.log(user);
   const [loading, setLoading] = useState(false)
   const [orgDetails, setOrgDetails] = useState({
     orgName: '',
     orgWeb: '',
     syncApiUrl: ''
   })
+  const [apiUrlError, setApiUrlError] = useState('')
 
   const getOrganizationDetails = async () => {
     try {
@@ -40,6 +45,10 @@ const Setting = () => {
   };
 
   const updateApiUrl = async () => {
+    if (orgDetails.syncApiUrl == undefined || orgDetails.syncApiUrl == '') {
+      setApiUrlError('Please Provide API URL')
+      return
+    }
     try {
       setLoading(true)
       const res = await apiPUT(`/v1/organizations/`, { syncApiUrl: orgDetails.syncApiUrl });
@@ -48,10 +57,12 @@ const Setting = () => {
         getOrganizationDetails();
         setLoading(false)
       } else {
+        setApiUrlError('Unable To Update API URL, Please Try again in some time!')
         setLoading(false)
       }
     } catch (error) {
       setLoading(false)
+      setApiUrlError('Unable To Update API URL, Please Try again in some time!')
       console.log("Error :", error);
     }
   };
@@ -65,12 +76,22 @@ const Setting = () => {
         <div style={{ padding: '20px 30px' }}>
           <div className="header-text">Organization Details</div>
         </div>
-        <div style={{ backgroundColor: 'white', width: '98%', margin: '10px', borderRadius: '20px', padding: '10px 10px' }}>
-          <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
-            <div style={{ fontWeight: '700', width: '80px' }}>Name </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{orgDetails?.orgName}</div>
+        <div style={{ backgroundColor: 'white', width: '98%', margin: '10px', borderRadius: '20px', padding: '10px 10px', display: 'flex' }}>
+          <div style={{ width: '50%' }}>
+            <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
+              <div style={{ fontWeight: '700', width: '80px' }}>Name </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{orgDetails?.orgName}</div>
+            </div>
+            <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
+              <div style={{ fontWeight: '700', width: '80px' }}>Website </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{orgDetails?.orgWeb}</div>
+            </div>
           </div>
-          <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
-            <div style={{ fontWeight: '700', width: '80px' }}>Website </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{orgDetails?.orgWeb}</div>
+          <div style={{ width: '50%' }}>
+            <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
+              <div style={{ fontWeight: '700', width: '180px' }}>Organization Admin </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{user?.name}</div>
+            </div>
+            <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
+              <div style={{ fontWeight: '700', width: '180px' }}>Work Email </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{user?.email}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -89,16 +110,14 @@ const Setting = () => {
                 value={orgDetails.syncApiUrl}
                 onChange={(e) => setOrgDetails({ ...orgDetails, syncApiUrl: e.target.value })}
                 onFocus={() => {
-                  // setErrorstate(false);
-                  // setEmailError('');
-                  // setErrorMessage('');
+                  setApiUrlError('')
                 }}
-              // error={emailError ? true : false}
+                error={apiUrlError ? true : false}
               />
               <div style={{ width: '70%', marginBottom: '5px' }}>
-                {/* <Message className="fadeIn" color="red" size="small">
-                  <Message.Content>{'guigewf'}</Message.Content>
-                </Message> */}
+                {apiUrlError ? <Message className="fadeIn" color="red" size="small">
+                  <Message.Content>{apiUrlError}</Message.Content>
+                </Message> : ''}
               </div>
             </div>
             <div style={{ marginTop: '24px' }}>
