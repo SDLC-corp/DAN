@@ -85,14 +85,14 @@ const Setting = () => {
               <div style={{ fontWeight: '700', width: '80px' }}>Website </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{orgDetails?.orgWeb}</div>
             </div>
           </div>
-          <div style={{ width: '50%' }}>
+          {/* <div style={{ width: '50%' }}>
             <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
               <div style={{ fontWeight: '700', width: '180px' }}>Organization Admin </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{user?.name}</div>
             </div>
             <div style={{ padding: '15px 10px', borderRadius: '10px', display: 'flex' }}>
               <div style={{ fontWeight: '700', width: '180px' }}>Work Email </div> <div style={{ fontWeight: '700', marginRight: '30px' }} >:</div> <div>{user?.email}</div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="" style={{ backgroundColor: '#E1EEFF', width: '100%', borderRadius: '20px', marginTop: '30px' }}>
