@@ -29,7 +29,9 @@ export default function ViewDocument() {
     const [selectedSentence, setSelectedSentence] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
     const [rawModal, setRawModal] = useState(false)
+    const [viewRawModal, setViewRawModal] = useState(false)
     const [rawModalData, setRawModalData] = useState({})
+    const [viewRawModelData, setViewRawModelData] = useState({})
     const [onChangeClearCanvas, setOnChangeClearCanvas] = useState(false)
     const [count, setCount] = useState(0)
     const [extractLoading, setExtractLoading] = useState(false);
@@ -58,6 +60,9 @@ export default function ViewDocument() {
               
                 if (doc?.extractedData?.documents) {
                     setRawModalData(doc?.extractedData?.documents[0]?.fields)
+                }
+                if(doc && doc.extractedData) {
+                    setViewRawModelData(doc.extractedData)
                 }
             } else if (data.status == "401") {
                 Toast.fire('Error!', data?.data?.data || 'Document Not Found', 'error');
@@ -279,7 +284,11 @@ export default function ViewDocument() {
                                             }
                                             {
                                                 hasAccess(VIEW_RAW) ?
-                                                    <Dropdown.Item onClick={() => { setRawModal(!rawModal); }} text='View Raw' /> : null
+                                                    <Dropdown.Item onClick={() => { setRawModal(!rawModal); }} text='Raw Fields' /> : null
+                                            }
+                                            {
+                                                hasAccess(VIEW_RAW) ?
+                                                    <Dropdown.Item onClick={() => { setViewRawModal(!viewRawModal); }} text='View Raw' /> : null
                                             }
 
                                             {
@@ -326,6 +335,7 @@ export default function ViewDocument() {
                                    
                                 </div>
                                 {rawModal && <RawModal rawModalData={rawModalData} />}
+                                {viewRawModal && <ViewRawModal rawModalData={viewRawModelData}/>}
                                 {docObj.documentUrl &&
                                     <FieldsAndValuesCmp documentId={id} _docObj={docObj} selectedSentence={selectedSentence}
                                         setDocObj={setDocObj} clearSelection={clearSelection} onChangeClearCanvas={OnChangeClearCanvas}
@@ -1933,6 +1943,19 @@ function RawModal({ rawModalData }) {
                 </Table.Body>
             </Table>
             <div style={{ height: 20 }}></div>
+        </Scrollbars>
+    );
+}
+
+function ViewRawModal({ rawModalData }) {
+    const {
+        content
+    } = rawModalData || {}
+    console.log("-------------- ViewRawModal -------------", rawModalData);
+
+    return (
+        <Scrollbars className="fields-container">
+            <div style={{ height: 20, padding: 20 }}>{content}</div>
         </Scrollbars>
     );
 }
