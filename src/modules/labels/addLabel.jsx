@@ -16,6 +16,7 @@ import { useEffect } from 'react';
 import { Editor } from '@monaco-editor/react';
 import AddLogic from '../logic/addLogic';
 import moment from 'moment';
+import SearchAddwithoutOptionDropdown from '../../components/dropdown/searchAddwithoutOptionDropdown';
 
 function AddLabel(props) {
     const navigate = useNavigate();
@@ -590,6 +591,8 @@ export default AddLabel;
 
 export function AddLogicModal({openModal,setOpenModal,updateLogicInLabelId,setUpdateLogicInLabelId,getAllLogics}) {
     const [dataObj, setDataObj] = useState()
+    const [dependencyArray, setDependencyArray] = useState([])
+
 
     const Toast = Swal.mixin({
         toast: true,
@@ -615,7 +618,7 @@ export function AddLogicModal({openModal,setOpenModal,updateLogicInLabelId,setUp
             const isValid = await validate(dataObj)
             if (isValid) {
                 // setLoading(true)
-                const response = await apiPOST('v1/logic/', dataObj)
+                const response = await apiPOST('v1/logic/', { ...dataObj, dependency: dependencyArray })
                 // setLoading(false)
                 if (response.status === 200) {
                     setUpdateLogicInLabelId(response?.data?._id)
@@ -660,7 +663,7 @@ export function AddLogicModal({openModal,setOpenModal,updateLogicInLabelId,setUp
             const isValid = await validate(dataObj)
             if (isValid) {
                 // setLoading(true)
-                const response = await apiPOST(`v1/logic/${updateLogicInLabelId}`, dataObj)
+                const response = await apiPOST(`v1/logic/${updateLogicInLabelId}`, { ...dataObj, dependency: dependencyArray });
                 // setLoading(false)
                 if (response.status === 200) {
                     Swal.fire({
@@ -694,6 +697,9 @@ export function AddLogicModal({openModal,setOpenModal,updateLogicInLabelId,setUp
                     shortCode: response.shortCode,
                     textArea: response.textArea,
                 })
+                if (response?.dependency) {
+                    setDependencyArray(response.dependency)
+                }
             }
             else {
                 Toast.fire('Error!', response?.data?.data || "Something went wrong!", 'error');
@@ -738,6 +744,16 @@ export function AddLogicModal({openModal,setOpenModal,updateLogicInLabelId,setUp
                             // delete errorObj?.shortCode
                         }}
                         // error={errorObj && errorObj.shortCode}
+                    />
+                    <Form.Field
+                        style={{marginBottom:0}}
+                        label="Dependency"
+                    />
+                    <SearchAddwithoutOptionDropdown
+                        style={{marginBottom:15}}
+                        placeholder="Enter dependency"
+                        dependencyArray={dependencyArray} 
+                        setDependencyArray={setDependencyArray}
                     />
                     <div style={{border:"1px solid #ccc",borderRadius:3,padding:1}}>
                         <Editor
