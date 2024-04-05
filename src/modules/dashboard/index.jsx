@@ -82,11 +82,14 @@ function Dashboard() {
       navigate("/dashboard/document-list")
     } else {
       if (response?.status == "403") {
-        Toast.fire({
-          icon: 'error',
-          title: 'Already Exist!',
-          html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`
-        });
+        // Toast.fire({
+        //   icon: 'error',
+        //   title: 'Already Exist!',
+        //   html: `<div style="display: flex; flex-direction:column; justify-content: center;">A Booking with this <div style="text-align: left; margin-left: 80px;"><span style={{margin: 0 20px;}}>Document No : ${docObj?.documentNo},</span><br/><span style={{margin: 0 20px;}}></span><br/> <span style={{margin: 0 20px;}}>Location : ${docObj?.domainName}</span><br/></div>already exist, kindly delete the previous to proceed with adding new one.</div>`
+        // });
+        Toast.fire('Error While uploading document!', response?.data?.message || 'Something went wrong!', 'error');
+
+        console.log(error);
 
       } else {
         alertError(response?.data?.data)
