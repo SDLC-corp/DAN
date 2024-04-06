@@ -2,45 +2,38 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Icon, Image, Input, Modal } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
-import { Chart as ChartsJs, BarElement, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
+import { Chart as ChartsJs, BarElement, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
 import { useNavigate } from 'react-router-dom';
 import { alertError } from '../../utils/alerts';
 import { AuthContext } from '../../contexts';
 import DocumentUploadDrop from '../../components/imageuploader/docUpload';
+import UpgradePlanModal from '../../components/modal/upgradePlanModal';
 
-ChartsJs.register(
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  BarElement,
-  PointElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-)
+ChartsJs.register(CategoryScale, LinearScale, LineElement, BarElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
 function Dashboard() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
-
   const initialDocObj = {
-    documentUrl: "",
-    documentTypeId: "",
-  }
-  const [openModal, setOpenModal] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [assignToUserId, setAssignToUserId] = useState("")
-  const [docNoLoading, setDocNoLoading] = useState(false)
-  const [docObj, setDocObj] = useState({ ...initialDocObj })
-  const [documentTypeOptions, setDocumentTypeOptions] = useState([])
-  const [uploadType, setUploadType] = useState(null)
-  const [refNo, setRefNo] = useState('')
-  const [refNoError, setRefNoError] = useState(false)
+    documentUrl: '',
+    documentTypeId: '',
+  };
+  const [openModal, setOpenModal] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [assignToUserId, setAssignToUserId] = useState('');
+  const [docNoLoading, setDocNoLoading] = useState(false);
+  const [docObj, setDocObj] = useState({ ...initialDocObj });
+  const [documentTypeOptions, setDocumentTypeOptions] = useState([]);
+  const [uploadType, setUploadType] = useState(null);
+  const [refNo, setRefNo] = useState('');
+  const [refNoError, setRefNoError] = useState(false);
+  const [isModalOpen,setIsModalOpen] = useState(false);
 
+  const [isFreeAccount, setIsFreeAccount] = useState(false);
+  const [uploadedDocCoount, setUploadedDocCoount] = useState(0);
 
   const Toast = Swal.mixin({
     toast: true,
@@ -49,36 +42,34 @@ function Dashboard() {
     timer: 3000,
     timerProgressBar: true,
     didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-    }
-})
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+  });
 
   const saveBtnClickHandler = async () => {
-
-
     let payload = {
-      "documentTypeId": docObj.documentTypeId,
-      "documentUrl": docObj.documentUrl || "https://artyfactassests.s3.ap-south-1.amazonaws.com/uploads/1692697809182/How-to-submit-shipping-instruction_0.pdf",
-      "documentNo": refNo
+      documentTypeId: docObj.documentTypeId,
+      documentUrl: docObj.documentUrl || 'https://artyfactassests.s3.ap-south-1.amazonaws.com/uploads/1692697809182/How-to-submit-shipping-instruction_0.pdf',
+      documentNo: refNo,
+    };
+
+    if (user.role != 'documentation' && assignToUserId) {
+      payload = { ...payload, assignToUserId: assignToUserId };
     }
 
-    if (user.role != "documentation" && assignToUserId) {
-      payload = { ...payload, assignToUserId: assignToUserId }
-    }
+    setLoading(true);
+    let response = await apiPOST('/v1/documents', payload);
+    setLoading(false);
+    if (response?.status == '200') {
+      Toast.fire('Success!', 'Document added successfully', 'success');
 
-    setLoading(true)
-    let response = await apiPOST("/v1/documents", payload)
-    setLoading(false)
-    if (response?.status == "200") {
-      Toast.fire("Success!","Document added successfully", 'success');
-
-      setDocObj(initialDocObj)
-      setImageUrl("")
-      setAssignToUserId("")
-      navigate("/dashboard/document-list")
+      setDocObj(initialDocObj);
+      setImageUrl('');
+      setAssignToUserId('');
+      navigate('/dashboard/document-list');
     } else {
-      if (response?.status == "403") {
+      if (response?.status == '403') {
         // Toast.fire({
         //   icon: 'error',
         //   title: 'Already Exist!',
@@ -87,31 +78,38 @@ function Dashboard() {
         Toast.fire('Error While uploading document!', response?.data?.message || 'Something went wrong!', 'error');
 
         console.log(error);
-
       } else {
-        alertError(response?.data?.data)
+        alertError(response?.data?.data);
       }
     }
-
-
-  }
-
+  };
 
   function updateUpload(url) {
-    setImageUrl(url)
+    setImageUrl(url);
   }
 
   const onUploadDone = (data) => {
-    updateUpload(data)
-
-  }
+    updateUpload(data);
+  };
   const updateDocObj = (key, value) => {
-    setDocObj({ ...docObj, [key]: value })
-  }
-
+    setDocObj({ ...docObj, [key]: value });
+  };
+  const getOrgStatus = async () => {
+    try {
+      let response = await apiGET(`/v1/organizations`);
+      if (response.status === 200) {
+        setUploadedDocCoount(response.data.data?.documentUploadedCount || 0);
+        setIsFreeAccount(response.data.data?.isFreeAccount || true);
+      } else {
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
+      }
+    } catch (error) {
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
+    }
+  };
   const getAllDocumentTypeList = async () => {
     try {
-      let response = await apiGET(`/v1/document-type/list`,);
+      let response = await apiGET(`/v1/document-type/list`);
       if (response.status === 200) {
         let list = response?.data?.data?.data;
         if (list && list.length) {
@@ -130,81 +128,63 @@ function Dashboard() {
               text: item?.name,
               value: item?._id,
               logo: item?.logo,
-              description: item?.description
+              description: item?.description,
             };
           });
         }
-        setDocumentTypeOptions(list)
-        updateDocObj("documentTypeId", list?.[0]?.value)
-      }
-      else {
+        setDocumentTypeOptions(list);
+        updateDocObj('documentTypeId', list?.[0]?.value);
+      } else {
         Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
       }
     } catch (error) {
       Toast.fire('Error!', error || 'Something went wrong!', 'error');
     }
-  }
+  };
 
   useEffect(() => {
-    updateDocObj("documentUrl", imageUrl)
-  }, [imageUrl])
-
+    updateDocObj('documentUrl', imageUrl);
+  }, [imageUrl]);
 
   useEffect(() => {
-    getAllDocumentTypeList()
-  }, [])
+    getAllDocumentTypeList();
+    getOrgStatus();
+  }, []);
   return (
-    <div className="fadeIn  page-content-wrapper " style={{ paddingBottom: '150px', margin: '10px' }} >
-      <div style={{ padding: '20px', display: 'flex', flexDirection: 'row ', flexWrap: "wrap", gap: '25px' }}>
-        {documentTypeOptions.length > 0 ? documentTypeOptions.map((type, index) => (
-          <div key={index} style={{ width: '258px' }}>
-            {type?.logo ?
-              <img src={type?.logo} style={{ width: '254px', height: '140px', borderRadius: '10.4px' }} ></img>
-              :
-              <div style={{ width: '254px', height: '140px', borderRadius: '10.4px', backgroundColor: '#F0EFEF' }}></div>}
-            <div style={{ marginTop: '8px', fontWeight: '700' }}>{type.text}</div>
-            <div style={{ fontSize: '12px' }}>
-              {type.description}
+    <div className="fadeIn  page-content-wrapper " style={{ paddingBottom: '150px', margin: '10px' }}>
+      <div style={{ padding: '20px', display: 'flex', flexDirection: 'row ', flexWrap: 'wrap', gap: '25px' }}>
+        {documentTypeOptions.length > 0 ? (
+          documentTypeOptions.map((type, index) => (
+            <div key={index} style={{ width: '258px' }}>
+              {type?.logo ? <img src={type?.logo} style={{ width: '254px', height: '140px', borderRadius: '10.4px' }}></img> : <div style={{ width: '254px', height: '140px', borderRadius: '10.4px', backgroundColor: '#F0EFEF' }}></div>}
+              <div style={{ marginTop: '8px', fontWeight: '700' }}>{type.text}</div>
+              <div style={{ fontSize: '12px' }}>{type.description}</div>
+              <button
+                onClick={() => {
+                  if (isFreeAccount && (uploadedDocCoount >= 10)) {
+                    setIsModalOpen(true)
+                  } else {
+                    setOpenModal(!openModal);
+                    updateDocObj('documentTypeId', type.value);
+                  }
+                }}
+                style={{ border: 'none', color: '#048DEF', background: 'transparent', fontWeight: '500', cursor: 'pointer', marginTop: '10px' }}>
+                <Icon name="upload" /> Upload Document
+              </button>
             </div>
-            <button onClick={() => { setOpenModal(!openModal); updateDocObj("documentTypeId", type.value); }} style={{ border: 'none', color: '#048DEF', background: 'transparent', fontWeight: '500', cursor: 'pointer', marginTop: '10px' }}><Icon name='upload' /> Upload Document</button>
-          </div>
-        )) :
-          <div style={{ width: '100%', height: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: '700', color: '#acbdcd' }}>
-            There are no records to display
-          </div>
-        }
-        <CardComponent
-          loading={loading}
-          docNoLoading={docNoLoading}
-          imageUrl={imageUrl}
-          saveBtnClickHandler={saveBtnClickHandler}
-          openModal={openModal}
-          setOpenModal={setOpenModal}
-          onUploadDone={onUploadDone}
-          docObj={docObj}
-          uploadType={uploadType}
-          setRefNo={setRefNo}
-          refNo={refNo}
-          refNoError={refNoError}
-          setRefNoError={setRefNoError}
-        />
+          ))
+        ) : (
+          <div style={{ width: '100%', height: '80vh', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: '700', color: '#acbdcd' }}>There are no records to display</div>
+        )}
+        <CardComponent loading={loading} docNoLoading={docNoLoading} imageUrl={imageUrl} saveBtnClickHandler={saveBtnClickHandler} openModal={openModal} setOpenModal={setOpenModal} onUploadDone={onUploadDone} docObj={docObj} uploadType={uploadType} setRefNo={setRefNo} refNo={refNo} refNoError={refNoError} setRefNoError={setRefNoError} />
       </div>
+      <UpgradePlanModal setIsModalOpen={setIsModalOpen} isModalOpen={isModalOpen}/>
     </div>
   );
 }
 
-
-
-const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, openModal, setOpenModal, onUploadDone, docObj, refNo, setRefNo, refNoError, setRefNoError }) =>
-(
-  <Modal
-    
-    open={openModal}
-    closeIcon={'close'}
-    onClose={() => setOpenModal(!openModal)}
-    closeOnDimmerClick={false}
-    style={{ padding: '25px', borderRadius: '20px', width:'500px' }}
-  >
+const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, openModal, setOpenModal, onUploadDone, docObj, refNo, setRefNo, refNoError, setRefNoError }) => (
+  <Modal open={openModal} closeIcon={'close'} onClose={() => setOpenModal(!openModal)} closeOnDimmerClick={false} style={{ padding: '25px', borderRadius: '20px', width: '500px' }}>
     <div>
       <h2>Upload Document</h2>
       <div style={{ marginBottom: '10px' }}>Document Number (Reference No.)</div>
@@ -215,29 +195,24 @@ const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, o
         required={true}
         value={refNo}
         onChange={(e) => {
-          setRefNoError('')
+          setRefNoError('');
           setRefNo(e.target.value);
         }}
         style={{ width: '100%' }}
         error={refNoError ? true : false}
-
       />
       {refNoError ? <div style={{ color: '#ab3a38', padding: '10px 0', fontSize: '10px' }}>{refNoError}</div> : ''}
     </div>
     <div style={{ paddingBottom: '30px', paddingTop: '20px' }}>
-      <div style={{ marginBottom: '10px' }}>Upload Document <span style={{ color: "red" }}>*</span></div>
-      <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight='15vh' />
+      <div style={{ marginBottom: '10px' }}>
+        Upload Document <span style={{ color: 'red' }}>*</span>
+      </div>
+      <DocumentUploadDrop imageUrl={docObj.documentUrl} onUploadDone={onUploadDone} disabled={loading} minHeight="15vh" />
     </div>
     <div style={{ width: '100%', display: 'flex', justifyContent: 'end' }}>
-      <Button
-        style={{ width: '100px', borderRadius: '20px' }}
-        icon='upload'
-
-        loading={loading} disabled={loading || docNoLoading || !imageUrl}
-        content='Save' fluid onClick={saveBtnClickHandler} primary />
+      <Button style={{ width: '100px', borderRadius: '20px' }} icon="upload" loading={loading} disabled={loading || docNoLoading || !imageUrl} content="Save" fluid onClick={saveBtnClickHandler} primary />
     </div>
   </Modal>
 );
-
 
 export default Dashboard;

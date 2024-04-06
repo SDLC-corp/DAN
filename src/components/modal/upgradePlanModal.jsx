@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, Button } from 'semantic-ui-react';
 
 
-const UpgradePlanModal = () => {
+const UpgradePlanModal = ({isModalOpen, setIsModalOpen}) => {
     const navigate = useNavigate();
   return (
     <Modal
-    open={true}
+    open={isModalOpen}
     closeIcon={'close'}
-    // onClose={() => setOpenModal(!openModal)}
+    onClose={() => setIsModalOpen(!isModalOpen)}
     closeOnDimmerClick={false}
     style={{  borderRadius: '20px', width:'700px', height: '400px',padding:'0' }}
     >

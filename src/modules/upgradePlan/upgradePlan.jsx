@@ -2,16 +2,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Breadcrumb, Button, Form, Icon, Image, Input, Modal, Message } from 'semantic-ui-react';
 import DataGeometryLogo from '../../assets/images/data-geometry.svg';
 import Swal from 'sweetalert2';
-import { apiPOST } from '../../utils/apiHelper';
+import { apiGET, apiPOST } from '../../utils/apiHelper';
+import { AuthContext } from '../../contexts';
 
 const UpgradePlan = () => {
   const [openModal, setOpenModal] = useState(false);
 
   return (
     <div style={{ backgroundColor: '#f0efef', height: '100%', overflow: 'auto' }}>
-
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: '40px', gap: '40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap:10 }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10 }}>
           <img src="/src/assets/image1.svg" alt="Description of the SVG image" style={{ width: '100px', height: '100px' }} />
           <span style={{ fontSize: '50px', lineHeight: '30px', fontWeight: '700' }}>Pricing</span>
         </div>
@@ -39,7 +39,7 @@ const UpgradePlan = () => {
                 onClick={() => {
                   setOpenModal(!openModal);
                 }}
-                style={{ backgroundColor: '#048def', borderRadius: '20px', padding: '10px 30px', fontWeight: '500', color: 'white', border: 'none' }}>
+                style={{ cursor: 'pointer', backgroundColor: '#048def', borderRadius: '20px', padding: '10px 30px', fontWeight: '500', color: 'white', border: 'none' }}>
                 Buy Now
               </button>
             </div>
@@ -52,6 +52,7 @@ const UpgradePlan = () => {
 };
 
 const CardComponent = ({ openModal, setOpenModal }) => {
+  const { user } = useContext(AuthContext);
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -63,7 +64,7 @@ const CardComponent = ({ openModal, setOpenModal }) => {
       toast.addEventListener('mouseleave', Swal.resumeTimer);
     },
   });
-
+  const [orgName, setOrgName] = useState();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -119,6 +120,7 @@ const CardComponent = ({ openModal, setOpenModal }) => {
     return isValid;
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -135,7 +137,7 @@ const CardComponent = ({ openModal, setOpenModal }) => {
             phone: '',
             comment: '',
           });
-          setOpenModal(false)
+          setOpenModal(false);
           Toast.fire('Success!', 'Professional Account Request Successfully Sent!', 'success');
         } else {
           Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
@@ -145,6 +147,31 @@ const CardComponent = ({ openModal, setOpenModal }) => {
       }
     }
   };
+  const getOrgStatus = async () => {
+    try {
+      let response = await apiGET(`/v1/organizations`);
+      if (response.status === 200) {
+        setOrgName(response.data.data.name);
+      } else {
+        Toast.fire('Error!', response?.data?.data || 'Something went wrong!', 'error');
+      }
+    } catch (error) {
+      Toast.fire('Error!', error || 'Something went wrong!', 'error');
+    }
+  };
+
+  useEffect(() => {
+    getOrgStatus();
+  }, [user]);
+
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      name: user.name,
+      email: user.email,
+      orgName: orgName,
+    });
+  }, [user, orgName]);
 
   return (
     <Modal open={openModal} closeIcon={'close'} onClose={() => setOpenModal(!openModal)} closeOnDimmerClick={false} style={{ padding: '25px', borderRadius: '20px', width: '500px' }}>
