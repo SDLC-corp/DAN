@@ -55,10 +55,7 @@ function Dashboard() {
 })
 
   const saveBtnClickHandler = async () => {
-    if (refNo == '' || refNo == undefined) {
-      setRefNoError('Please Provide Reference Number')
-      return
-    }
+
 
     let payload = {
       "documentTypeId": docObj.documentTypeId,
@@ -210,7 +207,7 @@ const CardComponent = ({ loading, docNoLoading, imageUrl, saveBtnClickHandler, o
   >
     <div>
       <h2>Upload Document</h2>
-      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.) <span style={{ color: "red" }}>*</span></div>
+      <div style={{ marginBottom: '10px' }}>Document Number (Reference No.)</div>
       <Form.Field
         id="form-input-control-first-name"
         control={Input}

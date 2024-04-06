@@ -15,10 +15,11 @@ import RoleList from '../modules/role/listRole';
 import UnAuthorized from '../utils/unAuthorized';
 import OrganizationsRegistration from '../modules/organizationsRegistration/organizationsRegistration';
 import VerifyRegistration from '../modules/organizationsRegistration/verifyRegistration';
-import { ADD_DOCUMENT_TYPE, AIR, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_USER, OCEAN, REUPLOAD_PDF, VIEW_CUSTOM_LOGIC, VIEW_DOCUMENT, VIEW_FIELD, VIEW_LABEL_MATRIX } from '../utils/accessHelper';
+import { ADD_DOCUMENT_TYPE, AIR, DELETE_REQUEST, DOCUMENT_TYPE, DOCUMENT_UPLOAD, EDIT_DOCUMENT_TYPE, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_USER, OCEAN, REUPLOAD_PDF, UPGRADE_PLAN, VIEW_CUSTOM_LOGIC, VIEW_DOCUMENT, VIEW_FIELD, VIEW_LABEL_MATRIX } from '../utils/accessHelper';
 import SetPassword from '../modules/organizationsRegistration/setPassword';
 import DocumentTypeList from '../modules/docupload/documentTypes/listDocumentType';
 import Setting from '../modules/settings';
+import UpgradePlan from '../modules/upgradePlan/upgradePlan';
 
 // These path are relative to /dashboard/
 const authProtectedRoutes = [
@@ -66,6 +67,8 @@ const authProtectedRoutes = [
   { path: 'jobs', component: <JobList /> },
 
   { path: 'setting', component: <Setting /> , acccessModuleName: VIEW_FIELD},
+
+  { path: '/dashboard/upgrade-plan', component: <UpgradePlan/> , acccessModuleName: UPGRADE_PLAN},
 
 
 

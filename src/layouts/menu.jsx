@@ -1,4 +1,4 @@
-import { AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_SETTING, MANAGE_USER, PORT_MASTERS, SETTING, SHIPPING_LINE, VIEW_CUSTOM_LOGIC, VIEW_DASHBOARD, VIEW_FIELD, VIEW_LABEL_MATRIX, hasAccess } from "../utils/accessHelper";
+import { AIR_PORT_MASTERS, CONTAINER_ISO_CODE, CUSTOM_LOGIC, DELETE_REQUEST, DOCUMENT_UPLOAD, FIELDS, FIELD_MAPPING, LABEL_MATRIX, MANAGE_DASHBOARD, MANAGE_DOCUMENT, MANAGE_DOMAIN, MANAGE_LABEL_MATRIX, MANAGE_ROLE, MANAGE_SETTING, MANAGE_USER, PORT_MASTERS, SETTING, SHIPPING_LINE, UPGRADE_PLAN, VIEW_CUSTOM_LOGIC, VIEW_DASHBOARD, VIEW_FIELD, VIEW_LABEL_MATRIX, hasAccess } from "../utils/accessHelper";
 
 export default function getMenus(user = {}) {
 
@@ -38,6 +38,7 @@ export default function getMenus(user = {}) {
     { type: 'menu', title: 'Dashboard', path: '/dashboard', icon: 'home', accessModule: VIEW_DASHBOARD },
     { type: 'menu', title: 'Document Upload', path: '/dashboard/document-upload', icon: 'upload', accessModule: DOCUMENT_UPLOAD },
     { type: 'menu', title: 'Document List', path: '/dashboard/document-list', icon: 'file alternate outline icon', accessModule: MANAGE_DOCUMENT },
+    { type: 'menu', title: 'Upgrade Plan', path: '/dashboard/upgrade-plan', icon: 'briefcase', accessModule: UPGRADE_PLAN },
 
     { type: 'label', title: 'Field Mapping', accessModule: MANAGE_LABEL_MATRIX },
     { type: 'menu', title: 'Label Matrix', path: '/dashboard/labels/manage', icon: 'modx', accessModule: VIEW_LABEL_MATRIX },
