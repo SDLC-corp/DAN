@@ -68,6 +68,7 @@ const SetPassword = () => {
       };
       try {
         if (loading) return;
+        setLoading(true);
         const res = await apiPOST(`/v1/auth/register/set-password`, payload);
         setLoading(false);
         if (res.status === 200) {
@@ -106,7 +107,7 @@ const SetPassword = () => {
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
             <div></div>
-            <Button type="submit" onClick={handleSubmit} style={{ borderRadius: '20px', marginTop: '10px' }} primary>
+            <Button type="submit" loading={loading} onClick={handleSubmit} style={{ borderRadius: '20px', marginTop: '10px' }} primary>
               Verify Email
             </Button>
           </div>

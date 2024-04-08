@@ -81,6 +81,7 @@ const OrganizationsRegistration = () => {
     if (validateForm()) {
       try {
         if (loading) return;
+        setLoading(true);
         const res = await apiPOST(`/v1/auth/register/send-otp`, formData);
         setLoading(false);
         if (res.status === 200) {
@@ -168,7 +169,7 @@ const OrganizationsRegistration = () => {
                 )}
               </div>
 
-              <Button type="submit" primary style={{ padding: '15px 34px', borderRadius: '65px', fontSize: '12px', fontWeight: '500', backgroundColor: '#048DEF' }}>
+              <Button type="submit" loading={loading} primary style={{ padding: '12px 34px', borderRadius: '65px', fontSize: '12px', fontWeight: '500', backgroundColor: '#048DEF' }}>
                 Next <i class="arrow right icon " style={{ color: 'white', width: '5px', fontSize: 'larger' }}></i>
               </Button>
             </div>

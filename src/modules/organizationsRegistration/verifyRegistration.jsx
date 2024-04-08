@@ -14,6 +14,7 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
   const token = queryParams.get('token');
   const [otp, setOtp] = useState(Array(numInputs).fill(''));
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const Toast = Swal.mixin({
     toast: true,
@@ -41,7 +42,10 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
           otp: Number(otp.join('')),
           token: token,
         };
+        if (loading) return;
+        setLoading(true);
         const res = await apiPOST(`/v1/auth/register/verify-otp`, payload);
+        setLoading(false);
         if (res.status === 200) {
           Toast.fire('Success!', 'OTP Verified Successfully', 'success');
           const encodedToken = encodeURIComponent(token);
@@ -122,7 +126,7 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
           {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
             <div></div>
-            <Button type="submit" onClick={handleSubmit} style={{ borderRadius: '20px', marginTop: '10px' }} primary>
+            <Button type="submit" loading={loading} onClick={handleSubmit} style={{ borderRadius: '20px', marginTop: '10px' }} primary>
               Verify Email
             </Button>
           </div>
