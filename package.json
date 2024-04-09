@@ -31,6 +31,7 @@
     "react-dropzone": "^14.2.3",
     "react-hot-toast": "^2.4.1",
     "react-pdf": "^7.3.3",
+    "react-phone-input-2": "^2.15.1",
     "react-pro-sidebar": "^1.0.0",
     "react-router-dom": "^6.10.0",
     "semantic-ui-css": "^2.5.0",

@@ -1,19 +1,23 @@
 import React from 'react';
-
-
+import {  Image } from 'semantic-ui-react';
+import svgDescription from '../../assets/image1.svg';
+import toplines from '../../assets/toplines.svg';
+import downLine from '../../assets/Group410.svg'
+import bottomLogo from "../../assets/Group109.svg"
 function DataGeoComp() {
   return (
     <div style={{ maxWidth: '100%', height: '94%', margin: '20px', backgroundColor: '#048def', borderRadius: '20px', position: 'relative',padding: '10px', overflow: 'hidden' }}>
 
-      <img style={{position: 'absolute', top: '0px', left: '18px', zindex: '1', marginRight: '10px', borderRadius: '20px', maxWidth: '100%', height: '59%', objectFit: 'cover', opacity: '0.57'}} 
-      src="/src/assets/toplines.svg" alt="line upper img" />
+      <Image style={{position: 'absolute', top: '0px', left: '18px', zindex: '1', marginRight: '10px', borderRadius: '20px', maxWidth: '100%', height: '59%', objectFit: 'cover', opacity: '0.57'}} 
+      src={toplines} alt="line upper img" />
 
       <div style={{ position:'relative', top: '55px', left: '35px', width: '266px', display:'flex'}}>
-        <img src="/src/assets/image1.svg" alt="Description of the SVG image" />
+        <Image src={svgDescription} alt="Description of the SVG image" />
           <h5 style={{color:'white', margin:0, position: 'relative', top: '20px', left: '13px', fontSize: '24px'}}>Data Geometry</h5>
       </div>
       
-      <img style={{position: 'absolute', zIndex: '1',left: '0px', width: '100%', height: 'auto', opacity: '0.57'}} src="/src/assets/Group410.svg" alt="Group img" />
+      <Image style={{position: 'absolute', zIndex: '1',left: '0px', width: '100%', height: 'auto', opacity: '0.57'}} src={downLine}
+       alt="Group img" />
 
       <div>
         <p style={{position: 'relative', top: '85px', left: '35px', color: 'white', fontSize: '35px', fontWeight: '500', width: '96.6%'}}>
@@ -41,7 +45,7 @@ function DataGeoComp() {
         <span style={{ left: '60%', top: '40%',paddingRight: '10px', paddingLeft: '10px', paddingTop: '3px', paddingBottom: '3px' ,fontSize: '12px', color: 'white', backgroundColor: 'rgb(240, 240, 240, 0.3)', margin: '5px', borderRadius: '43px', display: 'inline-block'}} >Contracts</span>
         <span style={{left: '80%', top: '20%',paddingRight: '10px', paddingLeft: '10px', paddingTop: '3px', paddingBottom: '3px' ,fontSize: '12px', color: 'white', backgroundColor: 'rgb(240, 240, 240, 0.3)', margin: '5px', borderRadius: '43px', display: 'inline-block'}} >and more...</span>
         </div>
-      <img style={{position: "absolute", zIndex: '1', left: '70%', bottom: '0px'}} src="/src/assets/Group109.svg" alt="Group img"/>
+      <Image style={{position: "absolute", zIndex: '1', left: '70%', bottom: '0px'}} src={bottomLogo} alt="Group img"/>
 
       </div>
       

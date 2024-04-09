@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Button, Form, Header, Input, Message } from 'semantic-ui-react';
+import { Button, Form, Header, Input, Message, Image } from 'semantic-ui-react';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import DataGeoComp from '../../components/authComponent/DataGeoComp';
 import { Link } from 'react-router-dom';
+import svgDescription from '../../assets/image1.svg';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css'; 
 
 const OrganizationsRegistration = () => {
   const navigate = useNavigate();
@@ -12,6 +15,7 @@ const OrganizationsRegistration = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     orgName: '',
     website: '',
   });
@@ -47,6 +51,11 @@ const OrganizationsRegistration = () => {
       isValid = false;
     }
 
+    if (!formData.phone.trim()) {
+      errors.phone = 'Phone number is required';
+      isValid = false;
+    } 
+    
     if (!formData.orgName.trim()) {
       errors.orgName = 'Organization Name is required';
       isValid = false;
@@ -64,7 +73,14 @@ const OrganizationsRegistration = () => {
     return isValid;
   };
 
-  const handleChange = (e, { name, value }) => {
+  const handleChange = (e, data) => {
+    console.log(e);
+    let { name, value } = data;
+    if (name =='phone') {
+      name = 'phone';
+      value = e;
+    }
+    console.log(name, value);
     setFormData({ ...formData, [name]: value });
     if (errors[name]) {
       setErrors({ ...errors, [name]: null });
@@ -101,7 +117,7 @@ const OrganizationsRegistration = () => {
     <div className="compdiv" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
       <div className="imgtext">
         <div style={{ display: 'flex', width: '222px', height: '147px', flexDirection: 'column', alignItems: 'center' }}>
-          <img src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px' }} />
+          <Image src={svgDescription} alt="Image" style={{ width: '98px', height: '98px' }} />
           <p style={{ fontSize: '28px', fontWeight: '600', color: '#048DEF' }}>Data Geometry</p>
         </div>
       </div>
@@ -136,6 +152,36 @@ const OrganizationsRegistration = () => {
             ) : (
               ''
             )}
+            {/* phone input */}
+            <Form.Field style={{marginBottom: `${!errors.phone ? '10px' : '0px'}`,}}>
+              <label style={{color: `${errors.phone? '#9f3a38':''}`}}>Phone Number</label>
+              <PhoneInput
+                country={'us'}
+                value={formData.phone}
+                onChange={(phone) => handleChange(phone, { name: 'phone' })}
+                inputStyle={{
+                  width: '100%',
+                  height: '40px',
+                  padding:'0 50px',
+                  borderRadius:'8px',
+                  backgroundColor:`${errors.phone? "#fff6f6":''}`,
+
+                }}
+                onFocus={handleFoucsed}
+                containerStyle={{
+                  borderRadius: '8px',
+                }}
+                placeholder='Enter Your Phone Number'
+              />
+              {errors.phone?.trim() && (
+                <div style={{ marginBottom: '5px', marginTop:'6px' }}>
+                  <Message className="fadeIn" color="red" size="small">
+                    <Message.Content>{errors.phone}</Message.Content>
+                  </Message>
+                </div>
+              )}
+            </Form.Field>
+
             <Form.Field control={Input} label="Organization Name" placeholder="Enter your organization name" name="orgName" style={{ marginBottom: `${!errors.orgName ? '10px' : '0px'}`, padding: '0px', width: window.innerWidth < 900 ? '335px' : '400px' }} value={formData.orgName} onChange={handleChange} error={errors.orgName ? true : false} onFocus={handleFoucsed} />
             {errors.orgName?.trim() ? (
               <div style={{ marginBottom: '5px' }}>
@@ -176,7 +222,7 @@ const OrganizationsRegistration = () => {
           </Form>
         </div>
 
-        <div style={{ position: 'absolute', bottom: '30px' }}>
+        <div style={{ position: 'absolute', bottom: '20px' }}>
           Don't have an account?
           <Link to="/" style={{ fontWeight: '600', fontSize: '15px' }} onMouseOver={(e) => (e.target.style.textDecoration = 'underline')} onMouseOut={(e) => (e.target.style.textDecoration = 'none')}>
             {' '}

@@ -456,3 +456,15 @@ color: white !important;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.react-tel-input .flag-dropdown{
+  border-radius: 8px 0 0 8px !important;
+}
+
+.react-tel-input .flag-dropdown.open .selected-flag{
+  border-radius: 8px 0 0 8px !important;
+
+}
+.react-tel-input .selected-flag:hover{
+  background-color: transparent !important;;
+}

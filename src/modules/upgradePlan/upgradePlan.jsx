@@ -4,6 +4,7 @@ import DataGeometryLogo from '../../assets/images/data-geometry.svg';
 import Swal from 'sweetalert2';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
 import { AuthContext } from '../../contexts';
+import DescriptionImage from '../../assets/image1.svg'
 
 const UpgradePlan = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -12,7 +13,7 @@ const UpgradePlan = () => {
     <div style={{ backgroundColor: '#f0efef', height: '100%', overflow: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', marginTop: '40px', gap: '40px' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10 }}>
-          <img src="/src/assets/image1.svg" alt="Description of the SVG image" style={{ width: '100px', height: '100px' }} />
+          <Image src={DescriptionImage} alt="Description of the SVG image" style={{ width: '100px', height: '100px' }} />
           <span style={{ fontSize: '50px', lineHeight: '30px', fontWeight: '700' }}>Pricing</span>
         </div>
         <div style={{ fontSize: '25px' }}>Pay only for what you need</div>

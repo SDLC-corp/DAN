@@ -6,6 +6,8 @@ import LogoImg from '../../assets/images/sdlc-logo.png';
 import DataGeoComp from '../../components/authComponent/DataGeoComp';
 import { intlFormat } from 'date-fns';
 import { Link } from 'react-router-dom';
+import svgDescription from '../../assets/image1.svg';
+
 
 function LoginPage() {
   let navigate = useNavigate();
@@ -73,7 +75,7 @@ function LoginPage() {
     <div className="compdiv" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
       <div className="imgtext" style={{ position: 'absolute', top: '50px' }}>
         <div style={{ display: 'flex', width: '222px', height: '147px', flexDirection: 'column', alignItems: 'center' }}>
-          <img src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px' }} />
+          <Image src={svgDescription} alt="Image" style={{ width: '98px', height: '98px' }} />
           <p style={{ fontSize: '28px', fontWeight: '600', color: '#048DEF' }}>Data Geometry</p>
         </div>
       </div>

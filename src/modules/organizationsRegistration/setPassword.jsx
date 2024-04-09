@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Form, Header, Input } from 'semantic-ui-react';
+import { Button, Form, Header, Input, Image } from 'semantic-ui-react';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DataGeoComp from '../../components/authComponent/DataGeoComp';
+import svgDescription from '../../assets/image1.svg';
 
 const SetPassword = () => {
   const location = useLocation();
@@ -87,7 +88,7 @@ const SetPassword = () => {
     <div className="compdiv" style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
       <div className="imgtext" style={{ position: 'absolute', top: '50px' }}>
         <div style={{ display: 'flex', width: '222px', height: '147px', flexDirection: 'column', alignItems: 'center' }}>
-          <img src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px' }} />
+          <Image src={svgDescription} alt="Image" style={{ width: '98px', height: '98px' }} />
           <p style={{ fontSize: '28px', fontWeight: '600', color: '#048DEF' }}>Data Geometry</p>
         </div>
       </div>

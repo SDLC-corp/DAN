@@ -5,6 +5,7 @@ import { Button } from 'semantic-ui-react';
 import Swal from 'sweetalert2';
 import { apiPOST } from '../../utils/apiHelper';
 import DataGeoComp from '../../components/authComponent/DataGeoComp';
+import DescriptionImage from '../../assets/image1.svg'
 
 const VerifyRegistration = ({ numInputs = 6 }) => {
   const inputRefs = useRef([]);
@@ -86,7 +87,7 @@ const VerifyRegistration = ({ numInputs = 6 }) => {
     <div className="compdiv" style={{ width: '100%', display: 'flex' }}>
       <div className="imgtext" style={{ position: 'absolute', top: '55px' }}>
         <div style={{ display: 'flex', width: '222px', height: '147px', flexDirection: 'column', alignItems: 'center' }}>
-          <img src="/src/assets/image1.svg" alt="Image" style={{ width: '98px', height: '98px' }} />
+          <img src={DescriptionImage} alt="Image" style={{ width: '98px', height: '98px' }} />
           <p style={{ fontSize: '28px', fontWeight: '600', color: '#048DEF' }}>Data Geometry</p>
         </div>
       </div>
