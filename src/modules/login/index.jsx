@@ -32,15 +32,15 @@ function LoginPage() {
   }, []);
 
   const check_validation = (userDetails) => {
-    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     let flag = false;
     if (!userDetails.email) {
       setEmailError('Please provide Email');
       setErrorstate(true);
       setLoading(false);
       flag = true;
-    } else if (!gmailRegex.test(userDetails.email)) {
-      setEmailError('Please provide valid Email');
+    } else if (!emailRegex.test(userDetails.email)) {
+      setEmailError('Please provide a valid Email');
       setErrorstate(true);
       setLoading(false);
       flag = true;

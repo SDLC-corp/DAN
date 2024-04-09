@@ -101,7 +101,7 @@ const OrganizationsRegistration = () => {
         const res = await apiPOST(`/v1/auth/register/send-otp`, formData);
         setLoading(false);
         if (res.status === 200) {
-          Toast.fire('Success!', 'OTP Verified Successfully', 'success');
+          Toast.fire('Success!', 'OTP Sent Successfully on your Email', 'success');
           const encodedToken = encodeURIComponent(res?.data?.data);
           navigate(`/signup/verify?token=${encodedToken}`);
         } else {

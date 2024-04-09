@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form, Header, Input, Image } from 'semantic-ui-react';
 import { apiGET, apiPOST } from '../../utils/apiHelper';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DataGeoComp from '../../components/authComponent/DataGeoComp';
 import svgDescription from '../../assets/image1.svg';
+import { AuthContext } from '../../contexts';
 
 const SetPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  let auth = useContext(AuthContext);
 
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get('token');
+  let from = location.state?.from?.pathname || '/dashboard';
 
   const [formData, setFormData] = useState({
     password: '',
@@ -67,18 +70,36 @@ const SetPassword = () => {
         password: formData.password,
         token: token,
       };
+      console.log(payload);
       try {
         if (loading) return;
         setLoading(true);
         const res = await apiPOST(`/v1/auth/register/set-password`, payload);
-        setLoading(false);
+        console.log(res);
         if (res.status === 200) {
-          Toast.fire('Success!', 'OTP Verified Successfully', 'success');
+          let userDetails = {
+            email: res?.data?.data,
+            password: formData?.password,
+          };
+          console.log(userDetails);
+          await auth.signin(userDetails, (type) => {
+              let userObj = localStorage.getItem('user');
+              type?.type == 'success' ? navigate(JSON.parse(userObj).role == 'superAdmin' ? from : '/dashboard', { replace: true }) :navigate(`/`);
+          });
+          
+          Toast.fire('Success!', 'Password Saved Successfully', 'success');
+          setLoading(false);
+
           navigate(`/`);
+          
         } else {
           Toast.fire('Error!', res?.data?.data || 'Something went wrong!', 'error');
+          setLoading(false);
+
         }
       } catch (error) {
+        setLoading(false);
+
         Toast.fire('Error!', error || 'Something went wrong!', 'error');
       }
     }
@@ -109,7 +130,7 @@ const SetPassword = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
             <div></div>
             <Button type="submit" loading={loading} onClick={handleSubmit} style={{ borderRadius: '20px', marginTop: '10px' }} primary>
-              Verify Email
+              Save Password
             </Button>
           </div>
         </Form>
