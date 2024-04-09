@@ -171,6 +171,7 @@ const CardComponent = ({ openModal, setOpenModal }) => {
       name: user.name,
       email: user.email,
       orgName: orgName,
+      phone: user.phone,
     });
   }, [user, orgName]);
 

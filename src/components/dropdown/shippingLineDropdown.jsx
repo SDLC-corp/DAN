@@ -39,8 +39,8 @@ const ShippingLineNameDropdown = ({
                 });
                 list = list.map((item) => {
                   return {
-                    key: item?.name,
-                    text: item?.code,
+                    key: item?.code,
+                    text: item?.name,
                     value: item?._id,
                   };
                 });
@@ -74,7 +74,7 @@ const ShippingLineNameDropdown = ({
             <Dropdown
               clearable
               value={shippingId ? shippingId: ""}
-              placeholder='Select Shipping line'
+              placeholder='Select Document Type'
               style={{ marginRight: '10px',height:height , borderRadius:'20px'}}
               search
               selection

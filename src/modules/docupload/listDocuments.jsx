@@ -206,17 +206,17 @@ function DocumentList() {
       selector: (row) => row?.seqId,
       width: '6%',
     },
-    {
-      name: <p> Document No.</p>,
-      selector: (row) =>
-        row && (
-          <Link style={{ color: "black" }} to={`/dashboard/studio/${row._id}`}>
-            <p>
-              <strong>{row && row.documentNo}</strong>
-            </p>
-          </Link>
-        ),
-    },
+    // {
+    //   name: <p> Document No.</p>,
+    //   selector: (row) =>
+    //     row && (
+    //       <Link style={{ color: "black" }} to={`/dashboard/studio/${row._id}`}>
+    //         <p>
+    //           <strong>{row && row.documentNo}</strong>
+    //         </p>
+    //       </Link>
+    //     ),
+    // },
     {
       name: <p>Document Type</p>,
       cell: (row) => (
