@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Button } from 'semantic-ui-react';
-
+import { Modal, Button, Image } from 'semantic-ui-react';
+import Logo from '../../assets/upage.svg'
 
 const UpgradePlanModal = ({isModalOpen, setIsModalOpen}) => {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const UpgradePlanModal = ({isModalOpen, setIsModalOpen}) => {
     style={{  borderRadius: '20px', width:'700px', height: '400px',padding:'0' }}
     >
     <div style={{position: 'relative', display: "flex", justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
-    <img src="/src/assets/upage.svg" alt="Description of the SVG image" style={{ width: '130px', height: '130px', position:  'absolute', top: '20px', zIndex: '1', padding: '5px' }} />
+    <Image src={Logo} alt="Description of the SVG image" style={{ width: '130px', height: '130px', position:  'absolute', top: '20px', zIndex: '1', padding: '5px' }} />
         <div className='' style={{height: "300px", width:"100%", position: "absolute", top:  '100px', zIndex: '0', borderRadius: "15px", alignContent: 'center', display: "flex", justifyContent: 'center'}}>
             <div style={{position: 'absolute', top:  '70px', display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center', gap: "20px"}}>
                 <span style={{fontSize: "30px", fontWeight: '900'}}>Unlock the Power of Data Extraction:

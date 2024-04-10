@@ -32,7 +32,7 @@ function Layout() {
   const getOrganizationName = async () => {
     try {
       const response = await apiGET('/v1/organizations')
-      if (response.status === 200) {
+      if (response?.status === 200) {
         setOrgName(response.data.data.name);
       } else {
         console.log(response);
@@ -94,10 +94,10 @@ function Layout() {
                   </div>
                 ) : null
               ) : aMenu.type == 'menu' ? (
-                <Link style={{ color: 'inherit' }} to={aMenu.path}>
+                <Link style={{ color: 'inherit', display: `${ userRole==='Organization Admin' &&  aMenu.title =='Document Upload'? "none":'block'}`, }} to={aMenu.path}>
                   {collapsed ?
                     <div className='collapsed-sidebar-icon' style={{ borderRadius: '100px', backgroundColor: location.pathname == aMenu.path ? '#048DEF' : '', margin: '12px 16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px', }}>
+                      <div style={{ display: `flex`, justifyContent: 'center', alignItems: 'center', padding: '15px', }}>
                         <Icon bordered={false} name={aMenu.icon} style={{ color: location.pathname == aMenu.path ? 'white' : '#9C9393', fontSize: '16px' }}></Icon>
                       </div>
                     </div>
@@ -113,7 +113,7 @@ function Layout() {
                       }}
                     >
                       <Icon bordered={false} name={aMenu.icon} style={{ padding: collapsed ? "" : '0 30px 0 10px', color: location.pathname == aMenu.path ? 'white' : '#9C9393', }}></Icon>
-                      {aMenu.title}
+                      {userRole==='Organization Admin' &&  aMenu.title =='Dashboard'? "Home": aMenu.title}
                     </MenuItem>}
                 </Link>
               ) : null
