@@ -1,7 +1,3 @@
-Below is a **production-grade, GitHub-ready `README.md`** for **Data Geometry (DAN)**.
-It is written in the tone and structure expected of serious enterprise platforms (SAP-class, not SaaS toy projects).
-
----
 
 # **Data Geometry (DAN)**
 
