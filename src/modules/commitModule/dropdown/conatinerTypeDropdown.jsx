@@ -7,6 +7,34 @@ import Swal from 'sweetalert2';
 
 
 
+/**
+ * ContainerTypeDropdown
+ * ---------------------
+ * Searchable dropdown for selecting a Container ISO Code ("Text | Code").
+ * It is rendered inside an editable table cell, so it is tightly coupled to the
+ * row it edits via the `aRow` / `index` / `clickedFieldIndex` props.
+ *
+ * Behaviour:
+ *  - Loads the full ISO-code list on mount, and switches to a server-side
+ *    search (`/isoCodes/ddlist`) as the user types.
+ *  - When a search yields no match, an "Add Type" button appears, opening a
+ *    modal to create a new ISO code on the fly.
+ *  - Highlights itself (purple outline) when it is the currently focused cell.
+ *
+ * @param {Object}   props
+ * @param {Array}    props.dropDownOptions  - Initial option list (pre-seeded ISO codes).
+ * @param {string}   props.dafaultValue     - Currently selected code (the dropdown value).
+ * @param {Function} props.updateTableField - Writes the chosen value back to the table:
+ *                                            `(index, value, 'type', itemId)`.
+ * @param {Function} props.onFocus          - Cell focus handler.
+ * @param {Function} props.onBlur           - Cell blur handler.
+ * @param {Object}   props.onFocusRow       - The row/param currently focused (drives highlight).
+ * @param {Object}   props.aRow             - The row this dropdown belongs to (`itemId`).
+ * @param {number}   props.clickedFieldIndex- Index of the cell the user clicked.
+ * @param {number}   props.index            - This dropdown's row index.
+ * @param {string}   props.selectedSentence - OCR/selected text used to auto-fill the search.
+ * @returns {JSX.Element}
+ */
 const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField, onFocus, onBlur, onFocusRow, aRow, clickedFieldIndex, index,selectedSentence }) => {
     const [isoCodeData, setIsoCodeData] = useState(dropDownOptions || [])
     const [isFetching, setIsFetching] = useState(false);
@@ -34,8 +62,29 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
         }
     })
 
-    const handleSearchChange = (e, { searchQuery }) => { setSearch(true),setSearchQuery(searchQuery) };
+    /**
+     * Dropdown search-input change handler. Enables search mode and stores the
+     * typed query, which a `useEffect` then uses to trigger the API lookup.
+     *
+     * @param {Object} e            - Synthetic event (unused).
+     * @param {Object} data         - Semantic-UI payload.
+     * @param {string} data.searchQuery - The text the user typed.
+     * @returns {void}
+     */
+    const handleSearchChange = (e, { searchQuery }) => {
+        setSearch(true);
+        setSearchQuery(searchQuery);
+    };
 
+    /**
+     * Fetches ISO codes from the API and stores them in `isoCodeData`.
+     * With a `searchQuery` it hits the searchable endpoint (limited to 10);
+     * without one it loads the full list. Toggles `isFetching` to drive the
+     * dropdown's loading/disabled state and surfaces errors via SweetAlert.
+     *
+     * @param {string} [searchQuery] - Optional text to search ISO codes by.
+     * @returns {Promise<void>}
+     */
     const getAllIsoCodes = async (searchQuery) => {
         try {
             setIsFetching(true)
@@ -69,12 +118,25 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
             });
         }
     };
+    /**
+     * Resets the "Add ISO Code" modal back to a clean state: clears the form
+     * fields, validation errors, and hides both the modal and the add button.
+     *
+     * @returns {void}
+     */
     const clearFields = () => {
         setDataObj({ text: "", code: "", description: "" })
         setErrorObj()
         setShowModal(false)
         setShowBtn(false)
     }
+    /**
+     * Validates the new-ISO-code form. `text` and `code` are mandatory;
+     * the first missing field sets `errorObj` and short-circuits.
+     *
+     * @param {{ text: string, code: string, description?: string }} data
+     * @returns {boolean} `true` when the form is valid, otherwise `false`.
+     */
     const validate = (data) => {
         if (!data.text.trim()) {
             setErrorObj({ ...errorObj,text: "text is required" })
@@ -86,6 +148,13 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
         }
         return true
     }
+    /**
+     * Creates a new Container ISO Code via `POST v1/isoCodes/`.
+     * Guards against double-submits with the `loading` flag, validates first,
+     * and on success shows a toast, clears the form, and refreshes the list.
+     *
+     * @returns {Promise<void>}
+     */
     const addIsoCode = async () => {
         try {
             if (loading) return
@@ -93,8 +162,7 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
             if (isValid) {
                 setLoading(true)
                 const response = await apiPOST('v1/isoCodes/', dataObj)
-                setLoading(false)    
-                console.log("response", response);
+                setLoading(false)
                 if (response.status === 200) {
                     Swal.fire({
                         title: "Success!",
@@ -110,7 +178,6 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
                 }
             }
         } catch (error) {
-            console.log(error);
             Toast.fire('Error!', error || "Something went wrong!", 'error');
         }
     }
@@ -142,7 +209,6 @@ const ContainerTypeDropdown = ({ dropDownOptions,dafaultValue, updateTableField,
         setOptions([...optionData])
     }, [isoCodeData])
 
-    console.log('options',options);
     useEffect(() => {
         if (selectedSentence?.trim() && (clickedFieldIndex == index) && (onFocusRow.selectedParam == 'type')) {
             setSearchQuery(selectedSentence?.trim())
