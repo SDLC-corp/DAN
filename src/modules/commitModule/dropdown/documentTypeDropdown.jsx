@@ -1,6 +1,6 @@
 import React from "react"
 import { Dropdown } from "semantic-ui-react"
-import { apiGET } from "../../utils/apiHelper"
+import { apiGET } from "../../../utils/apiHelper"
 import Swal from "sweetalert2"
 import { useState } from "react"
 import { useEffect } from "react"
