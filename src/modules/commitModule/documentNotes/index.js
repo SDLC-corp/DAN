@@ -1,2 +1,8 @@
 export { default } from './documentNotes';
-export { getDocumentNotes, addDocumentNote, deleteDocumentNote } from './documentNotesApi';
+export { default as useDocumentNotes } from './useDocumentNotes';
+export {
+  getDocumentNotes,
+  addDocumentNote,
+  updateDocumentNote,
+  deleteDocumentNote,
+} from './documentNotesApi';
